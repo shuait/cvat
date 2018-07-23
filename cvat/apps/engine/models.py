@@ -53,11 +53,7 @@ class Task(models.Model):
         return self.path
 
     def get_user_segments(self, user):
-        segments = []
-        for segment in self.segment_set.all():
-            if segment.check_user_access(user):
-                segments.append(segment)
-        return segments
+        return [s for s in self.segment_set.all() if s.check_user_access(user)]
 
     def __str__(self):
         return self.name
