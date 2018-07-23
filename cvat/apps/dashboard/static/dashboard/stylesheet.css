@@ -84,7 +84,7 @@
     background: #0b7fff;
 }
 
-#dashboardCreateTaskButton {
+#dashboardCreateTaskButton, dashboardGotoAdminButton, dashboardLogoutButton {
     font-size: 2em;
 }
 
