@@ -157,3 +157,38 @@ class TrackedBox(TrackedObject, BoundingBox):
 
 class TrackedBoxAttributeVal(AttributeVal):
     box = models.ForeignKey(TrackedBox, on_delete=models.CASCADE)
+
+
+
+# New models related to skeletons
+class Skeleton(models.Model):
+    pass
+
+class Keypoint(models.Model):
+
+    VISIBILITY= (
+        (0, 'NOT IN IMAGE'),
+        (1, 'INVISIBLE'),
+        (2, 'VISIBLE')
+    )
+    name = models.CharField(max_length = 256)
+    human = models.ForeignKey(Skeleton, on_delete=models.CASCADE)
+    x = models.FloatField()
+    y = models.FloatField()
+    visibility = models.PositiveIntegerField(default = 0, choices = VISIBILITY)
+
+class LabeledSkeleton(Annotation, Skeleton):
+    pass
+
+class LabeledSkeletonAttributeVal(AttributeVal):
+    skeleton = models.ForeignKey(LabeledSkeleton, on_delete=models.CASCADE)
+
+class TrackedSkeleton(TrackedObject,Skeleton):
+    pass
+
+class TrackedSkeletonAttributeVal(AttributeVal):
+    skeleton = models.ForeignKey(TrackedSkeleton, on_delete=models.CASCADE)
+
+
+
+
