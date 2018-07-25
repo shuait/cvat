@@ -121,6 +121,55 @@ class _Attribute:
         else:
             self.value = str(value)
 
+# Defining Skeleton and keypoint classes, attributes and methods
+# May need to think a bit more about how to best merge skeletons.
+
+'''
+class _Skeleton:
+    def __init__(self, keypoints, frame,  attributes=None):
+        self.keypoints = keypoints
+        self.frame = frame
+        self.attributes = attributes if attributes else []
+
+    # Not sure how to implement this for skeletons yet
+    def merge(self, box):
+        # The occluded property and attributes cannot be merged. Let's keep
+        # original attributes and occluded property of the self object.
+        assert self.frame == box.frame
+        self.xtl = (self.xtl + box.xtl) / 2
+        self.ytl = (self.ytl + box.ytl) / 2
+        self.xbr = (self.xbr + box.xbr) / 2
+        self.ybr = (self.ybr + box.ybr) / 2
+    
+    def add_attribute(self, attr):
+        self.attributes.append(attr)
+
+
+class _Keypoint:
+    def __init(self,x,y,frame, visibility,attributes=None):
+        self.x = x
+        self.y = y
+        self.frame = frame
+        self.visibility = visibility
+        self.attributes = attributes if attributes else []
+
+
+class _LabeledSkeleton(_Skeleton):
+    def __init__(self, label, keypoints, frame, attributes=None):
+        super().__init__(keypoints, frame, attributes)
+        self.label = label
+
+
+class _TrackedSkeleton(_Skeleton):
+    def __init__(self, keypoints, frame, attributes=None):
+        super().__init__(keypoints, frame, attributes)
+
+class _InterpolatedSkeleton(_TrackedSkeleton):
+    def __init__(self, keypoints, frame, keyframe, attributes=None):
+        super().__init__(keypoints, frame, attributes)
+        self.keyframe = keyframe
+'''
+
 class _BoundingBox:
     def __init__(self, x0, y0, x1, y1, frame, occluded, attributes=None):
         self.xtl = x0
@@ -159,23 +208,41 @@ class _InterpolatedBox(_TrackedBox):
         self.keyframe = keyframe
 
 class _ObjectPath:
-    def __init__(self, label, start_frame, stop_frame, boxes=None, attributes=None):
+    def __init__(self, label, start_frame, stop_frame, boxes=None, attributes=None): #skeletons=None,
         self.label = label
         self.frame = start_frame
         self.stop_frame = stop_frame
         self.boxes = boxes if boxes else []
+        '''
+        self.skeletons = skeletons if skeletons else []
+        '''
         self.attributes = attributes if attributes else []
         self._interpolated_boxes = []
+        #self._interpolated_skeletons = []
+
         assert not self.boxes or self.boxes[-1].frame <= self.stop_frame
+        '''
+        assert not self.boxes or self.boxes[-1].frame <= self.stop_frame \
+            or not self.skeletons or self.skeletons[-1].frame <= self.stop_frame
+        '''
 
     def add_box(self, box):
         self.boxes.append(box)
+
+    # def add_skeleton(self,skeleton):
+    #     self.skeletons.append(skeleton)
 
     def get_interpolated_boxes(self):
         if not self._interpolated_boxes:
             self._init_interpolated_boxes()
 
         return self._interpolated_boxes
+
+    # def get_interpolated_skeletons(self):
+    #     if not self._interpolated_skeletons:
+    #         self._init_interpolated_skeletons()
+
+        # return self._interpolated_skeletons
 
     def _init_interpolated_boxes(self):
         assert self.boxes[-1].frame <= self.stop_frame
@@ -214,6 +281,59 @@ class _ObjectPath:
 
         self._interpolated_boxes = boxes
 
+    # def _init_interpolated_skeletons(self):
+    #     assert self.skeletons[-1].frame <= self.stop_frame
+    #
+    #     skeletons = []
+    #     stop_skeleton = copy.copy(self.skeletons[1])
+    #     stop_skeleton.frame = self.stop_frame + 1
+    #     attributes = {}
+    #     for skel0, skel1 in zip(self.skeletons,self.skeletons[1:] + [stop_skeleton]):
+    #         assert skel0.frame <= skel1.frame
+    #
+    #         ## LOGIC FOR INTERPOLATING SKELETONS GOES HERE
+    #
+    #         distance = float(skel1.frame - skel0.frame)
+    #         deltas = []
+    #         for (keyp0,keyp1) in zip(skel0.keypoints,skel1.keypoints):
+    #             delta_x = (keyp1.x - keyp0.x)/distance
+    #             delta_y = (keyp1.y - keyp0.x)/distance
+    #             deltas.append((delta_x,delta_y))
+    #
+    #         # New box doesn't have all attributes (only first one does).
+    #         # Thus it is necessary to propagate them.
+    #
+    #         for attr in skel0.attributes:
+    #             attributes[attr.id] = attr
+    #
+    #         for frame in range(skel0.frame, skel1.frame):
+    #             off = frame - skel0.frame
+    #
+    #             keypoints = []
+    #
+    #
+    #         # Keypoints that are outside image shouldn't be interpolated,
+    #         # but ones that aren't should be.
+    #
+    #             # (Same for the visibility of each of the keypoints)
+    #             for i,(keyp0, keyp1) in enumerate(zip(skel0.keypoints, skel1.keypoints)):
+    #
+    #                 if not keyp0.visibility:
+    #                     # i.e. keypoint is either occluded or visible
+    #                     x = keyp0.x + deltas[i][0] * off
+    #                     y = keyp0.y + deltas[i][1] * off
+    #                 else:
+    #                     x = keyp0.x
+    #                     y = keyp0.y
+    #
+    #                 keypoint = _Keypoint(x, y, frame, skel0.keypoints[0].visibility)
+    #                 keypoints.append(keypoint)
+    #
+    #                 skeleton = _InterpolatedSkeleton(keypoints,frame,box0.frame == frame,
+    #                                                  list(attributes.values()))
+    #                 skeletons.append(skeleton)
+    #
+    # TODO: IMPLEMENT FOR SKELETONS
     def merge(self, path):
         assert self.label.id == path.label.id
         boxes = {box.frame:box for box in self.boxes}
@@ -235,11 +355,13 @@ class _Annotation:
     def __init__(self, start_frame, stop_frame):
         self.boxes = []
         self.paths = []
+        # self.skeletons = []
         self.start_frame = start_frame
         self.stop_frame = stop_frame
 
     def reset(self):
         self.boxes = []
+        # self.skeletons = []
         self.paths = []
 
     def to_boxes(self):
@@ -253,6 +375,17 @@ class _Annotation:
 
         return self.boxes + boxes
 
+    # def to_skeletons(self):
+    #     skeletons = []
+    #     for path in self.paths:
+    #         for skeleton in path.get_interpolated_skeletons():
+    #             # TODO: Check if not checking if any keypoints are outside is OK:
+    #             skeleton  = _LabeledSkeleton(path.label,skeleton.keypoints,
+    #                                          skeleton.frame,skeleton.attributes \
+    #                                          + path.attributes)
+    #             skeletons.append(skeleton)
+    #     return self.skeletons + skeletons
+
     def to_paths(self):
         paths = []
         for box in self.boxes:
@@ -261,8 +394,20 @@ class _Annotation:
             box1 = copy.copy(box0)
             box1.outside = True
             box1.frame += 1
-            path = _ObjectPath(box.label, box.frame, box.frame + 1, [box0, box1], box.attributes)
+            path = _ObjectPath(box.label, box.frame, box.frame + 1,
+                               boxes = [box0, box1],
+                               attributes = box.attributes)
             paths.append(path)
+
+        # for skeleton in self.skeletons:
+        #     skeleton0 = _InterpolatedSkeleton(skeleton.keypoints,skeleton.frame,
+        #                                       False, True)
+        #     skeleton1 = copy.copy(skeleton0)
+        #     # TODO: no outsides
+        #     skeleton1.frame += 1
+        #     path = _ObjectPath(skeleton.label, skeleton.frame,skeleton.frame + 1,
+        #                        skeletons = [skeleton0,skeleton1],
+        #                        attributes = skeleton.attributes)
 
         return self.paths + paths
 
@@ -326,6 +471,13 @@ class _AnnotationForJob(_Annotation):
                 'labeledboxattributeval__value', 'labeledboxattributeval__spec_id',
                 'labeledboxattributeval__id').order_by('frame'))
 
+        # Think we would acccess keypoints later.
+
+        # db_skeletons = list(self.db_job.labeledbox_set.prefetch_related('labeledskeletonattributeval_set') \
+        #     .values('id', 'frame', 'label_id',
+        #         'labeledskeletonattributeval__value', 'labeledskeletonattributeval__spec_id',
+        #         'labeledskeletonattributeval__id').order_by('frame'))
+
         keys_for_merge = {
             'attributes': [
                 'labeledboxattributeval__value',
@@ -333,6 +485,15 @@ class _AnnotationForJob(_Annotation):
                 'labeledboxattributeval__id'
             ]
         }
+
+        # keys_for_merge_skeleton = {
+        #     'attributes': [
+        #         'labeledskeletonattributeval__value',
+        #         'labeledskeletonattributeval__spec_id',
+        #         'labeledskeletonattributeval__id'
+        #     ]
+        # }
+
         db_boxes = self._merge_table_rows(db_boxes, keys_for_merge, 'id')
 
         for db_box in db_boxes:
@@ -464,6 +625,8 @@ class _AnnotationForJob(_Annotation):
             object_path = _ObjectPath(label, int(track['frame']), self.stop_frame,
                 boxes, attributes)
             self.paths.append(object_path)
+
+    #wefawefawe
 
     def save_boxes_to_db(self):
         self.db_job.labeledbox_set.all().delete()
