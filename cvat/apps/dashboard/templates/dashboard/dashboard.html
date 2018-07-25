@@ -40,7 +40,12 @@
         <center>
             <table style="width: 65%;">
                 <tr>
-                    <td><button id="dashboardCreateTaskButton" class="regular h1"> Create New Task </button></td>
+                    {% if user.is_superuser%}
+                        <td><button id="dashboardCreateTaskButton" class="regular h1"> Create New Task </button></td>
+                        <td><button id="dashboardGotoAdminButton" class="regular h1"> Admin portal </button></td>
+                    {% endif %}
+
+                    <td><button id="dashboardLogoutButton" class="regular h1"> Logout </button></td>
                     <td>
                         <div style="width: 300px; float: right;">
                             <input type="text" id="dashboardSearchInput" class="regular h1" placeholder="Search.." name="search">
