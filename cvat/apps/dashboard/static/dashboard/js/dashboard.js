@@ -79,6 +79,8 @@ function buildDashboard() {
 
 function setupTaskCreator() {
     let dashboardCreateTaskButton = $('#dashboardCreateTaskButton');
+    let dashboardGotoAdminButton = $('#dashboardGotoAdminButton');
+    let dashboardLogoutButton = $('#dashboardLogoutButton');
     let createModal = $('#dashboardCreateModal');
     let nameInput = $('#dashboardNameInput');
     let labelsInput = $('#dashboardLabelsInput');
@@ -116,6 +118,14 @@ function setupTaskCreator() {
 
     dashboardCreateTaskButton.on('click', function() {
         $('#dashboardCreateModal').removeClass('hidden');
+    });
+
+    dashboardGotoAdminButton.on('click', function() {
+        window.location.href = '/admin'
+    });
+
+    dashboardLogoutButton.on('click', function() {
+        window.location.href = '/auth/logout'
     });
 
     nameInput.on('change', (e) => {name = e.target.value;});
