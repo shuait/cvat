@@ -24,9 +24,14 @@ global_logger = logging.getLogger(__name__)
 def dispatch_request(request):
     """An entry point to dispatch legacy requests"""
     if request.method == 'GET' and 'id' in request.GET:
-        return render(request, 'engine/annotation.html', {
-            'js_3rdparty': JS_3RDPARTY.get('engine', [])
-        })
+        job = models.Job.objects.get(id=request.GET['id'])
+        segment = job.segment
+        if segment.check_user_access(request.user):
+            return render(request, 'engine/annotation.html', {
+                'js_3rdparty': JS_3RDPARTY.get('engine', [])
+            })
+        else:
+            return HttpResponseBadRequest("Permission denied")
     else:
         return redirect('/dashboard/')
 
