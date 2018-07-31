@@ -1,5 +1,6 @@
 from django.db import models
 from django.conf import settings
+from django.utils import timezone
 
 from django.contrib.auth.models import User
 
@@ -81,6 +82,8 @@ class Segment(models.Model):
 class Job(models.Model):
     segment = models.ForeignKey(Segment, on_delete=models.CASCADE)
     annotator = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    updated_date = models.DateTimeField(auto_now_add=True)
+    #url_state = models.BooleanField(default=True)
 
     def get_task_name(self):
         return self.segment.get_task_name()
@@ -91,6 +94,13 @@ class Job(models.Model):
         return str(self.id)
     get_id.short_description = 'Job ID'
     get_id.admin_order_field = 'id'
+
+    def get_deltatime(self):
+        if timezone.now() - self.updated_date < timezone.timedelta(minutes=2):
+            return 'False'
+        else:
+            return 'True'
+
 
     # TODO: add sub-issue number for the task
     def __str__(self):

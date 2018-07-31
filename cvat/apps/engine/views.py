@@ -26,7 +26,9 @@ def dispatch_request(request):
     if request.method == 'GET' and 'id' in request.GET:
         job = models.Job.objects.get(id=request.GET['id'])
         segment = job.segment
-        if segment.check_user_access(request.user):
+        if job.get_deltatime() == 'False':
+            return HttpResponseBadRequest("This job is being edited")
+        if segment.check_user_access(request.user):          
             return render(request, 'engine/annotation.html', {
                 'js_3rdparty': JS_3RDPARTY.get('engine', [])
             })

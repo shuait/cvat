@@ -438,6 +438,14 @@ function setupMenu(job, collectionModel, collectionController, annotationParser)
             settingsWindow.css('display', 'none');
         }
     });
+
+    saveButton.click();
+    autoSaveBox.attr("checked",true);
+    autoSaveBox.attr("disabled","disabled");
+    autoSaveTime.val(1);
+    autoSaveTime.attr("disabled","disabled");
+    autoSaveBox.trigger('change');
+
 }
 
 function setupAnnotationShortkeys() {
