@@ -23,7 +23,9 @@
         <table class="dashboardJobList regular">
             {% for segment in item.segments %}
             <tr>
-                <a id="test" href="{{segment.url}}"'>{{segment.url}}</a>
+                <td>
+                    <a id="test" href="{{segment.url}}"'>{{segment.url}}</a>
+                </td>
             </tr>
             {% endfor %}
         </table>
