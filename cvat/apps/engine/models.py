@@ -75,6 +75,8 @@ class Segment(models.Model):
         if user.is_superuser:
             return True
         segment_user = self.get_annotator()
+        if not segment_user:
+            return False
         return segment_user.get_username() == user.get_username()
 
 class Job(models.Model):

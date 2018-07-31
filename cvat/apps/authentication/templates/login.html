@@ -3,6 +3,7 @@
 {% block title %}Login{% endblock %}
 
 {% block content %}
+     
 	<h1>Login</h1>
 	{% if form.errors %}
 		<small>Your username and password didn't match. Please try again.</small>
@@ -18,5 +19,5 @@
 {% endblock %}
 
 {% block note%}
-	<p>Have not registered yet? <a href="{% url 'register' %}">Register here</a>.</p>
+	<!--p>Have not registered yet? <a href="{% url 'register' %}">Register here</a>.</p-->
 {% endblock %}

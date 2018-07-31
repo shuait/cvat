@@ -18,4 +18,5 @@ def register_user(request):
             return redirect('/')
     else:
         form = forms.NewUserForm()
-    return render(request, 'register.html', {'form': form})
+#    return render(request, 'register.html', {'form': form})
+    return render(request, 'login.html')

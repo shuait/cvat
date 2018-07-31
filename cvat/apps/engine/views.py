@@ -25,11 +25,15 @@ def dispatch_request(request):
     """An entry point to dispatch legacy requests"""
     if request.method == 'GET' and 'id' in request.GET:
         job = models.Job.objects.get(id=request.GET['id'])
+        segment = job.segment
         if job.get_deltatime() == 'False':
             return HttpResponseBadRequest("This job is being edited")
-        return render(request, 'engine/annotation.html', {
-            'js_3rdparty': JS_3RDPARTY.get('engine', [])
-        })
+        if segment.check_user_access(request.user):          
+            return render(request, 'engine/annotation.html', {
+                'js_3rdparty': JS_3RDPARTY.get('engine', [])
+            })
+        else:
+            return HttpResponseBadRequest("Permission denied")
     else:
         return redirect('/dashboard/')
 
