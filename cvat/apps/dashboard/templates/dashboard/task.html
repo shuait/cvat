@@ -22,10 +22,12 @@
         </center>
         <table class="dashboardJobList regular">
             {% for segment in item.segments %}
-                <tr>
-                    <td> <a href="{{segment.url}}"> {{segment.url}} </a> </td>
-                </tr>
+            <tr>
+                <a id="test" href="{{segment.url}}"'>{{segment.url}}</a>
+            </tr>
             {% endfor %}
         </table>
     </div>
 </div>
+
+<!-- {{segment.urlState}} === True -->

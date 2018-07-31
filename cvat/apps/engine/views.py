@@ -24,6 +24,9 @@ global_logger = logging.getLogger(__name__)
 def dispatch_request(request):
     """An entry point to dispatch legacy requests"""
     if request.method == 'GET' and 'id' in request.GET:
+        job = models.Job.objects.get(id=request.GET['id'])
+        if job.get_deltatime() == 'False':
+            return HttpResponseBadRequest("This job is being edited")
         return render(request, 'engine/annotation.html', {
             'js_3rdparty': JS_3RDPARTY.get('engine', [])
         })
