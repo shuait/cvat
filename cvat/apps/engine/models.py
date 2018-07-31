@@ -188,9 +188,8 @@ class TrackedBoxAttributeVal(AttributeVal):
     box = models.ForeignKey(TrackedBox, on_delete=models.CASCADE)
 
 
-
-# New models related to skeletons
 class Skeleton(models.Model):
+    # TODO: define exactly what "outside" attribute would be
     pass
 
 class Keypoint(models.Model):
@@ -204,7 +203,7 @@ class Keypoint(models.Model):
     human = models.ForeignKey(Skeleton, on_delete=models.CASCADE)
     x = models.FloatField()
     y = models.FloatField()
-    visibility = models.PositiveIntegerField(default = 0, choices = VISIBILITY)
+    visibility = models.PositiveIntegerField(default=2, choices=VISIBILITY)
 
 class LabeledSkeleton(Annotation, Skeleton):
     pass

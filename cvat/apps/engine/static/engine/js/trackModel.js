@@ -7,7 +7,16 @@ class TrackModel extends Listener {
     constructor(shapeType, data, id, labelsInfo, stopFrame, startFrame, colors) {
         super('onTrackUpdate', getState);
         this._id = id;
-        this._shape = TrackModel.createShape(shapeType, data.boxes);
+        //this._shape = TrackModel.createShape(shapeType, data.boxes);
+        this._shapeType = shapeType;
+
+        if (this._shapeType == 'skel'){
+            this._shape = TrackModel.createShape(shapeType, data.skels);
+        }
+        else{
+            this._shape = TrackModel.createShape(shapeType, data.boxes);
+        }
+
         this._firstFrame = TrackModel.computeFirstFrame(this._shape._positionJournal);
         this._type = TrackModel.computeFrameCount(stopFrame, this._shape._positionJournal) <= 1 ? 'annotation' : 'interpolation';
         this._label = +data.label;
@@ -20,7 +29,7 @@ class TrackModel extends Listener {
         this._selected = false;
         this._activeAAMTrack = false;
         this._activeAttribute = null;
-        this._shapeType = shapeType;
+
         this._stopFrame = stopFrame;
         this._startFrame = startFrame;
         this._labelsInfo = labelsInfo;
@@ -30,6 +39,27 @@ class TrackModel extends Listener {
         };
         this._curFrame = null;
         this._colors = colors;
+
+
+        this._keypoint_names = ["nose",
+                                "left eye",
+                                "right eye",
+                                "left ear",
+                                "right ear",
+                                "left shoulder",
+                                "right shoulder",
+                                "left elbow",
+                                "right elbow",
+                                "left wrist",
+                                "right wrist",
+                                "left hip",
+                                "right hip",
+                                "left knee",
+                                "right knee",
+                                "left ankle",
+                                "right ankle",
+                                "center"];
+
 
         let self = this;
         function getState() {
@@ -315,7 +345,7 @@ class TrackModel extends Listener {
     export() {
         let positions = this._shape.export();
         let immutable = this._attributes.immutable;
-        let mutable =  this._attributes.mutable;
+        let mutable = this._attributes.mutable;
 
         if (this.trackType == "annotation") {
             let attributes = [];
@@ -337,7 +367,8 @@ class TrackModel extends Listener {
 
             let frame = this._firstFrame;
             let pos = positions[frame];
-            let labeled_box = {
+
+            var labeled_box = {
                 "label_id": this.label,
                 "frame": frame,
                 "xtl": pos[0],
@@ -358,12 +389,21 @@ class TrackModel extends Listener {
                 });
             }
 
-            let track = {
+            var track = {
                 "label_id": this.label,
                 "frame": this._firstFrame,
                 "attributes": attributes,
                 "boxes": [],
             };
+
+            if (this._shapeType == 'skel') {
+
+                track["skels"] = [];
+            }
+            else {
+
+                track["boxes"] = [];
+            }
 
             for (let frame in positions) {
                 let attributes = [];
@@ -377,23 +417,54 @@ class TrackModel extends Listener {
                 }
 
                 let pos = positions[frame];
-                let tracked_box = {
+
+                var frame_attributes = {
                     "frame": +frame,
-                    "xtl": pos[0],
-                    "ytl": pos[1],
-                    "xbr": pos[2],
-                    "ybr": pos[3],
-                    "occluded": pos[4],
-                    "outside": pos[5],
                     "attributes": attributes,
+                }
+
+                var tmp = {};
+
+                if (this._shapeType == 'skel') {
+
+                    for (var i = 0; i < pos.length / 3; i++) {
+
+                        //x, y, visibility
+                        tmp[this._keypoint_names[i]] = [pos[3 * i],
+                            pos[3 * i + 1],
+                            pos[3 * i + 2]];
+
+                    };
+                }
+                else
+                    {
+
+                        tmp = {
+                            "xtl": pos[0],
+                            "ytl": pos[1],
+                            "xbr": pos[2],
+                            "ybr": pos[3],
+                            "occluded": pos[4],
+                            "outside": pos[5]
+                        };
+
+
+                    };
+
+                    var tracked_box = Object.assign({}, tmp, frame_attributes);
+
+                    if (this._shapeType == 'skel') {
+                        track["skels"].push(tracked_box);
+                    } else {
+                        track["boxes"].push(tracked_box);
+                    }
+
                 };
-
-                track["boxes"].push(tracked_box);
             }
-
             return track;
+
         }
-    }
+
 
     remove(force) {
         if ((!force && this._lock) || this._activeAAMTrack) return;
@@ -426,6 +497,9 @@ class TrackModel extends Listener {
 
 
     interpolate(frame) {
+        // Just doing this outside the decl
+        //let position = this._shape.interpolatePosition(frame, this._firstFrame)
+
         let interpolation = {
             attributes: this.interpolateAttributes(),
             position: this._shape.interpolatePosition(frame, this._firstFrame)
@@ -542,6 +616,9 @@ class TrackModel extends Listener {
         if (type === 'box') {
             return Box.contain(x, y, pos);
         }
+        else if (type === 'skel'){
+            return Skeleton.contain(x,y,pos);
+        }
         else throw new Error('Unknown shape type');
     }
 
@@ -549,6 +626,9 @@ class TrackModel extends Listener {
     static ShapeArea(pos, type) {
         if (type === 'box') {
             return Box.area(pos);
+        }
+        else if (type === 'skel'){
+            return Skeleton.area(pos);
         }
         else throw new Error('Unknown shape type');
     }
@@ -610,6 +690,9 @@ class TrackModel extends Listener {
         if (shapeType === 'box') {
             return new Box(data);
         }
+        else if (shapeType === 'skel'){
+            return new Skeleton(data);
+        }
         else throw new Error('Unknown shape type');
     }
 }
@@ -618,6 +701,7 @@ class TrackModel extends Listener {
 class Box {
     constructor(data) {
         this._positionJournal = new Object();
+
 
         Object.defineProperty(this._positionJournal, 'clone', {
             enumerable: false,
@@ -693,6 +777,7 @@ class Box {
     }
 
     interpolatePosition(frameNumber, firstFrame) {
+
         let pJ = this._positionJournal;
         if (firstFrame == frameNumber) return Object.assign(pJ.clone(firstFrame), {keyFrame: true});
         let leftPos = NaN;
@@ -735,5 +820,173 @@ class Box {
     static area(pos) {
         if (pos.outsided) return 0;
         else return ((pos.xbr - pos.xtl) * (pos.ybr - pos.ytl));
+    }
+}
+
+class Skeleton {
+    constructor(data) {
+        this._positionJournal = new Object();
+
+        Object.defineProperty(this._positionJournal, 'clone', {
+            enumerable: false,
+            value: function(key) {
+                if (key in this) {
+                    return {
+                        skel : this[key].skel,
+                        outsided: this[key].outsided,
+                        occluded: this[key].occluded
+                    };
+                }
+                else throw new Error("Unknown key frame for positionJournal.clone()");
+            }
+        });
+
+
+        for (let i = 0; i < data.length; i ++) {
+            let frameNumber = data[i][1];
+
+            // Keypoints content will be passed on to another variable
+            // Should also contain information concerning "outsided" variable
+            this._positionJournal[frameNumber] = {
+                skel: data[i][0],
+                outsided: data[i][2],
+                occluded: data[i][3]
+            };
+
+
+        }
+
+
+    }
+
+
+    setKeyFrame(value, frame, firstFrame) {
+        let pJ = this._positionJournal;
+        let firstFrameCandidates = Object.keys(pJ).length;
+        let interpolated = this.interpolatePosition(frame, firstFrame);
+
+        if (!value && firstFrameCandidates < 2) {
+            return false;
+        }
+
+        if (value && !(frame in pJ)) {
+            this.recordPosition(interpolated, frame);
+            return true;
+        }
+
+        if (!value && frame in pJ) {
+            delete pJ[frame];
+            return true;
+        }
+    }
+
+
+    recordPosition(pos, frame) {
+        this._positionJournal[frame] = {
+            xtl: pos.xtl,
+            ytl: pos.ytl,
+            xbr: pos.xbr,
+            ybr: pos.ybr,
+            outsided: pos.outsided,
+            occluded: pos.occluded
+        };
+    }
+
+    export() {
+        let serialized = {};
+        for (let frame in this._positionJournal) {
+            let pos = this._positionJournal[frame];
+
+            var tmp = [];
+
+            // Include "center" keypoint, we will save it in database too
+
+            //TODO: define VISIBILITY for keypoints
+            // assuming all keypoints are visible for now
+            for (var i = 0; i < pos.skel.length;i++){
+                tmp.push(pos.skel[i][0],pos.skel[i][1],2);
+            }
+
+            //TODO: decide on other information concerning global skeletons.
+
+            serialized[frame] = tmp;
+        }
+        //debugger;
+        return serialized;
+    }
+
+    interpolatePosition(frameNumber, firstFrame) {
+
+        let pJ = this._positionJournal;
+        if (firstFrame == frameNumber) return Object.assign(pJ.clone(firstFrame), {keyFrame: true});
+        let leftPos = NaN;
+        let rightPos = NaN;
+        for (let frameKey in pJ) {
+            if (+frameKey == frameNumber) return Object.assign(pJ.clone(frameKey), {keyFrame: true});
+            if (+frameKey < frameNumber) leftPos = +frameKey;
+            if (+frameKey > frameNumber) {
+                rightPos = +frameKey;
+                break;
+            }
+        }
+        if (isNaN(leftPos)) {
+            let position = pJ.clone(rightPos);
+            position.outsided = true;
+            return position;
+        }
+        if (isNaN(rightPos) || pJ[leftPos]["outsided"]) {
+            return pJ.clone(leftPos);
+        }
+
+        let leftCurDifference = frameNumber - leftPos;
+        let leftRightDifference = rightPos - leftPos;
+        let relativeOffset = leftCurDifference / leftRightDifference;
+        let interpolatedPos = {
+            xtl: pJ[leftPos].xtl+ (pJ[rightPos].xtl - pJ[leftPos].xtl) * relativeOffset,
+            ytl: pJ[leftPos].ytl + (pJ[rightPos].ytl - pJ[leftPos].ytl) * relativeOffset,
+            xbr: pJ[leftPos].xbr + (pJ[rightPos].xbr - pJ[leftPos].xbr) * relativeOffset,
+            ybr: pJ[leftPos].ybr + (pJ[rightPos].ybr - pJ[leftPos].ybr) * relativeOffset,
+            outsided: false,
+            occluded: pJ[leftPos].occluded
+        };
+        return interpolatedPos;
+    }
+
+    static contain(x,y,pos) {
+
+        var shapesX = [];
+        var shapesY = [];
+
+        for (var i = 0; i < pos.skel.length; i++){
+                shapesX.push(pos.skel[i][0]);
+                shapesY.push(pos.skel[i][1]);
+            }
+
+            let xtl = Math.min(...shapesX); // xtl of bbox fitting skeleton joints
+            let ytl = Math.min(...shapesY); // ytl of fitting bbox
+            let xbr = Math.max(...shapesX);
+            let ybr = Math.max(...shapesY);
+        return (x >= xtl && x <= xbr && y >= ytl && y <= ybr);
+    }
+
+    static area(pos) {
+        if (pos.outsided) return 0;
+        else{
+
+            var shapesX = [];
+            var shapesY = [];
+            for (var i = 0; i < pos.skel.length; i++){
+                shapesX.push(pos.skel[i][0]);
+                shapesY.push(pos.skel[i][1]);
+            }
+
+            let xtl = Math.min(...shapesX); // xtl of bbox fitting skeleton joints
+            let ytl = Math.min(...shapesY); // ytl of fitting bbox
+            let xbr = Math.max(...shapesX);
+            let ybr = Math.max(...shapesY);
+
+            return ((xbr - xtl) * (ybr - ytl));
+
+        }
     }
 }

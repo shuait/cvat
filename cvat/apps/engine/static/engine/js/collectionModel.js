@@ -181,8 +181,16 @@ class CollectionModel extends Listener {
 
     add(data) {
         let colors = this.getColors();
-        let trackModel = new TrackModel('box', data, this._trackCounter,
-            this._labelsInfo, this._stopFrame, this._startFrame, colors);
+
+        var trackModel;
+        if (data.hasOwnProperty('boxes')){
+            trackModel = new TrackModel('box', data, this._trackCounter,
+           this._labelsInfo, this._stopFrame, this._startFrame, colors);
+        }
+        else if (data.hasOwnProperty('skels')){
+            trackModel = new TrackModel('skel', data, this._trackCounter,
+          this._labelsInfo, this._stopFrame, this._startFrame, colors);
+        }
         let trackType = trackModel.trackType;
         if (trackType === 'interpolation') {
             this._interpolationTracks[this._trackCounter] = trackModel;
@@ -219,6 +227,26 @@ class CollectionModel extends Listener {
         this.onchangeframe(this._curFrame);
     }
 
+    createFromSkel(skel,label,type){
+
+        //Just to enforce this for debugging purposes
+        if (!(type == 'interpolation')){
+            throw new Error('Should be in interpolation mode')
+        }
+        let skels = [];
+        let current = [skel,this._curFrame,0,0];
+        skels.push(current);
+
+        this.add({
+            attributes: [],
+            skels: skels,
+            label: label
+        });
+
+        this.onchangeframe(this._curFrame);
+
+    }
+
 
     update() {
         if (this._curFrame != null) {
@@ -239,6 +267,8 @@ class CollectionModel extends Listener {
         let annotationTracks = [];
         let interpolationTracks = [];
 
+
+
         if (newframe in this._annotationTracks) {
             for (let trackId in this._annotationTracks[newframe]) {
                 this._annotationTracks[newframe][trackId].curFrame = newframe;
@@ -249,8 +279,11 @@ class CollectionModel extends Listener {
         for (let trackId in this._interpolationTracks) {
             this._interpolationTracks[trackId].curFrame = newframe;
         }
+
         interpolationTracks = this._interpolate(this._interpolationTracks, newframe);
         this._currentTracks = annotationTracks.concat(interpolationTracks);
+
+        // TODO: given we're not filtering, we should mask this for now
         this._trackFilter.filter(this._currentTracks);
         this.notify();
     }

@@ -37,6 +37,7 @@ class Listener {
     }
 
     notify() {
+
         let state = this._getStateCallback();
         for (let listener of this._listeners) {
             listener[this._notifyCallbackName](state);

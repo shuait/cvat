@@ -326,6 +326,7 @@ class MergerView {
     }
 
     onDrawerUpdate(drawer) {
-        this._mergeButton.prop('disabled', drawer.drawMode);
+        //TODO: Delete, or adapt, merger functionality
+        //this._mergeButton.prop('disabled', drawer.drawMode);
     }
 }

@@ -62,9 +62,9 @@ function buildAnnotationUI(job, trackData, loadJobEvent) {
     let collectionController = new CollectionController(collectionModel);
     let collectionView = new CollectionView(collectionController, collectionModel, playerModel, labelsInfo);
 
-    let mergerModel = new MergerModel(collectionModel);
-    let mergerController = new MergerController(mergerModel);
-    let mergerView = new MergerView(mergerModel, mergerController);
+    //let mergerModel = new MergerModel(collectionModel);
+    //let mergerController = new MergerController(mergerModel);
+    //let mergerView = new MergerView(mergerModel, mergerController);
 
     let drawerModel = new DrawerModel(collectionModel);
     let drawerController = new DrawerController(drawerModel);
@@ -82,14 +82,17 @@ function buildAnnotationUI(job, trackData, loadJobEvent) {
     let aamController = new AAMController(aamModel);
     new AAMView(aamModel, aamController);
 
-    mergerModel.subscribe(drawerModel);
-    mergerModel.subscribe(shapeBufferModel);
+    //TODO: Deal with merger functionality with a bit more grace
+    // but for now disregard it
+
+    //mergerModel.subscribe(drawerModel);
+    //mergerModel.subscribe(shapeBufferModel);
 
     drawerModel.subscribe(drawerView);
-    drawerModel.subscribe(mergerView);
+    //drawerModel.subscribe(mergerView);
     drawerModel.subscribe(collectionController);
     drawerModel.subscribe(collectionView);
-    drawerModel.subscribe(mergerModel);
+    //drawerModel.subscribe(mergerModel);
     drawerModel.subscribe(shapeBufferModel);
 
     playerModel.subscribe(drawerView);
@@ -98,11 +101,11 @@ function buildAnnotationUI(job, trackData, loadJobEvent) {
     playerModel.shift(0);
 
     shapeBufferModel.subscribe(drawerModel);
-    shapeBufferModel.subscribe(mergerModel);
+    //shapeBufferModel.subscribe(mergerModel);
     shapeBufferModel.subscribe(shapeBufferView);
     shapeBufferModel.subscribe(collectionController);
 
-    aamModel.subscribe(mergerModel);
+    //aamModel.subscribe(mergerModel);
     aamModel.subscribe(drawerModel);
     aamModel.subscribe(shapeBufferModel);
     aamModel.subscribe(collectionController);
@@ -353,6 +356,8 @@ function setupMenu(job, collectionModel, collectionController, annotationParser)
             'logs': JSON.stringify(annotationLogs.export()),
         };
 
+        debugger;
+
         let onsuccess = function() {
             collectionController.updateHash();
             saveButton.text('Success!');
@@ -372,10 +377,13 @@ function setupMenu(job, collectionModel, collectionController, annotationParser)
                 return;   // ignore such errors
             }
             let error = `Status: ${response.status}.`;
+            debugger;
             let message = 'Impossible to save job. Errors was occured. ' + error;
             showMessage(message);
             throw new Error(message);
         };
+
+
 
         saveJobOnServer(job.jobid, data, onsuccess, onerror);
     });

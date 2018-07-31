@@ -8,12 +8,32 @@ class TrackView {
         this._uicontent = $('#uiContent');
         this._revscale = 1;
         this._shape = TrackView.makeShape(interpolation.position, trackModel.shapeType, colors);
+
+        // this returns an HTML text box object
+        // TODO: return individual text box objects for individual keypoints
         this._text = TrackView.makeText(interpolation, labelsInfo.labels()[trackModel.label], trackModel.id);
+
+
         this._ui = TrackView.makeUI(interpolation, labelsInfo, colors, trackModel);
         this._ui.appendTo(this._uicontent);
-        this._shape.appendTo(this._framecontent);
+
+        // If box, _shape corresponds to a html element, if skel, corresponds to a list
+
         this._text.appendTo(this._framecontent);
+
+        if (trackModel.shapeType == 'skel'){
+            for (var i = 0; i< this._shape.length; i++){
+                this._shape[i].appendTo(this._framecontent);
+            }
+        } else {
+            this._shape.appendTo(this._framecontent);
+        }
+
         this._outsideShape = null;
+
+
+        // TODO: implement "editing" functionality
+        /*
 
         this._shape.on('resize drag', function(event, scale) {
             let type = event.type === 'drag' ? Logger.EventType.dragObject : Logger.EventType.resizeObject;
@@ -29,6 +49,7 @@ class TrackView {
             this._uicontent.scrollTop(0);
             this._uicontent.scrollTop(this._ui.offset().top - 10);
         }.bind(this));
+        */
 
         this._ui.on('mouseover', (e) => this.onoverUI(trackModel.id, e));
         this._ui.on('mouseout', (e) => this.onoutUI(e));
@@ -36,6 +57,67 @@ class TrackView {
         this._ui.onshift = function(frame) {
             this.onshift(frame);
         }.bind(this);
+
+
+        this._layout = [[0,-15], //nose
+                      [-1,-15], //left eye
+                      [1,-15], //right eye
+                      [-2,-15], //left ear
+                      [2,-15], //right ear
+                      [-3,-10], //left shoulder
+                      [3,-10], //right shoulder
+                      [-4,-3], //left elbow
+                      [4,-3], //right elbow
+                      [-3.5,0], //left wrist
+                      [3.5,0], //right wrist
+                      [-2,2], //left hip
+                      [2,2], //right hip
+                      [-3,6], //left knee
+                      [3,6], //right knee
+                      [-3.5,10], //left ankle
+                      [3.5,10], //right ankle
+                      [0,-3]];  // center (will be displayed in different color)
+
+        this._keypoint_names = ["nose",
+                                "left eye",
+                                "right eye",
+                                "left ear",
+                                "right ear",
+                                "left shoulder",
+                                "right shoulder",
+                                "left elbow",
+                                "right elbow",
+                                "left wrist",
+                                "right wrist",
+                                "left hip",
+                                "right hip",
+                                "left knee",
+                                "right knee",
+                                "left ankle",
+                                "right ankle",
+                                "center"];
+        this._connections = [[16,14],
+                            [14,12],
+                            [17,15],
+                            [15,13],
+                            [12,13],
+                            [6,12],
+                            [7,13],
+                            [6,7],
+                            [6,8],
+                            [7,9],
+                            [8,10],
+                            [9,11],
+                            [2,3],
+                            [1,2],
+                            [1,3],
+                            [2,4],
+                            [3,5],
+                            [4,6],
+                            [5,7]];
+
+
+
 
 
         trackModel.subscribe(this);
@@ -88,11 +170,30 @@ class TrackView {
             this._shape.detach();
         }
         else {
-            this._shape.updatePos(state.position);
-            this._framecontent.append(this._shape);
+
+            if (state.model._shapeType == 'skel'){
+
+                for (var i = 0; i < state.position.skel.length; i++){
+
+                    // I assigned the "updatePos" function to each
+                    // svgCircle element for skel _shapes, so just choose
+                    // the first one for instance
+                    this._shape[0].updatePos(state.position.skel[i]);
+                    this._framecontent.append(this._shape[i]);
+
+                }
+            } else{
+                this._shape.updatePos(state.position);
+                this._framecontent.append(this._shape);
+
+            }
         }
 
-        this.updateColors(state.model.colors, state.model.merge);
+
+        //TODO: try to focus on basic functionality before UI
+        //this.updateColors(state.model.colors, state.model.merge);
+
+        /*
 
         this._ui.lock(state.lock);
         if (state.lock) {
@@ -166,10 +267,22 @@ class TrackView {
         else {
             this._shape.removeClass('occludedShape');
         }
+        */
     }
 
     removeView() {
-        this._shape.remove();
+
+        if (this._trackController._trackModel._shapeType == 'skel'){
+            for (var i =0; i < this._layout.length; i++){
+               var ltmp = this._shape.pop();
+               ltmp.remove();
+            }
+
+        }
+        else{
+            this._shape.remove();
+        }
+
         this._ui.remove();
         this._text.remove();
     }
@@ -279,7 +392,11 @@ class TrackView {
             let attrElem = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
             attrElem.setAttribute('dy', '1em');
             attrElem.setAttribute('x', x);
+
+            // This displays the text displayed when highlighted
             attrElem.innerHTML = `${attribute.name.normalize()}: ${value}`;
+            //
+
             if (+attrKey === activeAttribute) {
                 attrElem.style['fill'] = 'red';
                 attrElem.style['font-weight'] = 'bold';
@@ -294,6 +411,7 @@ class TrackView {
     }
 
     static makeUI(interpolation, labelsInfo, colors, trackModel) {
+
         let attributes = interpolation.attributes;
         let labelId = trackModel.label;
         let id = trackModel.id;
@@ -307,9 +425,17 @@ class TrackView {
         $(`<label> ${labelName} ${id} [${shapeType}, ${trackType}] </label>`).addClass('semiBold').appendTo(ui);
         let button = $('<a></a>').addClass('close').appendTo(ui);
         button.attr('title', `Delete Object (${shortkeys["delete_track"].view_value})`);
-        button.on('click', function(event) {
-            trackModel.remove(event.shiftKey);
-        });
+
+
+        // TODO: implement remove functionality.
+
+        if (!(interpolation.position.hasOwnProperty('skel'))){
+            button.on('click', function(event) {
+                                trackModel.remove(event.shiftKey);
+                                });
+
+        }
+
 
         let occludedState = trackModel.occluded;
         let lockedState = trackModel.lock;
@@ -545,6 +671,9 @@ class TrackView {
         if (type == 'box') {
             return TrackView.makeBox(position, colors);
         }
+        else if (type == 'skel') {
+            return TrackView.makeSkel(position,colors);
+        }
         else throw new Error('Unknown shape type');
     }
 
@@ -570,21 +699,83 @@ class TrackView {
         return svgRect;
     }
 
+    static makeSkel(pos,colors) {
+
+        // Need to return a list of keypoints of the right color here.
+        var svgCircles = [];
+        var svgCircle;
+
+        for (var i = 0; i < pos.skel.length; i++){
+
+            svgCircle = $(document.createElementNS('http://www.w3.org/2000/svg', 'circle')).attr({
+                cx: pos.skel[i][0],
+                cy: pos.skel[i][1],
+                stroke: colors.border,
+                fill: colors.background
+            }).addClass('shape changeable');
+
+            svgCircle.updatePos = function(skel) {
+                svgCircle.attr({
+                    cx: skel[0],
+                    cy: skel[1],
+                });
+            };
+
+            svgCircles.push(svgCircle)
+        }
+
+        //TODO: We're assuming updatePos receives skel as argument.
+
+        return svgCircles;
+    }
+
     static makeText(interpolation, labelName, id) {
         let pos = interpolation.position;
         let attributes = interpolation.attributes;
 
-        let shapeX = pos.xtl;
-        let shapeY = pos.ytl;
-        let shapeW = pos.xbr - pos.xtl;
+
+        var shapeX;
+        var shapeY;
+        var shapeW;
+
+
+        if (!(interpolation.position.hasOwnProperty('skel'))){
+
+            shapeX = pos.xtl;
+            shapeY = pos.ytl;
+            shapeW = pos.xbr - pos.xtl;
+
+        }
+        else {
+            var shapesX = [];
+            var shapesY = [];
+            for (var i = 0; i < interpolation.position.skel.length; i++){
+                shapesX.push(interpolation.position.skel[i][0]);
+                shapesY.push(interpolation.position.skel[i][1]);
+            }
+
+            shapeX = Math.min(...shapesX); // xtl of bbox fitting skeleton joints
+            shapeY = Math.min(...shapesY); // ytl of fitting bbox
+            shapeW = Math.max(...shapesX) - Math.min(...shapesX);
+        }
+
+
 
         let svgText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+
+
         svgText.setAttribute('x', shapeX + shapeW);
         svgText.setAttribute('y', shapeY);
+
+
         svgText.setAttribute('class', 'shapeText regular');
 
         let labelNameText = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+
+        // Defines text
         labelNameText.innerHTML = `${labelName.normalize()}: ${id}`;
+        //
+
         labelNameText.setAttribute('dy', '1em');
         labelNameText.setAttribute('x', shapeX + shapeW + 5);
         labelNameText.setAttribute('class', 'bold');
@@ -595,7 +786,11 @@ class TrackView {
             let attrRow = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
             let value = attribute.value;
             if (value === AAMUndefinedKeyword) value = "";
+
+            // Defines text
             attrRow.innerHTML = `${attribute.name.normalize()}: ${value}`;
+            //
+
             attrRow.setAttribute('dy', '1em');
             attrRow.setAttribute('x', shapeX + shapeW + 5);
             svgText.appendChild(attrRow);

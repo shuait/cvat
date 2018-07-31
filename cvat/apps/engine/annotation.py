@@ -13,6 +13,7 @@ from abc import ABCMeta, abstractmethod
 import django_rq
 from django.conf import settings
 from django.db import transaction
+import pdb
 
 from . import models
 from .task import get_frame_path
@@ -73,8 +74,9 @@ def save_job(jid, data):
     db_job = models.Job.objects.select_for_update().get(id=jid)
     annotation = _AnnotationForJob(db_job)
     annotation.init_from_client(data)
-    annotation.save_boxes_to_db()
-    annotation.save_paths_to_db()
+    annotation.save_skels_to_db()
+    #annotation.save_boxes_to_db()
+    #annotation.save_paths_to_db()
     db_job.segment.task.updated_date = timezone.now()
     db_job.segment.task.save()
 
@@ -107,6 +109,27 @@ def rq_handler(job, exc_type, exc_value, traceback):
 
 ##################################################
 
+names = ["nose",
+        "left eye",
+        "right eye",
+        "left ear",
+        "right ear",
+        "left shoulder",
+        "right shoulder",
+        "left elbow",
+        "right elbow",
+        "left wrist",
+        "right wrist",
+        "left hip",
+        "right hip",
+        "left knee",
+        "right knee",
+        "left ankle",
+        "right ankle",
+        "center"];
+
+# NOT "center", we eliminated it in the javascript
+
 class _Label:
     def __init__(self, db_label):
         self.id = db_label.id
@@ -124,14 +147,19 @@ class _Attribute:
 # Defining Skeleton and keypoint classes, attributes and methods
 # May need to think a bit more about how to best merge skeletons.
 
-'''
+
 class _Skeleton:
     def __init__(self, keypoints, frame,  attributes=None):
         self.keypoints = keypoints
         self.frame = frame
         self.attributes = attributes if attributes else []
+        # Individual keypoints have "visibility" property
+        # that includes possibility of "outside" value
+        # but whole skeleton should also have this property
+        
 
     # Not sure how to implement this for skeletons yet
+    '''
     def merge(self, box):
         # The occluded property and attributes cannot be merged. Let's keep
         # original attributes and occluded property of the self object.
@@ -140,13 +168,15 @@ class _Skeleton:
         self.ytl = (self.ytl + box.ytl) / 2
         self.xbr = (self.xbr + box.xbr) / 2
         self.ybr = (self.ybr + box.ybr) / 2
+    '''
     
     def add_attribute(self, attr):
         self.attributes.append(attr)
 
 
 class _Keypoint:
-    def __init(self,x,y,frame, visibility,attributes=None):
+    def __init__(self,name,x,y,frame, visibility,attributes=None):
+        self.name = name
         self.x = x
         self.y = y
         self.frame = frame
@@ -161,14 +191,15 @@ class _LabeledSkeleton(_Skeleton):
 
 
 class _TrackedSkeleton(_Skeleton):
-    def __init__(self, keypoints, frame, attributes=None):
+    def __init__(self, keypoints, frame, outside, attributes=None):
         super().__init__(keypoints, frame, attributes)
+        self.outside = outside
 
 class _InterpolatedSkeleton(_TrackedSkeleton):
     def __init__(self, keypoints, frame, keyframe, attributes=None):
         super().__init__(keypoints, frame, attributes)
         self.keyframe = keyframe
-'''
+
 
 class _BoundingBox:
     def __init__(self, x0, y0, x1, y1, frame, occluded, attributes=None):
@@ -208,41 +239,42 @@ class _InterpolatedBox(_TrackedBox):
         self.keyframe = keyframe
 
 class _ObjectPath:
-    def __init__(self, label, start_frame, stop_frame, boxes=None, attributes=None): #skeletons=None,
+    def __init__(self, label, start_frame, stop_frame, boxes=None, skeletons=None, attributes=None): #
         self.label = label
         self.frame = start_frame
         self.stop_frame = stop_frame
         self.boxes = boxes if boxes else []
-        '''
+
         self.skeletons = skeletons if skeletons else []
-        '''
+
         self.attributes = attributes if attributes else []
         self._interpolated_boxes = []
         #self._interpolated_skeletons = []
-
+        '''
         assert not self.boxes or self.boxes[-1].frame <= self.stop_frame
         '''
         assert not self.boxes or self.boxes[-1].frame <= self.stop_frame \
             or not self.skeletons or self.skeletons[-1].frame <= self.stop_frame
-        '''
+
 
     def add_box(self, box):
         self.boxes.append(box)
 
-    # def add_skeleton(self,skeleton):
-    #     self.skeletons.append(skeleton)
+    def add_skeleton(self,skeleton):
+        self.skeletons.append(skeleton)
 
     def get_interpolated_boxes(self):
         if not self._interpolated_boxes:
             self._init_interpolated_boxes()
 
         return self._interpolated_boxes
+    '''
+     def get_interpolated_skeletons(self):
+         if not self._interpolated_skeletons:
+             self._init_interpolated_skeletons()
 
-    # def get_interpolated_skeletons(self):
-    #     if not self._interpolated_skeletons:
-    #         self._init_interpolated_skeletons()
-
-        # return self._interpolated_skeletons
+         return self._interpolated_skeletons
+    '''
 
     def _init_interpolated_boxes(self):
         assert self.boxes[-1].frame <= self.stop_frame
@@ -473,7 +505,7 @@ class _AnnotationForJob(_Annotation):
 
         # Think we would acccess keypoints later.
 
-        # db_skeletons = list(self.db_job.labeledbox_set.prefetch_related('labeledskeletonattributeval_set') \
+        # db_skeletons = list(self.db_job.labeledskeleton_set.prefetch_related('labeledskeletonattributeval_set') \
         #     .values('id', 'frame', 'label_id',
         #         'labeledskeletonattributeval__value', 'labeledskeletonattributeval__spec_id',
         #         'labeledskeletonattributeval__id').order_by('frame'))
@@ -486,6 +518,10 @@ class _AnnotationForJob(_Annotation):
             ]
         }
 
+
+
+        db_boxes = self._merge_table_rows(db_boxes, keys_for_merge, 'id')
+
         # keys_for_merge_skeleton = {
         #     'attributes': [
         #         'labeledskeletonattributeval__value',
@@ -493,8 +529,7 @@ class _AnnotationForJob(_Annotation):
         #         'labeledskeletonattributeval__id'
         #     ]
         # }
-
-        db_boxes = self._merge_table_rows(db_boxes, keys_for_merge, 'id')
+        # db_skeletons = self._merge_table_rows(db_skeletons,keys_for_merge_skeleton,'id')
 
         for db_box in db_boxes:
             label = _Label(self.db_labels[db_box.label_id])
@@ -506,6 +541,10 @@ class _AnnotationForJob(_Annotation):
                     attr = _Attribute(spec, db_attr.value)
                     box.add_attribute(attr)
             self.boxes.append(box)
+
+
+        #for db_skeleton in db_skeletons:
+        #    label = _Label(self.db_labels[db_skeleton.label_id])
 
         db_paths = list(self.db_job.objectpath_set.prefetch_related('trackedbox_set') \
             .prefetch_related('objectpathattributeval_set') \
@@ -577,6 +616,8 @@ class _AnnotationForJob(_Annotation):
         # accept "23".
         self.reset()
 
+
+        # Think this is just for frame-wise annotations
         for box in data['boxes']:
             label = _Label(self.db_labels[int(box['label_id'])])
 
@@ -595,6 +636,7 @@ class _AnnotationForJob(_Annotation):
             label = _Label(self.db_labels[int(track['label_id'])])
             boxes = []
             frame = -1
+            skels = []
             for box in track['boxes']:
                 if int(box['frame']) <= self.stop_frame:
                     tracked_box = _TrackedBox(float(box['xtl']), float(box['ytl']),
@@ -614,6 +656,28 @@ class _AnnotationForJob(_Annotation):
                     self.logger.error("init_from_client: ignore frame #%d " +
                         "because stop_frame is %d", box['frame'], self.stop_frame)
 
+            for skel in track['skels']:
+                keypoints = []
+                if int(skel['frame']) <= self.stop_frame:
+                    for keypoint,value in skel.items():
+                        if keypoint in names:
+                            keypoints.append(_Keypoint(keypoint, #its name
+                                                         value[0],value[1],
+                                                        skel['frame'],value[2]))
+
+                    # Putting a placeholder in "outside" for now
+                    tracked_skel = _TrackedSkeleton(keypoints,skel['frame'],1)
+                    assert tracked_skel.frame > frame
+                    frame = tracked_skel.frame
+
+                    for attr in skel['attributes']:
+                        spec = self.db_attributes[int(attr['id'])]
+                        assert spec.is_mutable()
+                        attr = _Attribute(spec, str(attr['value']))
+                        tracked_skel.add_attribute(attr)
+
+                    skels.append(tracked_skel)
+
             attributes = []
             for attr in track['attributes']:
                 spec = self.db_attributes[int(attr['id'])]
@@ -622,11 +686,11 @@ class _AnnotationForJob(_Annotation):
                 attributes.append(attr)
 
             assert frame <= self.stop_frame
-            object_path = _ObjectPath(label, int(track['frame']), self.stop_frame,
-                boxes, attributes)
-            self.paths.append(object_path)
 
-    #wefawefawe
+
+            object_path = _ObjectPath(label, int(track['frame']), self.stop_frame, boxes=boxes,
+                                          skeletons = skels, attributes = attributes)
+            self.paths.append(object_path)
 
     def save_boxes_to_db(self):
         self.db_job.labeledbox_set.all().delete()
@@ -663,6 +727,16 @@ class _AnnotationForJob(_Annotation):
         for db_attrval in db_attrvals:
             db_attrval.box_id = db_boxes[db_attrval.box_id].id
         models.LabeledBoxAttributeVal.objects.bulk_create(db_attrvals)
+
+    def save_skels_to_db(self):
+        self.db_job.labeledskeleton_set.all().delete()
+        db_skeletons = []
+        db_attrvals = []
+
+        for skel in self.skeletons:
+            db_skel = models.LabeledSkeleton()
+
+
 
     def save_paths_to_db(self):
         self.db_job.objectpath_set.all().delete()
