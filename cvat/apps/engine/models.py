@@ -14,12 +14,12 @@ class Task(models.Model):
     name = models.CharField(max_length=256)
     size = models.PositiveIntegerField()
     path = models.CharField(max_length=256)
-    mode = models.CharField(max_length=32)
+    mode = models.CharField(max_length=32,default = "interpolation")
     owner = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     bug_tracker = models.CharField(max_length=2000, default="")
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now_add=True)
-    status = models.CharField(max_length=32, default="annotate")
+    status = models.CharField(max_length=32, default="interpolate")
     overlap = models.PositiveIntegerField(default=0)
 
     # Extend default permission model
@@ -200,7 +200,7 @@ class Keypoint(models.Model):
         (2, 'VISIBLE')
     )
     name = models.CharField(max_length = 256)
-    human = models.ForeignKey(Skeleton, on_delete=models.CASCADE)
+    skeleton = models.ForeignKey(Skeleton, on_delete=models.CASCADE)
     x = models.FloatField()
     y = models.FloatField()
     visibility = models.PositiveIntegerField(default=2, choices=VISIBILITY)
