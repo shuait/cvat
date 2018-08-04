@@ -9,7 +9,7 @@ class TrackController {
     onclick() {
         this._trackModel.onSelect();
     }
-
+    //TODO: this will have to change for editing
     onchangegeometry(shape) {
         let pos = {
             xtl:    +shape.attr('x'),

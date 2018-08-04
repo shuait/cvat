@@ -134,7 +134,7 @@ class TrackFilterView {
     constructor(filterModel, filterController) {
         this._controller = filterController;
         this._filterString = $('#filterInputString');
-        this._resetFilterButton = $('#resetFilterButton');
+        //this._resetFilterButton = $('#resetFilterButton');
         this._hideFilteredBox = $('#hideFilteredBox');
 
         this._hideFilteredBox.prop('checked', filterModel.hideFiltered);
@@ -153,11 +153,11 @@ class TrackFilterView {
                 this._filterString.css('color', 'red');
             }
         }.bind(this));
-
+        /*
         this._resetFilterButton.on('click', function() {
             this._filterString.prop('value', '');
             this._controller.updateQuery('');
-        }.bind(this));
+        }.bind(this));*/
 
         this._hideFilteredBox.on('change', function(e) {
             let value = e.target.checked;

@@ -18,7 +18,11 @@ class TrackModel extends Listener {
         }
 
         this._firstFrame = TrackModel.computeFirstFrame(this._shape._positionJournal);
-        this._type = TrackModel.computeFrameCount(stopFrame, this._shape._positionJournal) <= 1 ? 'annotation' : 'interpolation';
+
+
+        this._type = 'interpolation';
+        //TODO: hopefully this doesn't cause any issues
+        //this._type = TrackModel.computeFrameCount(stopFrame, this._shape._positionJournal) <= 1 ? 'annotation' : 'interpolation';
         this._label = +data.label;
         this._lock = false;
         this._removed = false;
@@ -908,6 +912,8 @@ class Skeleton {
             }
 
             //TODO: decide on other information concerning global skeletons.
+            // There needs to be an "outsided" value for when the skeleton
+            // disappears off screen so TrackedObject can inherit from it
 
             serialized[frame] = tmp;
         }

@@ -31,6 +31,7 @@ function initLogger(jobID) {
 }
 
 function buildAnnotationUI(job, trackData, loadJobEvent) {
+
     let labelsInfo = new LabelsInfo(job);
     let annotationParser = new AnnotationParser(labelsInfo, job);
 
@@ -128,13 +129,14 @@ function buildAnnotationUI(job, trackData, loadJobEvent) {
         return;
     };
 
+    /*
     let statistics = collectionModel.collectStatistic();
     loadJobEvent.addValues({
         'track count': statistics.totalObjectCount.tracks,
         'frame count': job.stop - job.start + 1,
         'object count': statistics.totalObjectCount.manuallyShapes + statistics.totalObjectCount.interpolatedShapes,
     });
-    loadJobEvent.close();
+    loadJobEvent.close(); */
 
     setupAPI(collectionModel , job);
 
@@ -259,15 +261,18 @@ function setupMenu(job, collectionModel, collectionController, annotationParser)
 
     let visibleTimer;
 
+    /*
     let statistic = collectionModel.collectStatistic();
-    fillStat(statistic, job);
+    fillStat(statistic, job); */
+
     let top = menuButton.offset().top - annotationMenu.height() - menuButton.height();
     annotationMenu.css('top', top + 'px');
 
 
     menuButton.on('click', function() {
+        /*
         let statistic = collectionModel.collectStatistic();
-        fillStat(statistic, job);
+        fillStat(statistic, job); */
         annotationMenu.removeClass('hidden');
         clearTimeout(visibleTimer);
         visibleTimer = setTimeout(hideMenu, 1000);
@@ -356,7 +361,6 @@ function setupMenu(job, collectionModel, collectionController, annotationParser)
             'logs': JSON.stringify(annotationLogs.export()),
         };
 
-        debugger;
 
         let onsuccess = function() {
             collectionController.updateHash();
@@ -377,7 +381,6 @@ function setupMenu(job, collectionModel, collectionController, annotationParser)
                 return;   // ignore such errors
             }
             let error = `Status: ${response.status}.`;
-            debugger;
             let message = 'Impossible to save job. Errors was occured. ' + error;
             showMessage(message);
             throw new Error(message);

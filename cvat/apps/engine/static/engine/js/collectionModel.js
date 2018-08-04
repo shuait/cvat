@@ -116,7 +116,11 @@ class CollectionModel extends Listener {
     }
 
     importTracks(data) {
+
+
         let tracks = [];
+
+        /*
         for (let box of data.boxes) {
             let box0 = [box.xtl, box.ytl, box.xbr, box.ybr, box.frame, false, box.occluded];
             let box1 = box0.slice();
@@ -133,7 +137,7 @@ class CollectionModel extends Listener {
                 boxes: [box0, box1],
                 attributes: attributes
             });
-        }
+        }*/
 
         for (let track of data.tracks) {
             let attributes = [];
@@ -141,6 +145,23 @@ class CollectionModel extends Listener {
                 attributes.push([attr.id, 0, attr.value]);
             }
 
+            let skeletons = [];
+            for (let skel of track.skeletons) {
+                var keypoints = [];
+                //TODO: skeleton requires "occluded" property at the moment
+                // need to change that
+                for (let keyp of skel.keypoints){
+                    keypoints.push([keyp.x,keyp.y,keyp.visibility])
+
+                }
+                skeletons.push([keypoints,skel.frame,skel.outside,0]);
+                for (let attr of skel.attributes) {
+                    attributes.push([attr.id, skel.frame, attr.value]);
+                }
+            }
+
+
+            /*
             let boxes = [];
             for (let box of track.boxes) {
                 boxes.push([box.xtl, box.ytl, box.xbr, box.ybr, box.frame,
@@ -149,18 +170,32 @@ class CollectionModel extends Listener {
                     attributes.push([attr.id, box.frame, attr.value]);
                 }
             }
-
             tracks.push({
                 label: track.label_id,
                 boxes: boxes,
                 attributes: attributes
             });
+
+            for (let i = 0; i < tracks.length; i ++) {
+            if (!tracks[i].boxes.length) continue;    // Remove saved wrong tracks with empty path
+            this.add(tracks[i]);
+            }
+            */
+
+            tracks.push({
+                label: track.label,
+                skels: skeletons,
+                attributes: attributes
+            });
+
         }
 
         for (let i = 0; i < tracks.length; i ++) {
-            if (!tracks[i].boxes.length) continue;    // Remove saved wrong tracks with empty path
-            this.add(tracks[i]);
-        }
+                if (!tracks[i].skels.length) continue;    // Remove saved wrong tracks with empty path
+                this.add(tracks[i]);
+            }
+
+
     }
 
     exportTracks() {

@@ -9,6 +9,28 @@ class TrackView {
         this._revscale = 1;
         this._shape = TrackView.makeShape(interpolation.position, trackModel.shapeType, colors);
 
+        this._connections = [[16,14],
+                            [14,12],
+                            [17,15],
+                            [15,13],
+                            [12,13],
+                            [6,12],
+                            [7,13],
+                            [6,7],
+                            [6,8],
+                            [7,9],
+                            [8,10],
+                            [9,11],
+                            [2,3],
+                            [1,2],
+                            [1,3],
+                            [2,4],
+                            [3,5],
+                            [4,6],
+                            [5,7]];
+        /*
+        this._connectors = TrackView.makeConnections(this._shape,this._connections);
+        */
         // this returns an HTML text box object
         // TODO: return individual text box objects for individual keypoints
         this._text = TrackView.makeText(interpolation, labelsInfo.labels()[trackModel.label], trackModel.id);
@@ -25,6 +47,11 @@ class TrackView {
             for (var i = 0; i< this._shape.length; i++){
                 this._shape[i].appendTo(this._framecontent);
             }
+            /*
+            for (var i = 0; i< this._connectors.length; i++){
+                this._connectors[i].appendTo(this._framecontent);
+            }
+            */
         } else {
             this._shape.appendTo(this._framecontent);
         }
@@ -96,25 +123,7 @@ class TrackView {
                                 "left ankle",
                                 "right ankle",
                                 "center"];
-        this._connections = [[16,14],
-                            [14,12],
-                            [17,15],
-                            [15,13],
-                            [12,13],
-                            [6,12],
-                            [7,13],
-                            [6,7],
-                            [6,8],
-                            [7,9],
-                            [8,10],
-                            [9,11],
-                            [2,3],
-                            [1,2],
-                            [1,3],
-                            [2,4],
-                            [3,5],
-                            [4,6],
-                            [5,7]];
+
 
 
 
@@ -295,11 +304,57 @@ class TrackView {
         this._ui.css('background-color', colors.background);
     }
 
+    //TODO: this function needs to be revised
+
     updateViewGeometry() {
         let revscale = this._revscale;
         let frameWidth = +$('#frameContent').css('width').slice(0,-2);
         let frameHeight = +$('#frameContent').css('height').slice(0,-2);
 
+        for(var i = 0; i < this._shape.length; i++){
+
+            let shape = this._shape[i];
+
+            let oldcx = +shape.attr('cx');
+            let oldcy = +shape.attr('cy');
+
+            if (oldcx < 0) oldcx = 0;
+            if (oldcy < 0) oldcy = 0;
+            if (oldcx > frameWidth) oldcx = frameWidth;
+            if (oldcy > frameHeight) oldcy = frameHeight;
+
+            shape.attr({
+                cx: oldcx,
+                cy: oldcy,
+                r: 2
+            });
+
+            let margin = 5;
+
+            let cxpos = +shape.attr('cx') + +shape.attr('width') + margin;
+            let cypos = +shape.attr('cy');
+
+            this._text.attr({
+            cx : cxpos / revscale,
+            cy : cypos / revscale,
+            transform: `scale(${revscale})`})
+
+        //TODO: not sure what this does
+            /*
+        this._text.find('tspan').each(function() {
+            let parent = $(this.parentElement);
+            this.setAttribute('cx', parent.attr('cx'));
+        });*/
+
+
+
+        shape.css('stroke-width', 2 * revscale);
+
+
+        }
+
+
+        /*
         let oldX1 = +this._shape.attr('x');
         let oldY1 = +this._shape.attr('y');
         let oldX2 = +this._shape.attr('x') + +this._shape.attr('width');
@@ -331,11 +386,17 @@ class TrackView {
             y: oldY1,
             width: width,
             height: height
-        });
+        })
 
         let margin = 5;
         let box = null;
 
+        */
+
+
+
+
+        /*
         try {       // mozilla firefox throws exception when call getBBox() for undrawed object. Chrome in this case return zero box.
             box = this._text['0'].getBBox();
         }
@@ -347,7 +408,19 @@ class TrackView {
                 height: 0
             };
         }
+        */
 
+
+
+
+
+
+
+
+        //TODO: not sure how what transformations we will need to do
+        // for keypoints - let's figure that out later
+
+        /*
         let xpos = +this._shape.attr('x') + +this._shape.attr('width') + margin;
         let ypos = +this._shape.attr('y');
 
@@ -361,7 +434,6 @@ class TrackView {
             let greatherVal = ypos + box.height * revscale - frameHeight;
             ypos = Math.max(0, ypos - greatherVal);
         }
-
         this._text.attr({
             x: xpos / revscale,
             y: ypos / revscale,
@@ -373,7 +445,26 @@ class TrackView {
             this.setAttribute('x', parent.attr('x'));
         });
 
+        this._text.attr({
+            cx : cxpos / revscale,
+            cy : cypos / revscale,
+            transform: `scale(${revscale})`
+
+        })
+
+        //TODO: not sure what this does
+        this._text.find('tspan').each(function() {
+            let parent = $(this.parentElement);
+            this.setAttribute('cx', parent.attr('cx'));
+        });
+
+
+
         this._shape.css('stroke-width', 2 * revscale);
+
+        */
+
+
     }
 
     updateAndViewText(state) {
@@ -677,6 +768,36 @@ class TrackView {
         else throw new Error('Unknown shape type');
     }
 
+    static makeConnections(shape,connections){
+
+        var svgLines = [];
+        for(var conn = 0; conn < connections.length; conn++){
+            var svgLine =  $(document.createElementNS('http://www.w3.org/2000/svg', 'line')).attr({
+                        'stroke': 'red',
+                 'x1' : shape[connections[conn][0]-1][0].cx.animVal.value,
+                 'y1': shape[connections[conn][0]-1][0].cy.animVal.value,
+                 'x2': shape[connections[conn][1]-1][0].cx.animVal.value,
+                 'y2': shape[connections[conn][1]-1][0].cy.animVal.value,
+                    }).addClass('shape changeable');
+
+
+
+            svgLine.updatePos = function(pos){
+                svgLine.attr({
+                    'x1' : pos.x1,
+                    'y1' : pos.y1,
+                    'x2' : pos.x2,
+                    'y2' : pos.y2
+                })
+
+            }
+            svgLines.push(svgLine);
+
+        }
+
+        return svgLines;
+    }
+
     static makeBox(pos, colors) {
         let svgRect = $(document.createElementNS('http://www.w3.org/2000/svg', 'rect')).attr({
             x: pos.xtl,
@@ -773,6 +894,7 @@ class TrackView {
         let labelNameText = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
 
         // Defines text
+
         labelNameText.innerHTML = `${labelName.normalize()}: ${id}`;
         //
 
