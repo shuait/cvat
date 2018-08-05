@@ -102,8 +102,10 @@ class DrawerModel extends Listener  {
 
             for(keyp = 0;keyp < skel.length; keyp++){
                skelPos[keyp] =  [skel[keyp][0].cx.animVal.value,
-                     skel[keyp][0].cy.animVal.value]
+                                 skel[keyp][0].cy.animVal.value,
+                                 skel[keyp][0].attributes.name.value];
             }
+
             this._collection.createFromSkel(skelPos, this._label, this._trackType);
             //Logger.addEvent(Logger.EventType.addObject, {count: 1});
             this._drawObjectEvent.close();
@@ -244,6 +246,25 @@ class DrawerView {
                             [3,5],
                             [4,6],
                             [5,7]];
+
+        this._keypoint_names = ["nose",
+                                "left eye",
+                                "right eye",
+                                "left ear",
+                                "right ear",
+                                "left shoulder",
+                                "right shoulder",
+                                "left elbow",
+                                "right elbow",
+                                "left wrist",
+                                "right wrist",
+                                "left hip",
+                                "right hip",
+                                "left knee",
+                                "right knee",
+                                "left ankle",
+                                "right ankle",
+                                "center"];
 
 
         this._drawButton.on('click', () => this._controller.onDrawPressed.call(this._controller));
@@ -423,7 +444,8 @@ class DrawerView {
 
                     this._drawShape[keyp].attr({
                         cx: pos.x + this._layout[keyp][0]*5,
-                        cy: pos.y + this._layout[keyp][1]*5
+                        cy: pos.y + this._layout[keyp][1]*5,
+                        name :this._keypoint_names[keyp]
                     }).css('display', '');
 
 

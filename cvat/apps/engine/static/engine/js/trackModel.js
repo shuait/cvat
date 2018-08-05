@@ -347,6 +347,7 @@ class TrackModel extends Listener {
     }
 
     export() {
+
         let positions = this._shape.export();
         let immutable = this._attributes.immutable;
         let mutable = this._attributes.mutable;
@@ -431,12 +432,14 @@ class TrackModel extends Listener {
 
                 if (this._shapeType == 'skel') {
 
-                    for (var i = 0; i < pos.length / 3; i++) {
+                    tmp['outside'] = this._shape._positionJournal[frame].outsided;
+
+                    for (var i = 0; i < pos.length ; i++) {
 
                         //x, y, visibility
-                        tmp[this._keypoint_names[i]] = [pos[3 * i],
-                            pos[3 * i + 1],
-                            pos[3 * i + 2]];
+                        tmp[pos[i][3]] = [pos[i][0],
+                                          pos[i][1],
+                                          pos[i][2]];
 
                     };
                 }
@@ -831,6 +834,7 @@ class Skeleton {
     constructor(data) {
         this._positionJournal = new Object();
 
+
         Object.defineProperty(this._positionJournal, 'clone', {
             enumerable: false,
             value: function(key) {
@@ -908,7 +912,12 @@ class Skeleton {
             //TODO: define VISIBILITY for keypoints
             // assuming all keypoints are visible for now
             for (var i = 0; i < pos.skel.length;i++){
-                tmp.push(pos.skel[i][0],pos.skel[i][1],2);
+
+                tmp.push([pos.skel[i][0], // x
+                         pos.skel[i][1], // y
+                         2,              // visibility (placeholder for now)
+                        pos.skel[i][2]]);// name
+
             }
 
             //TODO: decide on other information concerning global skeletons.
@@ -917,7 +926,6 @@ class Skeleton {
 
             serialized[frame] = tmp;
         }
-        //debugger;
         return serialized;
     }
 

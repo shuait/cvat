@@ -3,6 +3,7 @@
 
 function serverRequest(url, successCallback)
 {
+
     $.ajax({
         url: url,
         dataType: "json",

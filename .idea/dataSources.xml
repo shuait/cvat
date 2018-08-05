@@ -7,7 +7,7 @@
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
       <jdbc-url>jdbc:postgresql://localhost:5432/cvat</jdbc-url>
     </data-source>
-    <data-source source="LOCAL" name="postgres@localhost" uuid="b32491a9-eec5-46a0-8dbe-a20043fcc711">
+    <data-source source="LOCAL" name="postgres@localhost" uuid="776cc681-cedb-42bf-830e-1fc7d28d37db">
       <driver-ref>postgresql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>

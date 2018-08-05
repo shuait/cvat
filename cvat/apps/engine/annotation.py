@@ -134,7 +134,6 @@ names = ["nose",
         "right ankle",
         "center"];
 
-# NOT "center", we eliminated it in the javascript
 
 class _Label:
     def __init__(self, db_label):
@@ -569,15 +568,6 @@ class _AnnotationForJob(_Annotation):
         }
         '''
 
-
-
-
-
-
-
-
-
-
         #for db_skeleton in db_skeletons:
         #    label = _Label(self.db_labels[db_skeleton.label_id])
 
@@ -703,6 +693,7 @@ class _AnnotationForJob(_Annotation):
 
                     db_keyps.append(keyp)
 
+
                 skel = _TrackedSkeleton(db_keyps, db_skel.frame,
                                             db_skel.outside)
 
@@ -752,9 +743,10 @@ class _AnnotationForJob(_Annotation):
 
         for track in data['tracks']:
             label = _Label(self.db_labels[int(track['label_id'])])
-            boxes = []
+
             frame = -1
-            skels = []
+
+            boxes = []
             for box in track['boxes']:
                 if int(box['frame']) <= self.stop_frame:
                     tracked_box = _TrackedBox(float(box['xtl']), float(box['ytl']),
@@ -774,17 +766,21 @@ class _AnnotationForJob(_Annotation):
                     self.logger.error("init_from_client: ignore frame #%d " +
                         "because stop_frame is %d", box['frame'], self.stop_frame)
 
+            skels = []
             for skel in track['skels']:
                 keypoints = []
                 if int(skel['frame']) <= self.stop_frame:
+
                     for keypoint,value in skel.items():
+
                         if keypoint in names:
+
                             keypoints.append(_Keypoint(keypoint, #its name
                                                          value[0],value[1],
                                                         skel['frame'],value[2]))
 
                     # Putting a placeholder in "outside" for now
-                    tracked_skel = _TrackedSkeleton(keypoints,skel['frame'],1)
+                    tracked_skel = _TrackedSkeleton(keypoints,skel['frame'],skel['outside'])
                     assert tracked_skel.frame > frame
                     frame = tracked_skel.frame
 
@@ -859,12 +855,7 @@ class _AnnotationForJob(_Annotation):
             for keypoint in keypoints:
     '''
 
-
-
-
     def save_paths_to_db(self):
-
-
 
         self.db_job.objectpath_set.all().delete()
 
@@ -924,6 +915,8 @@ class _AnnotationForJob(_Annotation):
                 # What to do with keypoints? Think need to initialize them
                 # after creating skeletons, then associate them with skels.
                 db_skel.frame = skel.frame
+
+
                 db_skel.outside = skel.outside
 
                 for attr in skel.attributes:
@@ -939,7 +932,7 @@ class _AnnotationForJob(_Annotation):
 
                 for keypoint in skel.keypoints:
                     db_keyp = models.Keypoint()
-                    db_keyp.name = names[skel.keypoints.index(keypoint)]
+                    db_keyp.name = keypoint.name
                     db_keyp.skeleton_id = len(db_skels)
                     db_keyp.x = keypoint.x
                     db_keyp.y = keypoint.y
@@ -953,7 +946,6 @@ class _AnnotationForJob(_Annotation):
 
 
             db_paths.append(db_path)
-
 
 
         db_paths = models.ObjectPath.objects.bulk_create(db_paths)
@@ -1049,7 +1041,8 @@ class _AnnotationForJob(_Annotation):
                     js_keypoint = {
                         "x" : keypoint.x,
                         "y" : keypoint.y,
-                        "visibility" : keypoint.visibility
+                        "visibility" : keypoint.visibility,
+                        "name" : keypoint.name
                     }
 
                     keypoints.append(js_keypoint)

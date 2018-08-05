@@ -8,7 +8,6 @@ class TrackView {
         this._uicontent = $('#uiContent');
         this._revscale = 1;
         this._shape = TrackView.makeShape(interpolation.position, trackModel.shapeType, colors);
-
         this._connections = [[16,14],
                             [14,12],
                             [17,15],
@@ -28,9 +27,29 @@ class TrackView {
                             [3,5],
                             [4,6],
                             [5,7]];
-        /*
-        this._connectors = TrackView.makeConnections(this._shape,this._connections);
-        */
+
+        this._keypoint_names = ["nose",
+                                "left eye",
+                                "right eye",
+                                "left ear",
+                                "right ear",
+                                "left shoulder",
+                                "right shoulder",
+                                "left elbow",
+                                "right elbow",
+                                "left wrist",
+                                "right wrist",
+                                "left hip",
+                                "right hip",
+                                "left knee",
+                                "right knee",
+                                "left ankle",
+                                "right ankle",
+                                "center"];
+
+
+        this._connectors = TrackView.makeConnections(this._shape,this._connections,this._keypoint_names);
+
         // this returns an HTML text box object
         // TODO: return individual text box objects for individual keypoints
         this._text = TrackView.makeText(interpolation, labelsInfo.labels()[trackModel.label], trackModel.id);
@@ -44,17 +63,19 @@ class TrackView {
         this._text.appendTo(this._framecontent);
 
         if (trackModel.shapeType == 'skel'){
-            for (var i = 0; i< this._shape.length; i++){
+            for (var i = 0; i < this._shape.length; i++){
                 this._shape[i].appendTo(this._framecontent);
             }
-            /*
-            for (var i = 0; i< this._connectors.length; i++){
+
+            for (var i = 0; i < this._connectors.length; i++){
                 this._connectors[i].appendTo(this._framecontent);
             }
-            */
+
         } else {
             this._shape.appendTo(this._framecontent);
         }
+
+        debugger;
 
         this._outsideShape = null;
 
@@ -105,27 +126,6 @@ class TrackView {
                       [3.5,10], //right ankle
                       [0,-3]];  // center (will be displayed in different color)
 
-        this._keypoint_names = ["nose",
-                                "left eye",
-                                "right eye",
-                                "left ear",
-                                "right ear",
-                                "left shoulder",
-                                "right shoulder",
-                                "left elbow",
-                                "right elbow",
-                                "left wrist",
-                                "right wrist",
-                                "left hip",
-                                "right hip",
-                                "left knee",
-                                "right knee",
-                                "left ankle",
-                                "right ankle",
-                                "center"];
-
-
-
 
 
 
@@ -170,14 +170,22 @@ class TrackView {
 
     onTrackUpdate(state) {
         this._removeOutsideShape();
+
         if (state.removed) {
             this.removeView();
             return;
         }
 
+        //TODO: Fix issues with outside
+
+        /*
+
         if (state.model.outside || state.model.hidden) {
+
+            debugger;
             this._shape.detach();
         }
+        */
         else {
 
             if (state.model._shapeType == 'skel'){
@@ -768,16 +776,33 @@ class TrackView {
         else throw new Error('Unknown shape type');
     }
 
-    static makeConnections(shape,connections){
+    static makeConnections(shape,connections,keypoint_names){
+
 
         var svgLines = [];
         for(var conn = 0; conn < connections.length; conn++){
+
+            // For each connection
+
+            var keyp1, keyp2 = null;
+            for(var i =0; i < shape.length; i++){
+
+                if (keypoint_names.indexOf(shape[i][0].attributes.name.value) == (connections[conn][0] -1)){
+                    keyp1 = shape[i][0];
+                }
+                else if (keypoint_names.indexOf(shape[i][0].attributes.name.value) == (connections[conn][1] -1)){
+                    keyp2 = shape[i][0];
+                };
+            }
+
+            if (keyp1 && keyp2){
+
             var svgLine =  $(document.createElementNS('http://www.w3.org/2000/svg', 'line')).attr({
                         'stroke': 'red',
-                 'x1' : shape[connections[conn][0]-1][0].cx.animVal.value,
-                 'y1': shape[connections[conn][0]-1][0].cy.animVal.value,
-                 'x2': shape[connections[conn][1]-1][0].cx.animVal.value,
-                 'y2': shape[connections[conn][1]-1][0].cy.animVal.value,
+                 'x1': keyp1.cx.animVal.value,
+                 'y1': keyp1.cy.animVal.value,
+                 'x2': keyp2.cx.animVal.value,
+                 'y2': keyp2.cy.animVal.value,
                     }).addClass('shape changeable');
 
 
@@ -790,10 +815,13 @@ class TrackView {
                     'y2' : pos.y2
                 })
 
-            }
+                }
             svgLines.push(svgLine);
 
+            }
+
         }
+
 
         return svgLines;
     }
@@ -828,9 +856,14 @@ class TrackView {
 
         for (var i = 0; i < pos.skel.length; i++){
 
+            // TODO: modify display if keypoint visibility is not 2
+
+
             svgCircle = $(document.createElementNS('http://www.w3.org/2000/svg', 'circle')).attr({
                 cx: pos.skel[i][0],
                 cy: pos.skel[i][1],
+                r : 2, //#pos.skel[i][2],
+                name: pos.skel[i][2],
                 stroke: colors.border,
                 fill: colors.background
             }).addClass('shape changeable');

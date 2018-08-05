@@ -151,7 +151,7 @@ class CollectionModel extends Listener {
                 //TODO: skeleton requires "occluded" property at the moment
                 // need to change that
                 for (let keyp of skel.keypoints){
-                    keypoints.push([keyp.x,keyp.y,keyp.visibility])
+                    keypoints.push([keyp.x,keyp.y,keyp.name,keyp.visibility])
 
                 }
                 skeletons.push([keypoints,skel.frame,skel.outside,0]);
@@ -188,6 +188,7 @@ class CollectionModel extends Listener {
                 attributes: attributes
             });
 
+
         }
 
         for (let i = 0; i < tracks.length; i ++) {
@@ -199,6 +200,8 @@ class CollectionModel extends Listener {
     }
 
     exportTracks() {
+
+        debugger;
         let response = {"boxes": [], "tracks": []};
         for (let i = 0; i < this._allTracks.length; i ++ ) {
             let track = this._allTracks[i];
@@ -216,6 +219,8 @@ class CollectionModel extends Listener {
 
     add(data) {
         let colors = this.getColors();
+
+
 
         var trackModel;
         if (data.hasOwnProperty('boxes')){
