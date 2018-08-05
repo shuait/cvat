@@ -7,5 +7,11 @@
       <jdbc-driver>org.postgresql.Driver</jdbc-driver>
       <jdbc-url>jdbc:postgresql://localhost:5432/cvat</jdbc-url>
     </data-source>
+    <data-source source="LOCAL" name="csls_cvat" uuid="576b2f36-b798-41c4-b95a-4755ec43bbc5">
+      <driver-ref>postgresql</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
+      <jdbc-url>jdbc:postgresql://localhost:5432/cvat</jdbc-url>
+    </data-source>
   </component>
 </project>
