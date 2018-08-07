@@ -373,7 +373,6 @@ class DrawerView {
         else {
             if (this._drawMode) {
 
-                //debugger;
 
                 this._drawButton.text('Create Track');
 
@@ -385,14 +384,15 @@ class DrawerView {
 
                 if (this._drawShapeType == 'skel'){
 
-                    /*
                     var i;
-                    for (i = 0; i < this._drawShape.length; i++){
+                    let ds_l = this._drawShape.length;
+                    let dc_l = this._drawConnectors.length;
+                    for (i = 0; i < ds_l; i++){
                         this._drawShape[i].remove();
                     }
-                    for (i = 0; i < this._drawConnectors.length; i++){
+                    for (i = 0; i < dc_l; i++){
                         this._drawConnectors[i].remove();
-                    }*/
+                    }
                 }
                 else{
                     this._drawShape.remove();
@@ -488,6 +488,8 @@ class DrawerView {
     }
 
     onPlayerUpdate(player) {
+
+
         this._playerScale = player.geometry.scale;
         if (this._drawMode) {
 

@@ -45,8 +45,6 @@ function buildAnnotationUI(job, trackData, loadJobEvent) {
     let collectionModel = new CollectionModel(labelsInfo, job, trackFilterModel);
     collectionModel.importTracks(trackData);
 
-    debugger;
-
     $('#playerProgress').css('width', $('#player')["0"].clientWidth - 420);
 
     let playerGeometry = {
@@ -356,8 +354,6 @@ function setupMenu(job, collectionModel, collectionController, annotationParser)
         saveButton.prop('disabled', true);
         saveButton.text('Saving..');
         const exportData = collectionModel.exportTracks();
-
-        debugger;
 
         const annotationLogs = Logger.getLogs();
 

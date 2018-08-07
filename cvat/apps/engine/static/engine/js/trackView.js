@@ -27,6 +27,7 @@ class TrackView {
                             [3,5],
                             [4,6],
                             [5,7]];
+        this._connections_length = this._connections.length;
 
         this._keypoint_names = ["nose",
                                 "left eye",
@@ -74,8 +75,6 @@ class TrackView {
         } else {
             this._shape.appendTo(this._framecontent);
         }
-
-        debugger;
 
         this._outsideShape = null;
 
@@ -166,6 +165,7 @@ class TrackView {
     _removeOutsideShape() {
         this._framecontent.find('defs').remove();
         this._framecontent.find('rect.outsideRect').remove();
+
     }
 
     onTrackUpdate(state) {
@@ -176,17 +176,13 @@ class TrackView {
             return;
         }
 
-        //TODO: Fix issues with outside
-
-        /*
-
         if (state.model.outside || state.model.hidden) {
 
-            debugger;
             this._shape.detach();
         }
-        */
+
         else {
+
 
             if (state.model._shapeType == 'skel'){
 
@@ -270,29 +266,38 @@ class TrackView {
             this._shape.removeClass('mergeHighlighted');
         }
 
+        //TODO: as soon as track is updated, keyFrame
+        // property becomes true.
+
         let occluded = state.model.occluded;
+        */
         let keyFrame = state.position.keyFrame === true;
+
+        /*
         let outsided = state.position.outsided;
 
         this._ui.occluded(occluded);
         this._ui.keyFrame(keyFrame);
         this._ui.outsided(outsided);
 
-        if (occluded) {
+        if (occluded) {R
             this._shape.addClass('occludedShape');
         }
         else {
             this._shape.removeClass('occludedShape');
         }
         */
+
     }
 
     removeView() {
 
         if (this._trackController._trackModel._shapeType == 'skel'){
             for (var i =0; i < this._layout.length; i++){
-               var ltmp = this._shape.pop();
-               ltmp.remove();
+               this._shape[i].remove();
+            }
+            for (var i =0; i < this._connections_length; i++){
+               this._connectors[i].remove();
             }
 
         }
@@ -302,6 +307,7 @@ class TrackView {
 
         this._ui.remove();
         this._text.remove();
+
     }
 
     updateColors(colors, merge) {
@@ -348,16 +354,13 @@ class TrackView {
             transform: `scale(${revscale})`})
 
         //TODO: not sure what this does
-            /*
+
         this._text.find('tspan').each(function() {
             let parent = $(this.parentElement);
             this.setAttribute('cx', parent.attr('cx'));
-        });*/
-
-
+        });
 
         shape.css('stroke-width', 2 * revscale);
-
 
         }
 
@@ -528,12 +531,16 @@ class TrackView {
 
         // TODO: implement remove functionality.
 
-        if (!(interpolation.position.hasOwnProperty('skel'))){
             button.on('click', function(event) {
                                 trackModel.remove(event.shiftKey);
                                 });
 
-        }
+        /*if (!(interpolation.position.hasOwnProperty('skel'))){
+            button.on('click', function(event) {
+                                trackModel.remove(event.shiftKey);
+                                });
+
+        }*/
 
 
         let occludedState = trackModel.occluded;
