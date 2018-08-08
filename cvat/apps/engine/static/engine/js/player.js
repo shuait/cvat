@@ -218,6 +218,7 @@ class PlayerModel extends Listener {
     }
 
     play() {
+
         this._pauseFlag = false;
         this._playInterval = setInterval(function() {
             if (this._pauseFlag) {      // pause method without notify (for frame downloading)
@@ -344,6 +345,8 @@ class PlayerController {
                 e.preventDefault();
             }.bind(this));
 
+
+            //TODO: setActiveKeypoint when changing keyFrames
             let nextKeyFrameHandler = Logger.shortkeyLogDecorator(function() {
                 let active = activeTrack();
                 if (active && active.trackType === 'interpolation') {
@@ -354,6 +357,7 @@ class PlayerController {
                 }
             }.bind(this));
 
+            //TODO: setActiveKeypoint when changing keyFrames
             let prevKeyFrameHandler = Logger.shortkeyLogDecorator(function() {
                 let active = activeTrack();
                 if (active && active.trackType === 'interpolation') {

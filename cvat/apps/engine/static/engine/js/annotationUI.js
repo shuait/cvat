@@ -54,6 +54,7 @@ function buildAnnotationUI(job, trackData, loadJobEvent) {
         top: $('#playerFrame').offset().top
     };
     let playerModel = new PlayerModel(job, playerGeometry);
+
     let playerController = new PlayerController(playerModel, () => collectionModel.activeTrack,
         (direction) => collectionModel.findFilterFrame(direction),
         playerGeometry, job);

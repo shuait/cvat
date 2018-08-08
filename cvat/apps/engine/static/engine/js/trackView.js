@@ -7,7 +7,8 @@ class TrackView {
         this._framecontent = $('#frameContent');
         this._uicontent = $('#uiContent');
         this._revscale = 1;
-        this._shape = TrackView.makeShape(interpolation.position, trackModel.shapeType, colors);
+        this._shape = TrackView.makeShape(interpolation.position, trackModel.shapeType, colors,
+                                            trackModel.id);
         this._connections = [[16,14],
                             [14,12],
                             [17,15],
@@ -49,7 +50,8 @@ class TrackView {
                                 "center"];
 
 
-        this._connectors = TrackView.makeConnections(this._shape,this._connections,this._keypoint_names);
+        this._connectors = TrackView.makeConnections(this._shape,this._connections,this._keypoint_names,
+                                                    trackModel.id);
 
         // this returns an HTML text box object
         // TODO: return individual text box objects for individual keypoints
@@ -80,8 +82,26 @@ class TrackView {
 
 
         // TODO: implement "editing" functionality
-        /*
 
+        this._shape.forEach((keypoint,ind) => {
+
+            keypoint.on('drag', function(event, scale) {
+
+
+            //TODO: logger.
+            /*let type = event.type === 'drag' ? Logger.EventType.dragObject;
+            let modifyObjEvent = Logger.addContinuedEvent('drag');*/
+            this._revscale = 1 / scale;
+
+
+            this.updateViewGeometry();
+            this._trackController.onchangekeypointgeometry(this._shape);
+            /*modifyObjEvent.close();*/
+        }.bind(this))
+
+        })
+
+        /*
         this._shape.on('resize drag', function(event, scale) {
             let type = event.type === 'drag' ? Logger.EventType.dragObject : Logger.EventType.resizeObject;
             let modifyObjEvent = Logger.addContinuedEvent(type);
@@ -89,14 +109,24 @@ class TrackView {
             this.updateViewGeometry();
             this._trackController.onchangegeometry(this._shape);
             modifyObjEvent.close();
-        }.bind(this));
+        }.bind(this)); */
 
+
+/*
         this._shape.on('mousedown', function() {
             this._trackController.onclick();
             this._uicontent.scrollTop(0);
             this._uicontent.scrollTop(this._ui.offset().top - 10);
-        }.bind(this));
-        */
+        }.bind(this)); */
+
+
+        /*
+        for(var i = 0; i < this._shape.length; i++){
+
+            this._shape[i].on('mousedown', function() {
+                this._trackController.onclickkeypoint(i);
+            }.bind(this));
+        }*/
 
         this._ui.on('mouseover', (e) => this.onoverUI(trackModel.id, e));
         this._ui.on('mouseout', (e) => this.onoutUI(e));
@@ -169,6 +199,7 @@ class TrackView {
     }
 
     onTrackUpdate(state) {
+
         this._removeOutsideShape();
 
         if (state.removed) {
@@ -178,11 +209,12 @@ class TrackView {
 
         if (state.model.outside || state.model.hidden) {
 
+            //TODO: all keypoints + skeleton shape should be detached
+
             this._shape.detach();
         }
 
         else {
-
 
             if (state.model._shapeType == 'skel'){
 
@@ -207,7 +239,6 @@ class TrackView {
         //this.updateColors(state.model.colors, state.model.merge);
 
         /*
-
         this._ui.lock(state.lock);
         if (state.lock) {
             this._shape.addClass('lockedShape');
@@ -228,7 +259,31 @@ class TrackView {
         else {
             this._text.detach();
         }
+        */
 
+        // State isn't active upon creation,
+        // but on mouseover it is
+
+
+        if (state.model._activeKeypoint != null && !(state.lock || state.model.outside || state.model.hidden)){
+
+            this._shape[state.model._activeKeypoint].addClass('highlightedShape');
+            if (this._framecontent.has(this._shape)) {
+                this._shape[state.model._activeKeypoint].appendTo(this._framecontent);
+            }
+
+            // TODO: add class to UI once Will finishes
+
+        } else{
+            //We will have resetted ._activeKeypoint to null by now.
+            //Just loop through all keypoints and remove class 'highlightedShape'
+            // if exists.
+            this._shape.forEach((keypoint) => {
+                keypoint.removeClass('highlightedShape');
+            })
+        }
+
+        /*
         if (state.active && !(state.lock || state.model.outside || state.model.hidden)) {
             this._shape.addClass('highlightedShape');
             if (this._framecontent.has(this._shape)) {
@@ -244,7 +299,10 @@ class TrackView {
         else {
             this._shape.removeClass('highlightedShape');
             this._ui.removeClass('highlightedUI');
-        }
+        }*/
+
+
+        /*
 
         if (state.model.activeAAMTrack) {
             if (state.active) {
@@ -327,6 +385,8 @@ class TrackView {
 
         for(var i = 0; i < this._shape.length; i++){
 
+
+            //shape transformation
             let shape = this._shape[i];
 
             let oldcx = +shape.attr('cx');
@@ -343,6 +403,7 @@ class TrackView {
                 r: 2
             });
 
+            //text transformation
             let margin = 5;
 
             let cxpos = +shape.attr('cx') + +shape.attr('width') + margin;
@@ -363,7 +424,6 @@ class TrackView {
         shape.css('stroke-width', 2 * revscale);
 
         }
-
 
         /*
         let oldX1 = +this._shape.attr('x');
@@ -401,13 +461,6 @@ class TrackView {
 
         let margin = 5;
         let box = null;
-
-        */
-
-
-
-
-        /*
         try {       // mozilla firefox throws exception when call getBBox() for undrawed object. Chrome in this case return zero box.
             box = this._text['0'].getBBox();
         }
@@ -420,13 +473,6 @@ class TrackView {
             };
         }
         */
-
-
-
-
-
-
-
 
         //TODO: not sure how what transformations we will need to do
         // for keypoints - let's figure that out later
@@ -450,31 +496,25 @@ class TrackView {
             y: ypos / revscale,
             transform: `scale(${revscale})`
         });
-
         this._text.find('tspan').each(function() {
             let parent = $(this.parentElement);
             this.setAttribute('x', parent.attr('x'));
         });
-
         this._text.attr({
             cx : cxpos / revscale,
             cy : cypos / revscale,
             transform: `scale(${revscale})`
 
         })
-
         //TODO: not sure what this does
         this._text.find('tspan').each(function() {
             let parent = $(this.parentElement);
             this.setAttribute('cx', parent.attr('cx'));
         });
 
-
-
         this._shape.css('stroke-width', 2 * revscale);
 
         */
-
 
     }
 
@@ -773,18 +813,17 @@ class TrackView {
         return ui;
     }
 
-    static makeShape(position, type, colors) {
+    static makeShape(position, type, colors,id) {
         if (type == 'box') {
             return TrackView.makeBox(position, colors);
         }
         else if (type == 'skel') {
-            return TrackView.makeSkel(position,colors);
+            return TrackView.makeSkel(position,colors,id);
         }
         else throw new Error('Unknown shape type');
     }
 
-    static makeConnections(shape,connections,keypoint_names){
-
+    static makeConnections(shape,connections,keypoint_names,id){
 
         var svgLines = [];
         for(var conn = 0; conn < connections.length; conn++){
@@ -810,9 +849,10 @@ class TrackView {
                  'y1': keyp1.cy.animVal.value,
                  'x2': keyp2.cx.animVal.value,
                  'y2': keyp2.cy.animVal.value,
+                 'track_id' : id,
+                  'id1' : keyp1.attributes['name'].value,
+                  'id2' : keyp2.attributes['name'].value
                     }).addClass('shape changeable');
-
-
 
             svgLine.updatePos = function(pos){
                 svgLine.attr({
@@ -855,7 +895,9 @@ class TrackView {
         return svgRect;
     }
 
-    static makeSkel(pos,colors) {
+    static makeSkel(pos,colors,id) {
+
+
 
         // Need to return a list of keypoints of the right color here.
         var svgCircles = [];
@@ -865,12 +907,12 @@ class TrackView {
 
             // TODO: modify display if keypoint visibility is not 2
 
-
             svgCircle = $(document.createElementNS('http://www.w3.org/2000/svg', 'circle')).attr({
                 cx: pos.skel[i][0],
                 cy: pos.skel[i][1],
-                r : 2, //#pos.skel[i][2],
-                name: pos.skel[i][2],
+                r : 2,
+                track_id : id,              // for identifying other keypoints belonging to same
+                name: pos.skel[i][2],       // skeleton
                 stroke: colors.border,
                 fill: colors.background
             }).addClass('shape changeable');

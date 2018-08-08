@@ -87,6 +87,8 @@ class CollectionView {
 
             // TODO: CHANGE THIS FUNCTION
             trackView.updateViewGeometry();
+
+            // TODO: integrate this with what Wilfredo is working on
             trackView.onoverUI = (id, e) => this._collectionController.setactivetrack(id, e);
             trackView.onoutUI = (e) => this._collectionController.resetactivetrack(e);
             trackView.onshift = (frame) => this._playerModel.shift(frame, true);

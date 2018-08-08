@@ -27,6 +27,7 @@ class TrackModel extends Listener {
         this._lock = false;
         this._removed = false;
         this._active = false;
+        this._activeKeypoint = null;
         this._merge = false;
         this._hidden = false;
         this._hiddenLabel = true;
@@ -172,6 +173,16 @@ class TrackModel extends Listener {
         }
         this._active = value;
         this.notify();
+    }
+
+    set activeKeypoint(value){
+        /*
+        if (value != true && value != false) {
+            throw new Error('Bad active value');
+        }*/
+        this._activeKeypoint = value;
+        this.notify();
+
     }
 
     set activeAAMTrack(value) {
@@ -497,6 +508,10 @@ class TrackModel extends Listener {
         this._shape.recordPosition(pos, this._curFrame);
     }
 
+    recordKeypointPosition(pos,ind){
+        this._shape.recordKeypointPosition(pos,ind,this._curFrame);
+    }
+
 
     isKeyFrame(frame) {
         if (frame in this._shape._positionJournal) return true;
@@ -553,6 +568,15 @@ class TrackModel extends Listener {
         this._selected = true;
         this.notify();
     }
+
+    //TODO: unfinished and probably unnecessary modifications - selected property
+    // is used for mergers.
+    /*
+    onSelectKeypoint(ind){
+        if(this._lock || !(this._activeKeypoint == ind)) return;
+        this._shape[ind]._selected
+
+    } */
 
 
     visibleOnFrames(checkSet) {
@@ -683,7 +707,7 @@ class TrackModel extends Listener {
         return [prev, next];
     }
 
-
+    //first "non-outsided" frame
     static computeFirstFrame(journal) {
         for (let frame in journal) {
             if (!journal[frame]["outsided"]) {
@@ -785,10 +809,14 @@ class Box {
 
     interpolatePosition(frameNumber, firstFrame) {
 
+
+
         let pJ = this._positionJournal;
         if (firstFrame == frameNumber) return Object.assign(pJ.clone(firstFrame), {keyFrame: true});
         let leftPos = NaN;
         let rightPos = NaN;
+        //Loop over frame numbers and assign new (different)
+        // (rightmost and leftmost?) framekeyss to leftPos and rightPos
         for (let frameKey in pJ) {
             if (+frameKey == frameNumber) return Object.assign(pJ.clone(frameKey), {keyFrame: true});
             if (+frameKey < frameNumber) leftPos = +frameKey;
@@ -832,8 +860,8 @@ class Box {
 
 class Skeleton {
     constructor(data) {
-        this._positionJournal = new Object();
 
+        this._positionJournal = new Object();
 
         Object.defineProperty(this._positionJournal, 'clone', {
             enumerable: false,
@@ -849,7 +877,6 @@ class Skeleton {
             }
         });
 
-
         for (let i = 0; i < data.length; i ++) {
             let frameNumber = data[i][1];
 
@@ -860,11 +887,7 @@ class Skeleton {
                 outsided: data[i][2],
                 occluded: data[i][3]
             };
-
-
         }
-
-
     }
 
 
@@ -890,14 +913,18 @@ class Skeleton {
 
 
     recordPosition(pos, frame) {
-        this._positionJournal[frame] = {
-            xtl: pos.xtl,
-            ytl: pos.ytl,
-            xbr: pos.xbr,
-            ybr: pos.ybr,
+
+        this._positionJournal[frame]= {
+
+            skel: pos.skel,
             outsided: pos.outsided,
             occluded: pos.occluded
+
         };
+    }
+
+    recordKeypointPosition(pos,ind,frame){
+        this._positionJournal
     }
 
     export() {

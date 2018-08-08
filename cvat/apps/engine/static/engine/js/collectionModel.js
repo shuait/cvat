@@ -15,6 +15,7 @@ class CollectionModel extends Listener {
         this._interpolationTracks = new Object();
         this._currentTracks = [];
         this._activeTrack = null;
+        this._activeKeypoint = null;
         this._drawing = false;
         this._allInterTracks = false;
         this._trackFilter = trackFilterModel;
@@ -41,6 +42,8 @@ class CollectionModel extends Listener {
 
 
     _interpolate(tracks, frame) {
+
+
         let result = [];
         for (let trackId in tracks) {
             let track = tracks[trackId];
@@ -52,6 +55,10 @@ class CollectionModel extends Listener {
              * track.isKeyFrame(frame) is provide the adding tracks if frame is keyframe (needed in cases when track become outsided on this frame)
              * this._allInterTracks is provide the adding any tracks (in mode when right panel show all tracks)  */
             if (!outsided || track.isKeyFrame(frame) || this._allInterTracks) {
+                //list of (number of tracks) track informations
+                // with (I think) information concerning the interpolated
+                // track info at the current (later) frame
+                // and the track info of the previous frame
                 result.push({
                     trackModel: track,
                     interpolation: interpolation
@@ -111,6 +118,7 @@ class CollectionModel extends Listener {
         this._interpolationTracks = new Object();
         this._currentTracks = [];
         this._activeTrack = null;
+        this._activeKeypoint = null;
         this._trackCounter = 0;
         this.notify();
     }
@@ -201,7 +209,7 @@ class CollectionModel extends Listener {
 
     exportTracks() {
 
-        debugger;
+
         let response = {"boxes": [], "tracks": []};
         for (let i = 0; i < this._allTracks.length; i ++ ) {
             let track = this._allTracks[i];
@@ -244,6 +252,7 @@ class CollectionModel extends Listener {
         }
         this._allTracks.push(trackModel);
         this._trackCounter ++;
+
     }
 
 
@@ -301,6 +310,7 @@ class CollectionModel extends Listener {
         }
         this._currentTracks = [];
         this._activeTrack = null;
+        this._activeKeypoint = null;
         this._frameChanged = this._curFrame != newframe;
         this._curFrame = newframe;
 
@@ -355,6 +365,9 @@ class CollectionModel extends Listener {
     }
 
     switchLockForActive() {
+
+        //TODO: necessary to define behavior here for keypoints?
+        // given we are not interested in working with "lock"
         if (this._activeTrack != null) {
             let value = this._allTracks[this._activeTrack].lock;
             this._allTracks[this._activeTrack].lock = !value;
@@ -418,6 +431,30 @@ class CollectionModel extends Listener {
         }
     }
 
+    setactivekeypoint(keypointID, trackID) {
+
+        if (keypointID != this._activeKeypoint){
+            this.resetactivekeypoint();
+            this._activeKeypoint = keypointID;
+            this._activeTrack = trackID;
+            this._allTracks[this._activeTrack].active = true;
+            this._allTracks[this._activeTrack].activeKeypoint = keypointID;
+
+
+        }
+
+    }
+
+    resetactivekeypoint(){
+        if (this._activeKeypoint != null && this._activeTrack != null) {
+            this._allTracks[this._activeTrack].active = false;
+            this._allTracks[this._activeTrack].activeKeypoint = null;
+            this._activeTrack = null;
+            this._activeKeypoint = null;
+        }
+
+    }
+
     resetactivetrack() {
         if (this._activeTrack != null) {
             this._allTracks[this._activeTrack].active = false;
@@ -425,6 +462,8 @@ class CollectionModel extends Listener {
         }
     }
 
+
+    //TODO: removeactivetrack
     removeactivetrack(force) {
         if (this._activeTrack != null) {
             this._allTracks[this._activeTrack].remove(force);
@@ -434,29 +473,68 @@ class CollectionModel extends Listener {
     onmousemove(x, y, modKeysStates) {
         if (this._activeTrack != null && modKeysStates.ctrl) return;
         let activeTrack = null;
+        let activeKeypoint = null;
         let minArea = Number.MAX_SAFE_INTEGER;
+        let minDist = Number.MAX_SAFE_INTEGER;
         this._currentTracks.forEach((item) => {
             if (item.trackModel.removed) return;
             let pos = item.trackModel._shape.interpolatePosition(this._curFrame, item.trackModel.firstFrame);
             let type = item.trackModel.shapeType;
             if (pos.outsided || item.trackModel.hidden) return;
+
+            // We'll search for active keypoint directly
+            // (distinguishing between center keypoint and others)
+            // instead of finding an active track first to avoid potential
+            // issues with overlap of skeleton bounding boxes.
+
+            if(TrackModel.ShapeContain(pos,x,y,type)){
+
+                for(var i = 0; i < pos.skel.length; i++){
+
+                    // Calculate distance between cursor and keypoint
+                    let keyp_x = pos.skel[i][0];
+                    let keyp_y = pos.skel[i][1];
+                    let dist = Math.hypot(x - keyp_x,y - keyp_y);
+
+                    if (dist < minDist){
+                        minDist = dist;
+                        activeTrack = item.trackModel.id;
+                        activeKeypoint = i;
+                    }
+
+                    //if(dist < minArea || this._allTracks[activeTrack].lock) {
+                }
+            }
+
+
+            /*
             if (TrackModel.ShapeContain(pos, x, y, type)) {
                 let area = TrackModel.ShapeArea(pos, type);
+
+                // If cursor is sufficiently contained within bbox
+                // set the corresponding track as active.
                 if (area < minArea || this._allTracks[activeTrack].lock) {
                     if (activeTrack != null) {
                         if (!this._allTracks[activeTrack].lock && this._allTracks[item.trackModel.id].lock) {
                             return;
                         }
                     }
+
                     minArea = area;
                     activeTrack = item.trackModel.id;
                 }
-            }
+            }*/
         });
-        if (activeTrack != null) {
-            this.setactivetrack(activeTrack);
+        if (activeKeypoint != null) {
+
+            this.setactivekeypoint(activeKeypoint,activeTrack);
+            //this.setactivetrack(activeTrack);
+
         }
-        else this.resetactivetrack();
+        else {
+            this.resetactivekeypoint();
+            //this.resetactivetrack();
+        }
         return activeTrack;
     }
 

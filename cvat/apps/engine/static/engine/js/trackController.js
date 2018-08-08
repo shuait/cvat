@@ -9,6 +9,12 @@ class TrackController {
     onclick() {
         this._trackModel.onSelect();
     }
+
+    /*
+    onclickkeypoint(ind){
+        this._trackModel.onSelectKeypoint(ind);
+    }
+    */
     //TODO: this will have to change for editing
     onchangegeometry(shape) {
         let pos = {
@@ -20,5 +26,28 @@ class TrackController {
             occluded: shape.hasClass('occludedShape') ? 1 : 0
         };
         this._trackModel.recordPosition(pos);
+    }
+
+    onchangekeypointgeometry(shape){
+
+        var skel = [];
+        for(var i=0; i< shape.length; i++){
+
+               skel[i] =  [shape[i][0].cx.animVal.value,
+                           shape[i][0].cy.animVal.value,
+                           shape[i][0].attributes.name.value];
+
+
+        }
+
+        var pos = {
+            skel: skel,
+            outsided: 0, //TODO: OUTSIDED (using placeholder for now)
+            occluded: 0 //TODO: VISIBILITY
+        }
+
+
+        this._trackModel.recordPosition(pos);
+        debugger;
     }
 }
