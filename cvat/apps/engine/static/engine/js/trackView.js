@@ -7,6 +7,7 @@ class TrackView {
         this._framecontent = $('#frameContent');
         this._uicontent = $('#uiContent');
         this._revscale = 1;
+
         this._shape = TrackView.makeShape(interpolation.position, trackModel.shapeType, colors,
                                             trackModel.id);
         this._connections = [[16,14],
@@ -330,6 +331,8 @@ class TrackView {
         let occluded = state.model.occluded;
         */
         let keyFrame = state.position.keyFrame === true;
+
+        this._ui.keyFrame(keyFrame);
 
         /*
         let outsided = state.position.outsided;

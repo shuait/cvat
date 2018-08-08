@@ -48,6 +48,5 @@ class TrackController {
 
 
         this._trackModel.recordPosition(pos);
-        debugger;
     }
 }

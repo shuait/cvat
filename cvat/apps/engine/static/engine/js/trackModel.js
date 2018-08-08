@@ -809,8 +809,6 @@ class Box {
 
     interpolatePosition(frameNumber, firstFrame) {
 
-
-
         let pJ = this._positionJournal;
         if (firstFrame == frameNumber) return Object.assign(pJ.clone(firstFrame), {keyFrame: true});
         let leftPos = NaN;
@@ -837,6 +835,16 @@ class Box {
         let leftCurDifference = frameNumber - leftPos;
         let leftRightDifference = rightPos - leftPos;
         let relativeOffset = leftCurDifference / leftRightDifference;
+
+
+        //TODO: Implement interpolation (if judged useful)
+        // In this scenario, we are switching to a frame in between keyframes
+        // (in my understanding, these are frames where a track has been edited).
+        // The result for this frame should be the interpolated position between
+        // key frame positions.
+        // For now, we'll just retain leftPos.
+
+
         let interpolatedPos = {
             xtl: pJ[leftPos].xtl+ (pJ[rightPos].xtl - pJ[leftPos].xtl) * relativeOffset,
             ytl: pJ[leftPos].ytl + (pJ[rightPos].ytl - pJ[leftPos].ytl) * relativeOffset,
@@ -982,14 +990,14 @@ class Skeleton {
         let leftCurDifference = frameNumber - leftPos;
         let leftRightDifference = rightPos - leftPos;
         let relativeOffset = leftCurDifference / leftRightDifference;
+
+
         let interpolatedPos = {
-            xtl: pJ[leftPos].xtl+ (pJ[rightPos].xtl - pJ[leftPos].xtl) * relativeOffset,
-            ytl: pJ[leftPos].ytl + (pJ[rightPos].ytl - pJ[leftPos].ytl) * relativeOffset,
-            xbr: pJ[leftPos].xbr + (pJ[rightPos].xbr - pJ[leftPos].xbr) * relativeOffset,
-            ybr: pJ[leftPos].ybr + (pJ[rightPos].ybr - pJ[leftPos].ybr) * relativeOffset,
-            outsided: false,
+            skel: pJ[leftPos].skel,
+            outsided: 0,
             occluded: pJ[leftPos].occluded
         };
+
         return interpolatedPos;
     }
 
