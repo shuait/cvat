@@ -14,6 +14,7 @@ class TrackView {
         this._shape.appendTo(this._framecontent);
         this._text.appendTo(this._framecontent);
         this._outsideShape = null;
+        this._skelKeypoints = null;
 
         this._shape.on('resize drag', function(event, scale) {
             let type = event.type === 'drag' ? Logger.EventType.dragObject : Logger.EventType.resizeObject;
@@ -311,6 +312,30 @@ class TrackView {
             trackModel.remove(event.shiftKey);
         });
 
+        //Modification
+
+        // let keypoints = TrackView._keypoint_names
+        let keypoints = ["nose",
+                    "left eye",
+                    "right eye",
+                    "left ear",
+                    "right ear",
+                    "left shoulder",
+                    "right shoulder",
+                    "left elbow",
+                    "right elbow",
+                    "left wrist",
+                    "right wrist",
+                    "left hip",
+                    "right hip",
+                    "left knee",
+                    "right knee",
+                    "left ankle",
+                    "right ankle",
+                    "center"];
+
+        //
+
         let occludedState = trackModel.occluded;
         let lockedState = trackModel.lock;
         let outsidedState = trackModel.outside;
@@ -329,6 +354,9 @@ class TrackView {
             .addClass('graphicButton occludedButton').appendTo(propManagement);
         let outsidedButton = $(`<button title="Outsided Property"></button>`).addClass('graphicButton outsidedButton');
         let keyFrameButton = $(`<button title="KeyFrame Property"></button>`).addClass('graphicButton keyFrameButton');
+
+
+        let keypointsListButton = $(`<button title="Show/hide keypoints"></button>`).addClass('graphicButton dropdownList').appendTo(propManagement);
 
         if (trackModel.trackType == 'interpolation') {
             outsidedButton.appendTo(propManagement);
@@ -450,6 +478,14 @@ class TrackView {
             trackModel.keyFrame = !keyFrameState;
         });
 
+        keypointsListButton.on('click', function() {
+            // if(value){
+                // this._skelKeypoints.slideDown();
+            // }else{
+            this._skelKeypoints.slideToggle();
+            // }
+        });        
+
         if (Object.keys(labels).length > 1) {
             let div = $('<div> </div>').css('width', '100%');
             $('<label> Label  </label>').addClass('semiBold').appendTo(div);
@@ -536,6 +572,78 @@ class TrackView {
 
         if (buttonBlock != null) {
             ui.append(buttonBlock);
+        }
+
+
+        //skeleton 
+
+        this._skelKeypoints = $('<div style="text-align:right;"></div>').appendTo(ui).css({
+            'margin': '5px 10px'
+        });
+
+        let occludedStates = [];
+        let outsidedStates = [];
+
+        let occludedButtons = [];
+        let outsidedButtons = [];
+
+        let occludedShortkeys = []
+
+        // let labelsBlocks = [];
+        // let attrBlockss = [];
+        // let buttonBlocks = [];
+        // let hiddens = [];
+
+        // let labelsBlocks[i_keypoint] = null;
+        // let attrBlockss[i_keypoint] = [];
+        // let buttonBlocks[i_keypoint] = null;
+        // let hiddens[i_keypoint] = interpolation.position.outsided;
+
+        ui.extend({
+            //write this function for all skel point
+            skelOccluded : function(value, index) {
+                if (value) occludedButtons[index].addClass('occluded');
+                else occludedButtons[index].removeClass('occluded');
+                occludedStates[index] = value;
+            },
+
+            skelOutsided : function(value, index) {
+                if (value) outsidedButtons[index].addClass('outsided');
+                else outsidedButtons[index].removeClass('outsided');
+                outsidedStates[index] = value;
+                this.hidden(value);
+            },
+
+        });
+
+        for (let i_keypoint = 0; i_keypoint < keypoints.length; i_keypoint++) { 
+
+            occludedStates[i_keypoint] = trackModel.occluded;
+            outsidedStates[i_keypoint] = trackModel.outside;
+
+            occludedShortkeys[i_keypoint] = `(${shortkeys["switch_occluded_property"].view_value})`;
+
+            $(`<label style="text-align:left;"> <br> ${keypoints[i_keypoint]} </label>`).addClass('semiBold').appendTo(this._skelKeypoints);
+            occludedButtons[i_keypoint] = $(`<button title="Occluded Property ${occludedShortkeys[i_keypoint]} ></button>`)
+                .addClass('graphicButton occludedButton').appendTo(this._skelKeypoints);
+            outsidedButtons[i_keypoint] = $(`<button title="Outsided Property" ></button>`).addClass('graphicButton outsidedButton');
+
+            if (trackModel.trackType == 'interpolation') {
+                outsidedButtons[i_keypoint].appendTo(this._skelKeypoints);
+            }
+
+            ui.skelOccluded(occludedStates[i_keypoint], i_keypoint);
+            ui.skelOutsided(outsidedStates[i_keypoint], i_keypoint);
+
+            occludedButtons[i_keypoint].on('click', function() {
+                occludedStates[i_keypoint] = !occludedStates[i_keypoint];
+                // trackModel.occluded = occludedStates[i_keypoint];
+            });
+
+            outsidedButtons[i_keypoint].on('click', function() {
+                trackModel.outside = !outsidedStates[i_keypoint];
+            });
+
         }
 
         return ui;

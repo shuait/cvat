@@ -105,6 +105,11 @@
     background-size: 20px;
 }
 
+.dropdownList {
+    background: url("icons/chevronright.png") no-repeat;
+    background-size: 20px;
+}
+
 
 
 .uiElement {
