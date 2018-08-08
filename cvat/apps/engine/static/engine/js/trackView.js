@@ -118,7 +118,7 @@ class TrackView {
             this._trackController.onclick();
             this._uicontent.scrollTop(0);
             this._uicontent.scrollTop(this._ui.offset().top - 10);
-        }.bind(this)); */
+        }.bind(this));
 
 
         /*
@@ -386,11 +386,15 @@ class TrackView {
         let frameWidth = +$('#frameContent').css('width').slice(0,-2);
         let frameHeight = +$('#frameContent').css('height').slice(0,-2);
 
-        for(var i = 0; i < this._shape.length; i++){
+        var shape = null;
 
+        for(var i = 0; i < this._shape.length; i++) {
 
-            //shape transformation
-            let shape = this._shape[i];
+            if (this._shape[i][0].attributes["name"].value == "center") {
+                shape = this._shape[i];
+            }
+
+        }
 
             let oldcx = +shape.attr('cx');
             let oldcy = +shape.attr('cy');
@@ -403,30 +407,28 @@ class TrackView {
             shape.attr({
                 cx: oldcx,
                 cy: oldcy,
-                r: 2
             });
 
             //text transformation
-            let margin = 5;
+            let xmargin = -6;
+            let ymargin = 5;
 
-            let cxpos = +shape.attr('cx') + +shape.attr('width') + margin;
-            let cypos = +shape.attr('cy');
+            let cxpos = +shape.attr('cx') + xmargin;
+            let cypos = +shape.attr('cy') + ymargin;
 
             this._text.attr({
-            cx : cxpos / revscale,
-            cy : cypos / revscale,
-            transform: `scale(${revscale})`})
+            x : cxpos / revscale,
+            y : cypos / revscale,
+            transform: `scale(${revscale})`});
 
-        //TODO: not sure what this does
+        //tspan is the div with the text box. Setting its x to parent's (_text's) x.
 
         this._text.find('tspan').each(function() {
             let parent = $(this.parentElement);
-            this.setAttribute('cx', parent.attr('cx'));
+            this.setAttribute('x', parent.attr('x'));
         });
 
-        shape.css('stroke-width', 2 * revscale);
-
-        }
+        //shape.css('stroke-width', 2 * revscale);
 
         /*
         let oldX1 = +this._shape.attr('x');
@@ -900,25 +902,33 @@ class TrackView {
 
     static makeSkel(pos,colors,id) {
 
-
-
         // Need to return a list of keypoints of the right color here.
         var svgCircles = [];
         var svgCircle;
 
         for (var i = 0; i < pos.skel.length; i++){
 
-            // TODO: modify display if keypoint visibility is not 2
 
             svgCircle = $(document.createElementNS('http://www.w3.org/2000/svg', 'circle')).attr({
                 cx: pos.skel[i][0],
                 cy: pos.skel[i][1],
-                r : 2,
                 track_id : id,              // for identifying other keypoints belonging to same
                 name: pos.skel[i][2],       // skeleton
-                stroke: colors.border,
                 fill: colors.background
             }).addClass('shape changeable');
+
+            if (pos.skel[i][2] == "center") {
+                svgCircle.attr({
+                    stroke : '#00ff00',
+                    r: 7
+                })
+            } else {
+                svgCircle.attr({
+                    stroke : colors.border,
+                    r : 5
+                })
+            }
+            // TODO: modify display if keypoint visibility is not 2
 
             svgCircle.updatePos = function(skel) {
                 svgCircle.attr({
@@ -926,7 +936,6 @@ class TrackView {
                     cy: skel[1],
                 });
             };
-
             svgCircles.push(svgCircle)
         }
 
@@ -980,7 +989,7 @@ class TrackView {
 
         // Defines text
 
-        labelNameText.innerHTML = `${labelName.normalize()}: ${id}`;
+        labelNameText.innerHTML = `Worker ${id}`;
         //
 
         labelNameText.setAttribute('dy', '1em');

@@ -145,7 +145,7 @@
 .shape {
     stroke-location: inside;
     fill-opacity: 0;
-    stroke-width: 2px;
+    /*stroke-width: 2px;*/
     position: relative;
     shape-rendering: optimizespeed;
     color-rendering: optimizeSpeed;

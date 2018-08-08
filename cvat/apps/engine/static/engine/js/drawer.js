@@ -95,7 +95,6 @@ class DrawerModel extends Listener  {
         if (!this._drawMode) return;
         if (this._drawShape === 'skel') {
 
-            //if (pos.fixed){
             let skelPos = [];
 
             var keyp;
@@ -105,13 +104,13 @@ class DrawerModel extends Listener  {
                                  skel[keyp][0].cy.animVal.value,
                                  skel[keyp][0].attributes.name.value];
             }
-
             this._collection.createFromSkel(skelPos, this._label, this._trackType);
             //Logger.addEvent(Logger.EventType.addObject, {count: 1});
             this._drawObjectEvent.close();
             this.endDraw();
 
-            //}
+
+
             this.notify();
 
 
@@ -313,20 +312,20 @@ class DrawerView {
 
                         if (!(keyp == this._layout.length-1)){
                         this._drawShape[keyp] = $(document.createElementNS('http://www.w3.org/2000/svg', 'circle')).attr({
-                         'stroke': '#ffffff', 'fill' : '#ffffff','r':2
+                         'stroke': '#ffff00', 'fill' : 'yellow','r':5
                      }).addClass('shape').css({
                          'stroke-width': 2 / this._playerScale,
                      }).appendTo(this._frameContent);
                         }
                         else{
                         this._drawShape[keyp] = $(document.createElementNS('http://www.w3.org/2000/svg', 'circle')).attr({
-                         'stroke': '#ffff00', 'fill' : 'yellow','r':2
+
+                            'stroke': '#00ff00', 'fill' : '#00ff00','r':7
+
                      }).addClass('shape').css({
                          'stroke-width': 2 / this._playerScale,
                      }).appendTo(this._frameContent);
                         }
-
-
 
                     }
                     var conn;
@@ -336,7 +335,7 @@ class DrawerView {
                         this._drawConnectors[conn]=$(document.createElementNS('http://www.w3.org/2000/svg', 'line')).attr({
                         'stroke': 'red',
                     }).css({
-                        'stroke-width': 2 / this._playerScale
+                        'stroke-width': 1 / this._playerScale //2 / this._playerScale
                     }).appendTo(this._frameContent)
                     }
 
@@ -443,8 +442,8 @@ class DrawerView {
                 for (keyp = 0; keyp < this._layout.length; keyp++) {
 
                     this._drawShape[keyp].attr({
-                        cx: pos.x + this._layout[keyp][0]*5,
-                        cy: pos.y + this._layout[keyp][1]*5,
+                        cx: pos.x + this._layout[keyp][0]*10,
+                        cy: pos.y + this._layout[keyp][1]*10,
                         name :this._keypoint_names[keyp]
                     }).css('display', '');
 

@@ -265,7 +265,7 @@ class ShapeBufferView {
         this._playerScale = player.geometry.scale;
         this._curFrame = player.frames.current;
         if (this._viewShape != null) {
-            this._viewShape.css('stroke-width', 2 / this._playerScale);
+            //this._viewShape.css('stroke-width', 2 / this._playerScale);
         }
     }
 }

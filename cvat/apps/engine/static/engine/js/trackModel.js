@@ -451,12 +451,10 @@ class TrackModel extends Listener {
                         tmp[pos[i][3]] = [pos[i][0],
                                           pos[i][1],
                                           pos[i][2]];
-
                     };
                 }
                 else
                     {
-
                         tmp = {
                             "xtl": pos[0],
                             "ytl": pos[1],
@@ -465,8 +463,6 @@ class TrackModel extends Listener {
                             "occluded": pos[4],
                             "outside": pos[5]
                         };
-
-
                     };
 
                     var tracked_box = Object.assign({}, tmp, frame_attributes);
@@ -476,7 +472,6 @@ class TrackModel extends Listener {
                     } else {
                         track["boxes"].push(tracked_box);
                     }
-
                 };
             }
             return track;

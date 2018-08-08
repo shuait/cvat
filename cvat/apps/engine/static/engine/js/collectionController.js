@@ -132,7 +132,7 @@ class CollectionController {
                 onend: function () {
                     this._moveMode = false;
                 }.bind(this)
-            }).resizable({
+            });/*.resizable({
                 margin: 8,
                 edges: { left: true, right: true, bottom: true, top: true },
                 restrict: {
@@ -164,7 +164,7 @@ class CollectionController {
                 onend: function () {
                     this._resizeMode = false;
                 }.bind(this)
-            });
+            }) */
         }   // end of setupInteract
     }
 
