@@ -84,8 +84,6 @@ class CollectionView {
             trackModel.notify();
             trackView.revscale = this._revPlayerScale;
 
-
-            // TODO: CHANGE THIS FUNCTION
             trackView.updateViewGeometry();
 
             // TODO: integrate this with what Wilfredo is working on

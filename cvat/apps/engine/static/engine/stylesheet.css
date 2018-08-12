@@ -105,6 +105,11 @@
     background-size: 20px;
 }
 
+.flipButton {
+    background: url("icons/index.png") no-repeat;
+    background-size: 20px;
+}
+
 
 
 .uiElement {
@@ -138,8 +143,6 @@
 .center {
     text-align: center;
 }
-
-
 
 
 .shape {
@@ -211,7 +214,8 @@
     background-color: #B0C4DE;
     padding: 8px 0;
     height: auto;
-    width: 700px;
+    width: 270px;
+    z-index: 100;
     z-index: 100;
     float: left;
     position: absolute;

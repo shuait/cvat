@@ -33,19 +33,18 @@ class TrackController {
         var skel = [];
         for(var i=0; i< shape.length; i++){
 
-               skel[i] =  [shape[i][0].cx.animVal.value,
-                           shape[i][0].cy.animVal.value,
-                           shape[i][0].attributes.name.value];
-
-
+           skel[i] =  [shape[i][0].cx.animVal.value,
+                       shape[i][0].cy.animVal.value,
+                       shape[i][0].attributes.name.value];
         }
+
+        var outsided;
 
         var pos = {
             skel: skel,
             outsided: 0, //TODO: OUTSIDED (using placeholder for now)
             occluded: 0 //TODO: VISIBILITY
         }
-
 
         this._trackModel.recordPosition(pos);
     }

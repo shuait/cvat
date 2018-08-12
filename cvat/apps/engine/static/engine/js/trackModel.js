@@ -1,6 +1,8 @@
 /* exported TrackModel MIN_BOX_SIZE */
 "use strict";
 
+/*worker @select=type:__undefined__,car,truck,bus,train */
+
 const MIN_BOX_SIZE = 3;
 
 class TrackModel extends Listener {
@@ -337,6 +339,8 @@ class TrackModel extends Listener {
             mutable: this.fillMutableAttributes( []),
             immutable: this.fillImmutableAttributes([])
         };
+
+        //TODO: need to put
     }
 
     getStatToObject(statObj) {
@@ -397,6 +401,8 @@ class TrackModel extends Listener {
 
             return labeled_box;
         } else {
+
+
             let attributes = [];
             for (let key in immutable) {
                 attributes.push({
@@ -432,7 +438,7 @@ class TrackModel extends Listener {
                     }
                 }
 
-                let pos = positions[frame];
+                let pos = positions[frame]['skels'];
 
                 var frame_attributes = {
                     "frame": +frame,
@@ -444,6 +450,7 @@ class TrackModel extends Listener {
                 if (this._shapeType == 'skel') {
 
                     tmp['outside'] = this._shape._positionJournal[frame].outsided;
+                    tmp['activity'] = positions[frame]['activity'];
 
                     for (var i = 0; i < pos.length ; i++) {
 
@@ -467,13 +474,21 @@ class TrackModel extends Listener {
 
                     var tracked_box = Object.assign({}, tmp, frame_attributes);
 
+
+
+
                     if (this._shapeType == 'skel') {
                         track["skels"].push(tracked_box);
+
+                        //TODO : make this placeholder a true activity value
+
                     } else {
                         track["boxes"].push(tracked_box);
                     }
                 };
             }
+
+
             return track;
 
         }
@@ -926,29 +941,28 @@ class Skeleton {
         };
     }
 
-    recordKeypointPosition(pos,ind,frame){
-        this._positionJournal
-    }
-
     export() {
         let serialized = {};
         for (let frame in this._positionJournal) {
             let pos = this._positionJournal[frame];
 
-            var tmp = [];
+            var tmp = {
+                'skels' : [],
+                'activity' : 'test_modif'
+            };
 
             // Include "center" keypoint, we will save it in database too
 
             //TODO: define VISIBILITY for keypoints
             // assuming all keypoints are visible for now
             for (var i = 0; i < pos.skel.length;i++){
-
-                tmp.push([pos.skel[i][0], // x
-                         pos.skel[i][1], // y
-                         2,              // visibility (placeholder for now)
-                        pos.skel[i][2]]);// name
-
+                tmp['skels'].push([pos.skel[i][0],   // x
+                                   pos.skel[i][1],   // y
+                                   2,                // visibility (placeholder for now)
+                                   pos.skel[i][2]]); //name
             }
+
+            //TODO: need to decide when to assign activity and activity taxonomy
 
             //TODO: decide on other information concerning global skeletons.
             // There needs to be an "outsided" value for when the skeleton

@@ -212,6 +212,11 @@ class LabeledSkeletonAttributeVal(AttributeVal):
     skeleton = models.ForeignKey(LabeledSkeleton, on_delete=models.CASCADE)
 
 class TrackedSkeleton(TrackedObject,Skeleton):
+
+    # TODO: Is this most appropriate place to define "activity" field?
+    # It is a property specific to a tracked skeleton
+    # but could also be defined as an attribute
+    activity = models.CharField(max_length=64)
     pass
 
 class TrackedSkeletonAttributeVal(AttributeVal):

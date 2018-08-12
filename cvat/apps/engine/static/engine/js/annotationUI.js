@@ -151,8 +151,8 @@ function buildAnnotationUI(job, trackData, loadJobEvent) {
     $('#helpButton').attr('title', `${shortkeys["open_help"].view_value}`);
     $('#settingsButton').attr('title', `${shortkeys["open_settings"].view_value}`);
 
-    $('#labelSelect').attr('title',
-        `${shortkeys["change_default_label"].view_value} - ${shortkeys["change_default_label"].description}`);
+    //$('#labelSelect').attr('title',
+    //    `${shortkeys["change_default_label"].view_value} - ${shortkeys["change_default_label"].description}`);
     $('#hideBoxesBox').attr('title', `${shortkeys["hide_shapes"].view_value}`);
     $('#hideLabelsBox').attr('title', `${shortkeys["hide_labels"].view_value}`);
     $('#hideFilteredBox').attr('title', `${shortkeys["hide_filtered_tracks"].view_value}`);
@@ -246,8 +246,8 @@ function setupMenu(job, collectionModel, collectionController, annotationParser)
     let helpWindow = $('#helpWindow');
     let closeHelpButton = $('#closeHelpButton');
     let closeSettingsButton = $('#closeSettignsButton');
-    let downloadAnnotationButton = $('#downloadAnnotation');
-    let uploadAnnotationButton = $('#uploadAnnotation');
+    //let downloadAnnotationButton = $('#downloadAnnotation');
+    //let uploadAnnotationButton = $('#uploadAnnotation');
     let annotationFileSelector = $('#annotationFileSelector');
     let removeAnnotationButton = $('#removeAnnotationButton');
     let saveButton = $('#saveButton');
@@ -276,7 +276,7 @@ function setupMenu(job, collectionModel, collectionController, annotationParser)
         fillStat(statistic, job); */
         annotationMenu.removeClass('hidden');
         clearTimeout(visibleTimer);
-        visibleTimer = setTimeout(hideMenu, 1000);
+        visibleTimer = setTimeout(hideMenu, 500);
     });
 
     annotationMenu.on('mouseout', function() {
@@ -300,8 +300,9 @@ function setupMenu(job, collectionModel, collectionController, annotationParser)
         settingsWindow.css('display', 'none');
     });
 
-    downloadAnnotationButton.on('click', () => dumpAnnotationRequest(downloadAnnotationButton, job.taskid, job.slug));
+    //downloadAnnotationButton.on('click', () => dumpAnnotationRequest(downloadAnnotationButton, job.taskid, job.slug));
 
+    /*
     uploadAnnotationButton.on('click', function() {
         hideMenu();
         let message = 'Current annotation will be removed from the client. Continue?';
@@ -310,8 +311,9 @@ function setupMenu(job, collectionModel, collectionController, annotationParser)
         };
 
         confirm(message, onagree, null);
-    });
+    }); */
 
+    /*
     annotationFileSelector.on('change', function(e) {
         let file = e.target.files['0'];
         e.target.value = "";
@@ -339,7 +341,7 @@ function setupMenu(job, collectionModel, collectionController, annotationParser)
             collectionModel.update();
         };
         fileReader.readAsText(file);
-    });
+    }); */
 
 
     saveButton.on('click', function() {
@@ -527,7 +529,7 @@ function fillStat(labelStatistic, job) {
     statStartFrame.text(job.start);
     statStopFrame.text(job.stop);
 
-    let table = $('<table id="statTable"></table').addClass('regular h3');
+    let table = $('<table id="statTable"></table>').addClass('regular h3');
     let header = `
     <tr>
       <td>Label</td><td>Tracks</td><td>Manually</td><td>Interpolated</td><td>Total</td>

@@ -51,20 +51,28 @@ class TrackView {
                                 "center"];
 
 
-        this._connectors = TrackView.makeConnections(this._shape,this._connections,this._keypoint_names,
-                                                    trackModel.id);
+        this._connectors = TrackView.makeConnections(this._shape,this._connections,
+                                                     this._keypoint_names, trackModel.id);
 
         // this returns an HTML text box object
         // TODO: return individual text box objects for individual keypoints
-        this._text = TrackView.makeText(interpolation, labelsInfo.labels()[trackModel.label], trackModel.id);
+        this._text = TrackView.makeText(interpolation, labelsInfo.labels()[trackModel.label],
+                                        trackModel.id);
 
 
-        this._ui = TrackView.makeUI(interpolation, labelsInfo, colors, trackModel);
+
+        this._keypoint_texts = TrackView.makeKeypointTexts(interpolation);
+
+
+        this._ui = TrackView.makeUI(interpolation, labelsInfo, colors, trackModel,
+                                    this._shape, this._connectors, this._keypoint_texts,
+                                    trackController, this._revscale);
         this._ui.appendTo(this._uicontent);
 
         // If box, _shape corresponds to a html element, if skel, corresponds to a list
 
         this._text.appendTo(this._framecontent);
+
 
         if (trackModel.shapeType == 'skel'){
             for (var i = 0; i < this._shape.length; i++){
@@ -79,6 +87,10 @@ class TrackView {
             this._shape.appendTo(this._framecontent);
         }
 
+        for(var i =0; i < this._keypoint_texts.length; i++){
+            $(this._keypoint_texts[i]).appendTo(this._framecontent);
+        }
+
         this._outsideShape = null;
 
 
@@ -88,12 +100,10 @@ class TrackView {
 
             keypoint.on('drag', function(event, scale) {
 
-
             //TODO: logger.
             /*let type = event.type === 'drag' ? Logger.EventType.dragObject;
             let modifyObjEvent = Logger.addContinuedEvent('drag');*/
             this._revscale = 1 / scale;
-
 
             this.updateViewGeometry();
             this._trackController.onchangekeypointgeometry(this._shape);
@@ -207,13 +217,20 @@ class TrackView {
             this.removeView();
             return;
         }
-
+        /*
         if (state.model.outside || state.model.hidden) {
 
-            //TODO: all keypoints + skeleton shape should be detached
-
-            this._shape.detach();
-        }
+            // Detach shape, connector, keypoint texts
+            for (var i = 0; i < this._shape.length; i++){
+                this._shape[i].detach();
+            }
+            for (var i = 0; i < this._connectors.length; i++){
+                this._connectors[i].detach();
+            }
+            for(var i =0; i < this._keypoint_texts.length; i++){
+                $(this._keypoint_texts[i]).detach();
+            }
+        }*/
 
         else {
 
@@ -221,20 +238,17 @@ class TrackView {
 
                 for (var i = 0; i < state.position.skel.length; i++){
 
-                    // I assigned the "updatePos" function to each
+                    // I assigned the updatePos function to each
                     // svgCircle element for skel _shapes, so just choose
-                    // the first one for instance
+                    // the first element's updatePos function, for instance
                     this._shape[0].updatePos(state.position.skel[i]);
                     this._framecontent.append(this._shape[i]);
-
                 }
             } else{
                 this._shape.updatePos(state.position);
                 this._framecontent.append(this._shape);
-
             }
         }
-
 
         //TODO: try to focus on basic functionality before UI
         //this.updateColors(state.model.colors, state.model.merge);
@@ -300,10 +314,7 @@ class TrackView {
         else {
             this._shape.removeClass('highlightedShape');
             this._ui.removeClass('highlightedUI');
-        }*/
-
-
-        /*
+        }
 
         if (state.model.activeAAMTrack) {
             if (state.active) {
@@ -348,7 +359,6 @@ class TrackView {
             this._shape.removeClass('occludedShape');
         }
         */
-
     }
 
     removeView() {
@@ -360,7 +370,9 @@ class TrackView {
             for (var i =0; i < this._connections_length; i++){
                this._connectors[i].remove();
             }
-
+            for (var i =0; i < this._keypoint_texts.length; i++) {
+                this._keypoint_texts[i].remove();
+            }
         }
         else{
             this._shape.remove();
@@ -389,13 +401,10 @@ class TrackView {
         var shape = null;
 
         for(var i = 0; i < this._shape.length; i++) {
-
             if (this._shape[i][0].attributes["name"].value == "center") {
                 shape = this._shape[i];
             }
-
         }
-
             let oldcx = +shape.attr('cx');
             let oldcy = +shape.attr('cy');
 
@@ -427,6 +436,36 @@ class TrackView {
             let parent = $(this.parentElement);
             this.setAttribute('x', parent.attr('x'));
         });
+
+            //keypoint text transformation
+
+        let xkeypointmargin = -1.5;
+        let ykeypointmargin = 2;
+
+
+        for(var i =0; i < this._keypoint_texts.length; i++){
+
+            let cxpos = +$(this._shape[i]).attr('cx') + xkeypointmargin;
+            let cypos = +$(this._shape[i]).attr('cy') + ykeypointmargin;
+
+            //TODO: assuming keypoint_texts ordered in same way as _shape
+            // possible source of error?
+
+            $(this._keypoint_texts[i]).attr({
+                x : cxpos / revscale,
+                y : cypos / revscale,
+                transform: `scale(${revscale})`})
+
+            if(['l','r'].includes($(this._shape[i]).attr('name')[0])){
+                $(this._keypoint_texts[i]).text($(this._shape[i]).attr('name')[0].toUpperCase());
+            }
+
+            $(this._keypoint_texts[i]).find('tspan').each(function() {
+                let parent = $(this.parentElement);
+                this.setAttribute('x', parent.attr('x'));
+            });
+
+        }
 
         //shape.css('stroke-width', 2 * revscale);
 
@@ -509,7 +548,6 @@ class TrackView {
             cx : cxpos / revscale,
             cy : cypos / revscale,
             transform: `scale(${revscale})`
-
         })
         //TODO: not sure what this does
         this._text.find('tspan').each(function() {
@@ -520,7 +558,6 @@ class TrackView {
         this._shape.css('stroke-width', 2 * revscale);
 
         */
-
     }
 
     updateAndViewText(state) {
@@ -557,7 +594,8 @@ class TrackView {
         this._revscale = value;
     }
 
-    static makeUI(interpolation, labelsInfo, colors, trackModel) {
+    static makeUI(interpolation, labelsInfo, colors, trackModel, shape,
+                  connectors,_keypoint_texts, trackController,revScale) {
 
         let attributes = interpolation.attributes;
         let labelId = trackModel.label;
@@ -569,7 +607,7 @@ class TrackView {
         let shortkeys = userConfig.shortkeys;
 
         let ui = $('<div></div>').css('background-color', colors.background).addClass('uiElement regular');
-        $(`<label> ${labelName} ${id} [${shapeType}, ${trackType}] </label>`).addClass('semiBold').appendTo(ui);
+        $(`<label> Worker ${id} </label>`).addClass('semiBold').appendTo(ui);
         let button = $('<a></a>').addClass('close').appendTo(ui);
         button.attr('title', `Delete Object (${shortkeys["delete_track"].view_value})`);
 
@@ -606,11 +644,22 @@ class TrackView {
             .addClass('graphicButton occludedButton').appendTo(propManagement);
         let outsidedButton = $(`<button title="Outsided Property"></button>`).addClass('graphicButton outsidedButton');
         let keyFrameButton = $(`<button title="KeyFrame Property"></button>`).addClass('graphicButton keyFrameButton');
+        let flipButton = $(`<button title="Flip L/R"></button>`).addClass('graphicButton flipButton');
+
+
 
         if (trackModel.trackType == 'interpolation') {
             outsidedButton.appendTo(propManagement);
             keyFrameButton.appendTo(propManagement);
+            flipButton.appendTo(propManagement);
         }
+
+        //Code for activity selector
+
+        /*
+        <select id="trackTypeSelect" class="regular h2">
+            <option value="interpolation" class="regular"> Interpolation </option>
+        </select>*/
 
 
         let labelsBlock = null;
@@ -720,12 +769,105 @@ class TrackView {
         });
 
         outsidedButton.on('click', function() {
-            trackModel.outside = !outsidedState;
+
+            //TODO: restore functionality of outsided Button
+            //trackModel.outside = !outsidedState;
         });
+
+        flipButton.on('click', function() {
+
+            // First, access all different body parts.
+
+            let keyp_names = trackModel._keypoint_names;
+
+            var bodyparts = [];
+
+            for(let keyp_name in keyp_names){
+                if(keyp_names[keyp_name].includes('left') || keyp_names[keyp_name].includes('right') && (!bodyparts.includes(keyp_names[keyp_name].split(" ")[1]))) {
+                    bodyparts.push(keyp_names[keyp_name].split(" ")[1]);
+                }
+            }
+
+            //Next, iterate over body parts and switch coordinates
+            //if are "left" or "right"
+
+            for (var c=0; c <connectors.length; c++){
+
+                if ($(connectors[c]).attr('id1').includes('left')) {
+                    $(connectors[c]).attr('id1', 'right ' + $(connectors[c]).attr('id1').split(" ")[1]);
+                } else if ($(connectors[c]).attr('id1').includes('right')) {
+                    $(connectors[c]).attr('id1', 'left ' + $(connectors[c]).attr('id1').split(" ")[1]);
+                };
+
+                if ($(connectors[c]).attr('id2').includes('left')) {
+                    $(connectors[c]).attr('id2', 'right ' + $(connectors[c]).attr('id2').split(" ")[1]);
+                } else if ($(connectors[c]).attr('id2').includes('right')) {
+                    $(connectors[c]).attr('id2', 'left ' + $(connectors[c]).attr('id2').split(" ")[1]);
+                };
+            };
+
+            for(var bodypart =0; bodypart < bodyparts.length; bodypart++) {
+                //Switch circle left/right coordinates
+
+                //Extremely inefficient, but given the nature of shape
+                // I am not sure how to proceed otherwise
+
+                var switches = {
+                    left : null,
+                    right : null
+                };
+
+                for(var c = 0; c < shape.length; c++){
+
+                    // If name is right something or left something
+                    if (bodyparts[bodypart] == $(shape[c]).attr('name').split(" ")[1]){
+                        if ($(shape[c]).attr('name').split(" ")[0] == 'left'){
+                            switches.left = c;
+                        }
+                        else {
+                            switches.right = c;
+                        }
+                    }
+                    else {
+                        //Don't switch anything around, this is either nose
+                        // or center keypoints.
+                    }
+                }
+
+                var tmp_coord = [$(shape[switches.left]).attr('cx'),
+                                 $(shape[switches.left]).attr('cy')];
+
+                $(shape[switches.left]).attr({
+                    'cx' : $(shape[switches.right]).attr('cx'),
+                    'cy' : $(shape[switches.right]).attr('cy')
+                });
+
+                $(shape[switches.right]).attr({
+                    'cx' : tmp_coord[0],
+                    'cy' : tmp_coord[1]
+                });
+
+            }
+
+            for(var kt = 0; kt< _keypoint_texts.length; kt++){
+
+                if($(_keypoint_texts[kt]).text() =='L'){
+                    $(_keypoint_texts[kt]).text('R');
+
+                } else if ($(_keypoint_texts[kt]).text() =='R'){
+                    $(_keypoint_texts[kt]).text('L');
+                }
+            }
+
+
+            trackController.onchangekeypointgeometry(shape);
+        });
+
+        /*
 
         keyFrameButton.on('click', function() {
             trackModel.keyFrame = !keyFrameState;
-        });
+        }); */
 
         if (Object.keys(labels).length > 1) {
             let div = $('<div> </div>').css('width', '100%');
@@ -751,7 +893,7 @@ class TrackView {
 
 
         if (Object.keys(attributes).length) {
-            attrBlocks.push($('<label> Attributes <br>  </label>').addClass('semiBold'));
+            attrBlocks.push($('<label> <br>  </label>').addClass('semiBold'));
         }
 
         for (let attrKey in attributes) {
@@ -948,18 +1090,14 @@ class TrackView {
         let pos = interpolation.position;
         let attributes = interpolation.attributes;
 
-
         var shapeX;
         var shapeY;
         var shapeW;
 
-
         if (!(interpolation.position.hasOwnProperty('skel'))){
-
             shapeX = pos.xtl;
             shapeY = pos.ytl;
             shapeW = pos.xbr - pos.xtl;
-
         }
         else {
             var shapesX = [];
@@ -974,29 +1112,22 @@ class TrackView {
             shapeW = Math.max(...shapesX) - Math.min(...shapesX);
         }
 
-
-
         let svgText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-
 
         svgText.setAttribute('x', shapeX + shapeW);
         svgText.setAttribute('y', shapeY);
-
 
         svgText.setAttribute('class', 'shapeText regular');
 
         let labelNameText = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
 
         // Defines text
-
         labelNameText.innerHTML = `Worker ${id}`;
         //
-
         labelNameText.setAttribute('dy', '1em');
         labelNameText.setAttribute('x', shapeX + shapeW + 5);
         labelNameText.setAttribute('class', 'bold');
         svgText.appendChild(labelNameText);
-
         for (let attrKey in attributes) {
             let attribute = attributes[attrKey];
             let attrRow = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
@@ -1011,11 +1142,50 @@ class TrackView {
             attrRow.setAttribute('x', shapeX + shapeW + 5);
             svgText.appendChild(attrRow);
         }
-
         return $(svgText);
     }
 
+    static makeKeypointTexts(interpolation) {
 
+        var svgTextList = [];
+
+        if (!(interpolation.position.hasOwnProperty('skel'))) {
+            //should throw an error
+        }
+        else {
+
+            for (var i = 0; i < interpolation.position.skel.length; i++) {
+
+                let svgText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+
+                svgText.setAttribute('x', interpolation.position.skel[i][0]);
+                svgText.setAttribute('y', interpolation.position.skel[i][1]);
+
+                svgText.setAttribute('class', 'regular');
+                svgText.setAttribute('font-size', '1.6em');
+                svgText.setAttribute('fill', 'white');
+                svgText.setAttribute('text-shadow', '0px 0px 3px black');
+                svgText.setAttribute('cursor', 'default');
+
+                let labelNameText = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+
+                if (interpolation.position.skel[i][2].includes('right')){
+                    labelNameText.innerHTML = "R";
+                } else if (interpolation.position.skel[i][2].includes('left')){
+                    labelNameText.innerHTML = "L";
+                }
+
+                labelNameText.setAttribute('dy', '1em');
+                labelNameText.setAttribute('x', interpolation.position.skel[i][0]);
+                labelNameText.setAttribute('name',interpolation.position.skel[i][2]);
+                labelNameText.setAttribute('class', 'bold');
+                svgText.appendChild(labelNameText);
+                svgTextList.push(svgText);
+            }
+
+            return svgTextList;
+        }
+    }
 
     static makeAttr(type, name, value, values, key, id) {
         if (type === 'checkbox') {
@@ -1114,7 +1284,9 @@ class TrackView {
     static makeSelectAttr(name, value, values, key, id) {
         let div = document.createElement('div');
         let label = document.createElement('label');
-        label.innerText = `${name.normalize()}`;
+
+        //TODO: find where this is declared
+        label.innerText = 'Type';//`${name.normalize()}`;
 
         let select = document.createElement('select');
         select.classList = 'regular';

@@ -162,7 +162,10 @@ class CollectionModel extends Listener {
                     keypoints.push([keyp.x,keyp.y,keyp.name,keyp.visibility])
 
                 }
-                skeletons.push([keypoints,skel.frame,skel.outside,0]);
+
+                //TODO: activity successfully loaded and retrieved from the back-end
+
+                skeletons.push([keypoints,skel.frame,skel.outside,0, skel.activity]);
                 for (let attr of skel.attributes) {
                     attributes.push([attr.id, skel.frame, attr.value]);
                 }
@@ -209,7 +212,6 @@ class CollectionModel extends Listener {
 
     exportTracks() {
 
-
         let response = {"boxes": [], "tracks": []};
         for (let i = 0; i < this._allTracks.length; i ++ ) {
             let track = this._allTracks[i];
@@ -220,7 +222,6 @@ class CollectionModel extends Listener {
             } else {
                 response["tracks"].push(track.export());
             }
-
         }
         return JSON.stringify(response);
     }
