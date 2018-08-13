@@ -35,7 +35,8 @@ class TrackController {
 
            skel[i] =  [shape[i][0].cx.animVal.value,
                        shape[i][0].cy.animVal.value,
-                       shape[i][0].attributes.name.value];
+                       shape[i][0].attributes.name.value,
+                       shape[i][0].attributes.visibility.value];
         }
 
         var outsided;

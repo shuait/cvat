@@ -241,7 +241,7 @@ class TrackView {
                     // I assigned the updatePos function to each
                     // svgCircle element for skel _shapes, so just choose
                     // the first element's updatePos function, for instance
-                    this._shape[0].updatePos(state.position.skel[i]);
+                    this._shape[i].updatePos(state.position.skel[i]);
                     this._framecontent.append(this._shape[i]);
                 }
             } else{
@@ -611,19 +611,32 @@ class TrackView {
         let button = $('<a></a>').addClass('close').appendTo(ui);
         button.attr('title', `Delete Object (${shortkeys["delete_track"].view_value})`);
 
-
         // TODO: implement remove functionality.
 
-            button.on('click', function(event) {
-                                trackModel.remove(event.shiftKey);
-                                });
-
+        button.on('click', function(event) {trackModel.remove(event.shiftKey);});
         /*if (!(interpolation.position.hasOwnProperty('skel'))){
             button.on('click', function(event) {
                                 trackModel.remove(event.shiftKey);
                                 });
-
         }*/
+        let keypoints = ["nose",
+                    "left eye",
+                    "right eye",
+                    "left ear",
+                    "right ear",
+                    "left shoulder",
+                    "right shoulder",
+                    "left elbow",
+                    "right elbow",
+                    "left wrist",
+                    "right wrist",
+                    "left hip",
+                    "right hip",
+                    "left knee",
+                    "right knee",
+                    "left ankle",
+                    "right ankle",
+                    "center"];
 
 
         let occludedState = trackModel.occluded;
@@ -660,7 +673,6 @@ class TrackView {
         <select id="trackTypeSelect" class="regular h2">
             <option value="interpolation" class="regular"> Interpolation </option>
         </select>*/
-
 
         let labelsBlock = null;
         let attrBlocks = [];
@@ -841,12 +853,10 @@ class TrackView {
                     'cx' : $(shape[switches.right]).attr('cx'),
                     'cy' : $(shape[switches.right]).attr('cy')
                 });
-
                 $(shape[switches.right]).attr({
                     'cx' : tmp_coord[0],
                     'cy' : tmp_coord[1]
                 });
-
             }
 
             for(var kt = 0; kt< _keypoint_texts.length; kt++){
@@ -859,15 +869,21 @@ class TrackView {
                 }
             }
 
-
             trackController.onchangekeypointgeometry(shape);
         });
 
         /*
-
         keyFrameButton.on('click', function() {
             trackModel.keyFrame = !keyFrameState;
         }); */
+
+        let keypointsListButton = $(`<button title="Show/hide keypoints"></button>`)
+            .addClass('graphicButton dropdownList dropButton').appendTo(propManagement);
+
+        keypointsListButton.on('click', function() {
+            skelKeypoints[0].classList.toggle('open');
+
+        });
 
         if (Object.keys(labels).length > 1) {
             let div = $('<div> </div>').css('width', '100%');
@@ -893,7 +909,7 @@ class TrackView {
 
 
         if (Object.keys(attributes).length) {
-            attrBlocks.push($('<label> <br>  </label>').addClass('semiBold'));
+            //attrBlocks.push($('<label> <br>  </label>').addClass('semiBold'));
         }
 
         for (let attrKey in attributes) {
@@ -908,11 +924,8 @@ class TrackView {
             attrView['0'].onchangeattribute = function(key, value) {
                 trackModel.recordAttribute(key, value);
             };
-            attrBlocks.push(attrView);
-        }
 
-        if (trackModel.trackType == 'interpolation') {
-            buttonBlock = $('<div></div>').addClass('center');
+            buttonBlock = null;//$('<div></div>').addClass('center');
             let prevKeyFrame = $('<button> \u2190 </button>');
             let nextKeyFrame = $('<button> \u2192 </button>');
             let initFrame = $('<button> \u21ba </button>');
@@ -923,10 +936,10 @@ class TrackView {
                 `Next Key Frame (${shortkeys["next_key_frame"].view_value})`);
             initFrame.attr('title', "First Visible Frame");
 
-            buttonBlock.append(prevKeyFrame);
-            buttonBlock.append(initFrame);
-            buttonBlock.append(nextKeyFrame);
-            ui.append(buttonBlock);
+            //TODO: assumption there will only be one Attribute (worker role/posture)
+            attrView.append(prevKeyFrame);
+            attrView.append(initFrame);
+            attrView.append(nextKeyFrame);
 
             prevKeyFrame.on('click', function() {
                 let frame = trackModel.prevKeyFrame;
@@ -944,6 +957,32 @@ class TrackView {
                     ui.onshift(frame);
                 }
             });
+
+
+
+            attrBlocks.push(attrView);
+        }
+
+        if (trackModel.trackType == 'interpolation') {
+            /*
+            buttonBlock = $('<div></div>').addClass('center');
+            let prevKeyFrame = $('<button> \u2190 </button>');
+            let nextKeyFrame = $('<button> \u2192 </button>');
+            let initFrame = $('<button> \u21ba </button>');
+
+            prevKeyFrame.attr('title',
+                `Previous Key Frame (${shortkeys["prev_key_frame"].view_value})`);
+            nextKeyFrame.attr('title',
+                `Next Key Frame (${shortkeys["next_key_frame"].view_value})`);
+            initFrame.attr('title', "First Visible Frame");
+
+            //TODO: assumption there will only be one Attribute (worker role/posture)
+            buttonBlock.append(prevKeyFrame);
+            buttonBlock.append(initFrame);
+            buttonBlock.append(nextKeyFrame); */
+            ui.append(buttonBlock);
+
+
         }
 
         if (!hidden) {
@@ -956,6 +995,50 @@ class TrackView {
         if (buttonBlock != null) {
             ui.append(buttonBlock);
         }
+
+        let skelKeypoints = $('<div id="skelKeypoints" class ="slider"></div>').appendTo(ui).css({
+            'margin': '5px 10px',
+            'overflow': 'hidden'
+        });
+
+        let occludedStates = [];
+        let occludedButtons = [];
+        let occludedShortkeys = [];
+
+        // Need to enforce interpolation.position.skel has the same order as keypoints.
+        // When info saved to database, skel keypoint order isn't necessarily preserved.
+        function comparator(a, b) {
+            if (keypoints.indexOf(a[2]) < keypoints.indexOf(b[2])) return -1;
+            if (keypoints.indexOf(b[2]) < keypoints.indexOf(a[2])) return 1;
+            return 0;
+        }
+
+        interpolation.position.skel = interpolation.position.skel.sort(comparator);
+
+        //don't include center
+        for (let i_keypoint = 0; i_keypoint < keypoints.length -1; i_keypoint++) {
+
+            occludedStates[i_keypoint] = interpolation.position.skel[i_keypoint][3]; // (should be "2" if// new)
+            occludedShortkeys[i_keypoint] = `(${shortkeys["switch_occluded_property"].view_value})`;
+
+            $(`<label> <br> ${keypoints[i_keypoint]} </label>`).addClass('semiBold').appendTo(skelKeypoints); //(this._skelKeypoints);
+
+            occludedButtons[i_keypoint] = $(`<button title="Occluded Property"></button>`)
+                .addClass('graphicButton occludedButton'); //.appendTo(this._skelKeypoints);
+
+            occludedButtons[i_keypoint].on('click', function(){
+                occludedStates[i_keypoint] = (occludedStates[i_keypoint] == "2") ?  "1" : "2";
+                shape[i_keypoint].updateVisibility(occludedStates[i_keypoint]);
+                trackController.onchangekeypointgeometry(shape);
+            })
+
+            if (trackModel.trackType == 'interpolation') {
+                //outsidedButtons[i_keypoint].appendTo(skelKeypoints); //.appendTo(this._skelKeypoints);
+                occludedButtons[i_keypoint].appendTo(skelKeypoints);
+            }
+        }
+
+        ui.append(skelKeypoints);
 
         return ui;
     }
@@ -1002,20 +1085,17 @@ class TrackView {
                     }).addClass('shape changeable');
 
             svgLine.updatePos = function(pos){
-                svgLine.attr({
-                    'x1' : pos.x1,
-                    'y1' : pos.y1,
-                    'x2' : pos.x2,
-                    'y2' : pos.y2
-                })
+                    svgLine.attr({
+                        'x1' : pos.x1,
+                        'y1' : pos.y1,
+                        'x2' : pos.x2,
+                        'y2' : pos.y2
+                    })
+                };
 
-                }
             svgLines.push(svgLine);
-
             }
-
         }
-
 
         return svgLines;
     }
@@ -1050,13 +1130,11 @@ class TrackView {
 
         for (var i = 0; i < pos.skel.length; i++){
 
-
             svgCircle = $(document.createElementNS('http://www.w3.org/2000/svg', 'circle')).attr({
                 cx: pos.skel[i][0],
                 cy: pos.skel[i][1],
                 track_id : id,              // for identifying other keypoints belonging to same
-                name: pos.skel[i][2],       // skeleton
-                fill: colors.background
+                name: pos.skel[i][2]       // skeleton
             }).addClass('shape changeable');
 
             if (pos.skel[i][2] == "center") {
@@ -1073,11 +1151,32 @@ class TrackView {
             // TODO: modify display if keypoint visibility is not 2
 
             svgCircle.updatePos = function(skel) {
-                svgCircle.attr({
+                $(this).attr({
                     cx: skel[0],
                     cy: skel[1],
                 });
             };
+
+            svgCircle.updateVisibility = function(visibility){
+
+                 //If outside, doesn't matter
+                // If occluded (visibility = 1), transparent
+                // If visible, opaque
+
+                if(visibility == "1"){
+                    $(this).attr({
+                        'stroke-dashoffset' : "1",
+                        'stroke-dasharray' : "2, 1"
+                    })
+                }
+                else {
+                    $(this).removeAttr('stroke-dashoffset');
+                    $(this).removeAttr('stroke-dasharray');
+                }
+                $(this).attr('visibility', visibility);
+
+            }
+            svgCircle.updateVisibility(pos.skel[i][3]);
             svgCircles.push(svgCircle)
         }
 
@@ -1176,6 +1275,7 @@ class TrackView {
                 }
 
                 labelNameText.setAttribute('dy', '1em');
+                labelNameText.setAttribute('x', interpolation.position.skel[i][0]);
                 labelNameText.setAttribute('x', interpolation.position.skel[i][0]);
                 labelNameText.setAttribute('name',interpolation.position.skel[i][2]);
                 labelNameText.setAttribute('class', 'bold');
@@ -1286,13 +1386,18 @@ class TrackView {
         let label = document.createElement('label');
 
         //TODO: find where this is declared
-        label.innerText = 'Type';//`${name.normalize()}`;
+        //TODO: customized this for our purposes
+        //label.innerText = 'Type';//`${name.normalize()}`;
 
         let select = document.createElement('select');
         select.classList = 'regular';
         select.setAttribute('name', `${key}`);
         select.setAttribute('id', `${id}_${name}_select`);
-        select.style['margin-left'] = '5px';
+        //select.style['margin-left'] = '5px';
+
+        //TODO: added margin right
+        select.style['margin-right'] = '10px';
+
         select.className += " uiSelect";
 
 
@@ -1315,7 +1420,7 @@ class TrackView {
             e.preventDefault();
         };
 
-        div.appendChild(label);
+        //div.appendChild(label);
         div.appendChild(select);
         return $(div);
     }

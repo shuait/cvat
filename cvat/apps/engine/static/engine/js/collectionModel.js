@@ -147,6 +147,32 @@ class CollectionModel extends Listener {
             });
         }*/
 
+        let keypoint_names = ["nose",
+                                "left eye",
+                                "right eye",
+                                "left ear",
+                                "right ear",
+                                "left shoulder",
+                                "right shoulder",
+                                "left elbow",
+                                "right elbow",
+                                "left wrist",
+                                "right wrist",
+                                "left hip",
+                                "right hip",
+                                "left knee",
+                                "right knee",
+                                "left ankle",
+                                "right ankle",
+                                "center"];
+
+        function comparator(a, b) {
+            if (keypoint_names.indexOf(a.name) < keypoint_names.indexOf(b.name)) return -1;
+            if (keypoint_names.indexOf(b.name) < keypoint_names.indexOf(a.name)) return 1;
+            return 0;
+        }
+
+
         for (let track of data.tracks) {
             let attributes = [];
             for (let attr of track.attributes) {
@@ -158,6 +184,9 @@ class CollectionModel extends Listener {
                 var keypoints = [];
                 //TODO: skeleton requires "occluded" property at the moment
                 // need to change that
+
+                skel.keypoints.sort(comparator);
+
                 for (let keyp of skel.keypoints){
                     keypoints.push([keyp.x,keyp.y,keyp.name,keyp.visibility])
 

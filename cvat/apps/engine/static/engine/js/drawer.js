@@ -100,9 +100,12 @@ class DrawerModel extends Listener  {
             var keyp;
 
             for(keyp = 0;keyp < skel.length; keyp++){
-               skelPos[keyp] =  [skel[keyp][0].cx.animVal.value,
-                                 skel[keyp][0].cy.animVal.value,
-                                 skel[keyp][0].attributes.name.value];
+               skelPos[keyp] =  [skel[keyp][0].cx.animVal.value,              // x
+                                 skel[keyp][0].cy.animVal.value,              // y
+                                 skel[keyp][0].attributes.name.value,         // name
+                                 skel[keyp][0].attributes.visibility.value]; // visibility
+                                                        //TODO: (default visible,
+                                                        // can change this)
             }
             this._collection.createFromSkel(skelPos, this._label, this._trackType);
             //Logger.addEvent(Logger.EventType.addObject, {count: 1});
@@ -444,7 +447,8 @@ class DrawerView {
                     this._drawShape[keyp].attr({
                         cx: pos.x + this._layout[keyp][0]*10,
                         cy: pos.y + this._layout[keyp][1]*10,
-                        name :this._keypoint_names[keyp]
+                        name :this._keypoint_names[keyp],
+                        visibility : 2
                     }).css('display', '');
 
 

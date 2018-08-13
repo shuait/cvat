@@ -1,7 +1,7 @@
 /* exported TrackModel MIN_BOX_SIZE */
 "use strict";
 
-/*worker @select=type:__undefined__,car,truck,bus,train */
+/*worker ~select=type:__undefined__,bend, sit,d */
 
 const MIN_BOX_SIZE = 3;
 
@@ -47,7 +47,6 @@ class TrackModel extends Listener {
         this._curFrame = null;
         this._colors = colors;
 
-
         this._keypoint_names = ["nose",
                                 "left eye",
                                 "right eye",
@@ -66,8 +65,6 @@ class TrackModel extends Listener {
                                 "left ankle",
                                 "right ankle",
                                 "center"];
-
-
         let self = this;
         function getState() {
             let state = {
@@ -901,7 +898,7 @@ class Skeleton {
             // Keypoints content will be passed on to another variable
             // Should also contain information concerning "outsided" variable
             this._positionJournal[frameNumber] = {
-                skel: data[i][0],
+                skel: data[i][0], //contains x,y,name,visibility now
                 outsided: data[i][2],
                 occluded: data[i][3]
             };
@@ -931,13 +928,10 @@ class Skeleton {
 
 
     recordPosition(pos, frame) {
-
         this._positionJournal[frame]= {
-
             skel: pos.skel,
             outsided: pos.outsided,
             occluded: pos.occluded
-
         };
     }
 
@@ -953,12 +947,13 @@ class Skeleton {
 
             // Include "center" keypoint, we will save it in database too
 
-            //TODO: define VISIBILITY for keypoints
-            // assuming all keypoints are visible for now
+            //TODO: un-mix up order of pos contents
+
+
             for (var i = 0; i < pos.skel.length;i++){
                 tmp['skels'].push([pos.skel[i][0],   // x
                                    pos.skel[i][1],   // y
-                                   2,                // visibility (placeholder for now)
+                                   +pos.skel[i][3],   // visibility
                                    pos.skel[i][2]]); //name
             }
 
