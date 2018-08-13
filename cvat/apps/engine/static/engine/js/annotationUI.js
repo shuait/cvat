@@ -31,6 +31,7 @@ function initLogger(jobID) {
 }
 
 function buildAnnotationUI(job, trackData, loadJobEvent) {
+
     let labelsInfo = new LabelsInfo(job);
     let annotationParser = new AnnotationParser(labelsInfo, job);
 
@@ -53,6 +54,7 @@ function buildAnnotationUI(job, trackData, loadJobEvent) {
         top: $('#playerFrame').offset().top
     };
     let playerModel = new PlayerModel(job, playerGeometry);
+
     let playerController = new PlayerController(playerModel, () => collectionModel.activeTrack,
         (direction) => collectionModel.findFilterFrame(direction),
         playerGeometry, job);
@@ -62,9 +64,9 @@ function buildAnnotationUI(job, trackData, loadJobEvent) {
     let collectionController = new CollectionController(collectionModel);
     let collectionView = new CollectionView(collectionController, collectionModel, playerModel, labelsInfo);
 
-    let mergerModel = new MergerModel(collectionModel);
-    let mergerController = new MergerController(mergerModel);
-    let mergerView = new MergerView(mergerModel, mergerController);
+    //let mergerModel = new MergerModel(collectionModel);
+    //let mergerController = new MergerController(mergerModel);
+    //let mergerView = new MergerView(mergerModel, mergerController);
 
     let drawerModel = new DrawerModel(collectionModel);
     let drawerController = new DrawerController(drawerModel);
@@ -82,14 +84,17 @@ function buildAnnotationUI(job, trackData, loadJobEvent) {
     let aamController = new AAMController(aamModel);
     new AAMView(aamModel, aamController);
 
-    mergerModel.subscribe(drawerModel);
-    mergerModel.subscribe(shapeBufferModel);
+    //TODO: Deal with merger functionality with a bit more grace
+    // but for now disregard it
+
+    //mergerModel.subscribe(drawerModel);
+    //mergerModel.subscribe(shapeBufferModel);
 
     drawerModel.subscribe(drawerView);
-    drawerModel.subscribe(mergerView);
+    //drawerModel.subscribe(mergerView);
     drawerModel.subscribe(collectionController);
     drawerModel.subscribe(collectionView);
-    drawerModel.subscribe(mergerModel);
+    //drawerModel.subscribe(mergerModel);
     drawerModel.subscribe(shapeBufferModel);
 
     playerModel.subscribe(drawerView);
@@ -98,11 +103,11 @@ function buildAnnotationUI(job, trackData, loadJobEvent) {
     playerModel.shift(0);
 
     shapeBufferModel.subscribe(drawerModel);
-    shapeBufferModel.subscribe(mergerModel);
+    //shapeBufferModel.subscribe(mergerModel);
     shapeBufferModel.subscribe(shapeBufferView);
     shapeBufferModel.subscribe(collectionController);
 
-    aamModel.subscribe(mergerModel);
+    //aamModel.subscribe(mergerModel);
     aamModel.subscribe(drawerModel);
     aamModel.subscribe(shapeBufferModel);
     aamModel.subscribe(collectionController);
@@ -125,13 +130,14 @@ function buildAnnotationUI(job, trackData, loadJobEvent) {
         return;
     };
 
+    /*
     let statistics = collectionModel.collectStatistic();
     loadJobEvent.addValues({
         'track count': statistics.totalObjectCount.tracks,
         'frame count': job.stop - job.start + 1,
         'object count': statistics.totalObjectCount.manuallyShapes + statistics.totalObjectCount.interpolatedShapes,
     });
-    loadJobEvent.close();
+    loadJobEvent.close(); */
 
     setupAPI(collectionModel , job);
 
@@ -145,8 +151,8 @@ function buildAnnotationUI(job, trackData, loadJobEvent) {
     $('#helpButton').attr('title', `${shortkeys["open_help"].view_value}`);
     $('#settingsButton').attr('title', `${shortkeys["open_settings"].view_value}`);
 
-    $('#labelSelect').attr('title',
-        `${shortkeys["change_default_label"].view_value} - ${shortkeys["change_default_label"].description}`);
+    //$('#labelSelect').attr('title',
+    //    `${shortkeys["change_default_label"].view_value} - ${shortkeys["change_default_label"].description}`);
     $('#hideBoxesBox').attr('title', `${shortkeys["hide_shapes"].view_value}`);
     $('#hideLabelsBox').attr('title', `${shortkeys["hide_labels"].view_value}`);
     $('#hideFilteredBox').attr('title', `${shortkeys["hide_filtered_tracks"].view_value}`);
@@ -240,8 +246,8 @@ function setupMenu(job, collectionModel, collectionController, annotationParser)
     let helpWindow = $('#helpWindow');
     let closeHelpButton = $('#closeHelpButton');
     let closeSettingsButton = $('#closeSettignsButton');
-    let downloadAnnotationButton = $('#downloadAnnotation');
-    let uploadAnnotationButton = $('#uploadAnnotation');
+    //let downloadAnnotationButton = $('#downloadAnnotation');
+    //let uploadAnnotationButton = $('#uploadAnnotation');
     let annotationFileSelector = $('#annotationFileSelector');
     let removeAnnotationButton = $('#removeAnnotationButton');
     let saveButton = $('#saveButton');
@@ -256,18 +262,21 @@ function setupMenu(job, collectionModel, collectionController, annotationParser)
 
     let visibleTimer;
 
+    /*
     let statistic = collectionModel.collectStatistic();
-    fillStat(statistic, job);
+    fillStat(statistic, job); */
+
     let top = menuButton.offset().top - annotationMenu.height() - menuButton.height();
     annotationMenu.css('top', top + 'px');
 
 
     menuButton.on('click', function() {
+        /*
         let statistic = collectionModel.collectStatistic();
-        fillStat(statistic, job);
+        fillStat(statistic, job); */
         annotationMenu.removeClass('hidden');
         clearTimeout(visibleTimer);
-        visibleTimer = setTimeout(hideMenu, 1000);
+        visibleTimer = setTimeout(hideMenu, 500);
     });
 
     annotationMenu.on('mouseout', function() {
@@ -291,8 +300,9 @@ function setupMenu(job, collectionModel, collectionController, annotationParser)
         settingsWindow.css('display', 'none');
     });
 
-    downloadAnnotationButton.on('click', () => dumpAnnotationRequest(downloadAnnotationButton, job.taskid, job.slug));
+    //downloadAnnotationButton.on('click', () => dumpAnnotationRequest(downloadAnnotationButton, job.taskid, job.slug));
 
+    /*
     uploadAnnotationButton.on('click', function() {
         hideMenu();
         let message = 'Current annotation will be removed from the client. Continue?';
@@ -301,8 +311,9 @@ function setupMenu(job, collectionModel, collectionController, annotationParser)
         };
 
         confirm(message, onagree, null);
-    });
+    }); */
 
+    /*
     annotationFileSelector.on('change', function(e) {
         let file = e.target.files['0'];
         e.target.value = "";
@@ -330,7 +341,7 @@ function setupMenu(job, collectionModel, collectionController, annotationParser)
             collectionModel.update();
         };
         fileReader.readAsText(file);
-    });
+    }); */
 
 
     saveButton.on('click', function() {
@@ -346,12 +357,14 @@ function setupMenu(job, collectionModel, collectionController, annotationParser)
         saveButton.prop('disabled', true);
         saveButton.text('Saving..');
         const exportData = collectionModel.exportTracks();
+
         const annotationLogs = Logger.getLogs();
 
         const data = {
             'annotation': exportData,
             'logs': JSON.stringify(annotationLogs.export()),
         };
+
 
         let onsuccess = function() {
             collectionController.updateHash();
@@ -376,6 +389,8 @@ function setupMenu(job, collectionModel, collectionController, annotationParser)
             showMessage(message);
             throw new Error(message);
         };
+
+
 
         saveJobOnServer(job.jobid, data, onsuccess, onerror);
     });
@@ -522,7 +537,7 @@ function fillStat(labelStatistic, job) {
     statStartFrame.text(job.start);
     statStopFrame.text(job.stop);
 
-    let table = $('<table id="statTable"></table').addClass('regular h3');
+    let table = $('<table id="statTable"></table>').addClass('regular h3');
     let header = `
     <tr>
       <td>Label</td><td>Tracks</td><td>Manually</td><td>Interpolated</td><td>Total</td>

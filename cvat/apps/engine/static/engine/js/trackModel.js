@@ -1,26 +1,42 @@
 /* exported TrackModel MIN_BOX_SIZE */
 "use strict";
 
+/*worker ~select=type:__undefined__,bend, sit,d */
+
 const MIN_BOX_SIZE = 3;
 
 class TrackModel extends Listener {
     constructor(shapeType, data, id, labelsInfo, stopFrame, startFrame, colors) {
         super('onTrackUpdate', getState);
         this._id = id;
-        this._shape = TrackModel.createShape(shapeType, data.boxes);
+        //this._shape = TrackModel.createShape(shapeType, data.boxes);
+        this._shapeType = shapeType;
+
+        if (this._shapeType == 'skel'){
+            this._shape = TrackModel.createShape(shapeType, data.skels);
+        }
+        else{
+            this._shape = TrackModel.createShape(shapeType, data.boxes);
+        }
+
         this._firstFrame = TrackModel.computeFirstFrame(this._shape._positionJournal);
-        this._type = TrackModel.computeFrameCount(stopFrame, this._shape._positionJournal) <= 1 ? 'annotation' : 'interpolation';
+
+
+        this._type = 'interpolation';
+        //TODO: hopefully this doesn't cause any issues
+        //this._type = TrackModel.computeFrameCount(stopFrame, this._shape._positionJournal) <= 1 ? 'annotation' : 'interpolation';
         this._label = +data.label;
         this._lock = false;
         this._removed = false;
         this._active = false;
+        this._activeKeypoint = null;
         this._merge = false;
         this._hidden = false;
         this._hiddenLabel = true;
         this._selected = false;
         this._activeAAMTrack = false;
         this._activeAttribute = null;
-        this._shapeType = shapeType;
+
         this._stopFrame = stopFrame;
         this._startFrame = startFrame;
         this._labelsInfo = labelsInfo;
@@ -31,6 +47,24 @@ class TrackModel extends Listener {
         this._curFrame = null;
         this._colors = colors;
 
+        this._keypoint_names = ["nose",
+                                "left eye",
+                                "right eye",
+                                "left ear",
+                                "right ear",
+                                "left shoulder",
+                                "right shoulder",
+                                "left elbow",
+                                "right elbow",
+                                "left wrist",
+                                "right wrist",
+                                "left hip",
+                                "right hip",
+                                "left knee",
+                                "right knee",
+                                "left ankle",
+                                "right ankle",
+                                "center"];
         let self = this;
         function getState() {
             let state = {
@@ -138,6 +172,16 @@ class TrackModel extends Listener {
         }
         this._active = value;
         this.notify();
+    }
+
+    set activeKeypoint(value){
+        /*
+        if (value != true && value != false) {
+            throw new Error('Bad active value');
+        }*/
+        this._activeKeypoint = value;
+        this.notify();
+
     }
 
     set activeAAMTrack(value) {
@@ -292,6 +336,8 @@ class TrackModel extends Listener {
             mutable: this.fillMutableAttributes( []),
             immutable: this.fillImmutableAttributes([])
         };
+
+        //TODO: need to put
     }
 
     getStatToObject(statObj) {
@@ -313,9 +359,10 @@ class TrackModel extends Listener {
     }
 
     export() {
+
         let positions = this._shape.export();
         let immutable = this._attributes.immutable;
-        let mutable =  this._attributes.mutable;
+        let mutable = this._attributes.mutable;
 
         if (this.trackType == "annotation") {
             let attributes = [];
@@ -337,7 +384,8 @@ class TrackModel extends Listener {
 
             let frame = this._firstFrame;
             let pos = positions[frame];
-            let labeled_box = {
+
+            var labeled_box = {
                 "label_id": this.label,
                 "frame": frame,
                 "xtl": pos[0],
@@ -350,6 +398,8 @@ class TrackModel extends Listener {
 
             return labeled_box;
         } else {
+
+
             let attributes = [];
             for (let key in immutable) {
                 attributes.push({
@@ -358,12 +408,21 @@ class TrackModel extends Listener {
                 });
             }
 
-            let track = {
+            var track = {
                 "label_id": this.label,
                 "frame": this._firstFrame,
                 "attributes": attributes,
                 "boxes": [],
             };
+
+            if (this._shapeType == 'skel') {
+
+                track["skels"] = [];
+            }
+            else {
+
+                track["boxes"] = [];
+            }
 
             for (let frame in positions) {
                 let attributes = [];
@@ -376,24 +435,61 @@ class TrackModel extends Listener {
                     }
                 }
 
-                let pos = positions[frame];
-                let tracked_box = {
-                    "frame": +frame,
-                    "xtl": pos[0],
-                    "ytl": pos[1],
-                    "xbr": pos[2],
-                    "ybr": pos[3],
-                    "occluded": pos[4],
-                    "outside": pos[5],
-                    "attributes": attributes,
-                };
+                let pos = positions[frame]['skels'];
 
-                track["boxes"].push(tracked_box);
+                var frame_attributes = {
+                    "frame": +frame,
+                    "attributes": attributes,
+                }
+
+                var tmp = {};
+
+                if (this._shapeType == 'skel') {
+
+                    tmp['outside'] = this._shape._positionJournal[frame].outsided;
+                    tmp['activity'] = positions[frame]['activity'];
+
+                    for (var i = 0; i < pos.length ; i++) {
+
+                        //x, y, visibility
+                        tmp[pos[i][3]] = [pos[i][0],
+                                          pos[i][1],
+                                          pos[i][2]];
+                    };
+                }
+                else
+                    {
+                        tmp = {
+                            "xtl": pos[0],
+                            "ytl": pos[1],
+                            "xbr": pos[2],
+                            "ybr": pos[3],
+                            "occluded": pos[4],
+                            "outside": pos[5]
+                        };
+                    };
+
+                    var tracked_box = Object.assign({}, tmp, frame_attributes);
+
+
+
+
+                    if (this._shapeType == 'skel') {
+                        track["skels"].push(tracked_box);
+
+                        //TODO : make this placeholder a true activity value
+
+                    } else {
+                        track["boxes"].push(tracked_box);
+                    }
+                };
             }
 
+
             return track;
+
         }
-    }
+
 
     remove(force) {
         if ((!force && this._lock) || this._activeAAMTrack) return;
@@ -419,6 +515,10 @@ class TrackModel extends Listener {
         this._shape.recordPosition(pos, this._curFrame);
     }
 
+    recordKeypointPosition(pos,ind){
+        this._shape.recordKeypointPosition(pos,ind,this._curFrame);
+    }
+
 
     isKeyFrame(frame) {
         if (frame in this._shape._positionJournal) return true;
@@ -426,6 +526,9 @@ class TrackModel extends Listener {
 
 
     interpolate(frame) {
+        // Just doing this outside the decl
+        //let position = this._shape.interpolatePosition(frame, this._firstFrame)
+
         let interpolation = {
             attributes: this.interpolateAttributes(),
             position: this._shape.interpolatePosition(frame, this._firstFrame)
@@ -472,6 +575,15 @@ class TrackModel extends Listener {
         this._selected = true;
         this.notify();
     }
+
+    //TODO: unfinished and probably unnecessary modifications - selected property
+    // is used for mergers.
+    /*
+    onSelectKeypoint(ind){
+        if(this._lock || !(this._activeKeypoint == ind)) return;
+        this._shape[ind]._selected
+
+    } */
 
 
     visibleOnFrames(checkSet) {
@@ -542,6 +654,9 @@ class TrackModel extends Listener {
         if (type === 'box') {
             return Box.contain(x, y, pos);
         }
+        else if (type === 'skel'){
+            return Skeleton.contain(x,y,pos);
+        }
         else throw new Error('Unknown shape type');
     }
 
@@ -549,6 +664,9 @@ class TrackModel extends Listener {
     static ShapeArea(pos, type) {
         if (type === 'box') {
             return Box.area(pos);
+        }
+        else if (type === 'skel'){
+            return Skeleton.area(pos);
         }
         else throw new Error('Unknown shape type');
     }
@@ -596,7 +714,7 @@ class TrackModel extends Listener {
         return [prev, next];
     }
 
-
+    //first "non-outsided" frame
     static computeFirstFrame(journal) {
         for (let frame in journal) {
             if (!journal[frame]["outsided"]) {
@@ -610,6 +728,9 @@ class TrackModel extends Listener {
         if (shapeType === 'box') {
             return new Box(data);
         }
+        else if (shapeType === 'skel'){
+            return new Skeleton(data);
+        }
         else throw new Error('Unknown shape type');
     }
 }
@@ -618,6 +739,7 @@ class TrackModel extends Listener {
 class Box {
     constructor(data) {
         this._positionJournal = new Object();
+
 
         Object.defineProperty(this._positionJournal, 'clone', {
             enumerable: false,
@@ -693,6 +815,161 @@ class Box {
     }
 
     interpolatePosition(frameNumber, firstFrame) {
+
+        let pJ = this._positionJournal;
+        if (firstFrame == frameNumber) return Object.assign(pJ.clone(firstFrame), {keyFrame: true});
+        let leftPos = NaN;
+        let rightPos = NaN;
+        //Loop over frame numbers and assign new (different)
+        // (rightmost and leftmost?) framekeyss to leftPos and rightPos
+        for (let frameKey in pJ) {
+            if (+frameKey == frameNumber) return Object.assign(pJ.clone(frameKey), {keyFrame: true});
+            if (+frameKey < frameNumber) leftPos = +frameKey;
+            if (+frameKey > frameNumber) {
+                rightPos = +frameKey;
+                break;
+            }
+        }
+        if (isNaN(leftPos)) {
+            let position = pJ.clone(rightPos);
+            position.outsided = true;
+            return position;
+        }
+        if (isNaN(rightPos) || pJ[leftPos]["outsided"]) {
+            return pJ.clone(leftPos);
+        }
+
+        let leftCurDifference = frameNumber - leftPos;
+        let leftRightDifference = rightPos - leftPos;
+        let relativeOffset = leftCurDifference / leftRightDifference;
+
+
+        //TODO: Implement interpolation (if judged useful)
+        // In this scenario, we are switching to a frame in between keyframes
+        // (in my understanding, these are frames where a track has been edited).
+        // The result for this frame should be the interpolated position between
+        // key frame positions.
+        // For now, we'll just retain leftPos.
+
+
+        let interpolatedPos = {
+            xtl: pJ[leftPos].xtl+ (pJ[rightPos].xtl - pJ[leftPos].xtl) * relativeOffset,
+            ytl: pJ[leftPos].ytl + (pJ[rightPos].ytl - pJ[leftPos].ytl) * relativeOffset,
+            xbr: pJ[leftPos].xbr + (pJ[rightPos].xbr - pJ[leftPos].xbr) * relativeOffset,
+            ybr: pJ[leftPos].ybr + (pJ[rightPos].ybr - pJ[leftPos].ybr) * relativeOffset,
+            outsided: false,
+            occluded: pJ[leftPos].occluded
+        };
+        return interpolatedPos;
+    }
+
+    static contain(x,y,pos) {
+        return (x >= pos.xtl && x <= pos.xbr && y >= pos.ytl && y <= pos.ybr);
+    }
+
+    static area(pos) {
+        if (pos.outsided) return 0;
+        else return ((pos.xbr - pos.xtl) * (pos.ybr - pos.ytl));
+    }
+}
+
+class Skeleton {
+    constructor(data) {
+
+        this._positionJournal = new Object();
+
+        Object.defineProperty(this._positionJournal, 'clone', {
+            enumerable: false,
+            value: function(key) {
+                if (key in this) {
+                    return {
+                        skel : this[key].skel,
+                        outsided: this[key].outsided,
+                        occluded: this[key].occluded
+                    };
+                }
+                else throw new Error("Unknown key frame for positionJournal.clone()");
+            }
+        });
+
+        for (let i = 0; i < data.length; i ++) {
+            let frameNumber = data[i][1];
+
+            // Keypoints content will be passed on to another variable
+            // Should also contain information concerning "outsided" variable
+            this._positionJournal[frameNumber] = {
+                skel: data[i][0], //contains x,y,name,visibility now
+                outsided: data[i][2],
+                occluded: data[i][3]
+            };
+        }
+    }
+
+
+    setKeyFrame(value, frame, firstFrame) {
+        let pJ = this._positionJournal;
+        let firstFrameCandidates = Object.keys(pJ).length;
+        let interpolated = this.interpolatePosition(frame, firstFrame);
+
+        if (!value && firstFrameCandidates < 2) {
+            return false;
+        }
+
+        if (value && !(frame in pJ)) {
+            this.recordPosition(interpolated, frame);
+            return true;
+        }
+
+        if (!value && frame in pJ) {
+            delete pJ[frame];
+            return true;
+        }
+    }
+
+
+    recordPosition(pos, frame) {
+        this._positionJournal[frame]= {
+            skel: pos.skel,
+            outsided: pos.outsided,
+            occluded: pos.occluded
+        };
+    }
+
+    export() {
+        let serialized = {};
+        for (let frame in this._positionJournal) {
+            let pos = this._positionJournal[frame];
+
+            var tmp = {
+                'skels' : [],
+                'activity' : 'test_modif'
+            };
+
+            // Include "center" keypoint, we will save it in database too
+
+            //TODO: un-mix up order of pos contents
+
+
+            for (var i = 0; i < pos.skel.length;i++){
+                tmp['skels'].push([pos.skel[i][0],   // x
+                                   pos.skel[i][1],   // y
+                                   +pos.skel[i][3],   // visibility
+                                   pos.skel[i][2]]); //name
+            }
+
+            //TODO: need to decide when to assign activity and activity taxonomy
+
+            //TODO: decide on other information concerning global skeletons.
+            // There needs to be an "outsided" value for when the skeleton
+            // disappears off screen so TrackedObject can inherit from it
+
+            serialized[frame] = tmp;
+        }
+        return serialized;
+    }
+
+    interpolatePosition(frameNumber, firstFrame) {
+
         let pJ = this._positionJournal;
         if (firstFrame == frameNumber) return Object.assign(pJ.clone(firstFrame), {keyFrame: true});
         let leftPos = NaN;
@@ -717,23 +994,52 @@ class Box {
         let leftCurDifference = frameNumber - leftPos;
         let leftRightDifference = rightPos - leftPos;
         let relativeOffset = leftCurDifference / leftRightDifference;
+
+
         let interpolatedPos = {
-            xtl: pJ[leftPos].xtl+ (pJ[rightPos].xtl - pJ[leftPos].xtl) * relativeOffset,
-            ytl: pJ[leftPos].ytl + (pJ[rightPos].ytl - pJ[leftPos].ytl) * relativeOffset,
-            xbr: pJ[leftPos].xbr + (pJ[rightPos].xbr - pJ[leftPos].xbr) * relativeOffset,
-            ybr: pJ[leftPos].ybr + (pJ[rightPos].ybr - pJ[leftPos].ybr) * relativeOffset,
-            outsided: false,
+            skel: pJ[leftPos].skel,
+            outsided: 0,
             occluded: pJ[leftPos].occluded
         };
+
         return interpolatedPos;
     }
 
     static contain(x,y,pos) {
-        return (x >= pos.xtl && x <= pos.xbr && y >= pos.ytl && y <= pos.ybr);
+
+        var shapesX = [];
+        var shapesY = [];
+
+        for (var i = 0; i < pos.skel.length; i++){
+                shapesX.push(pos.skel[i][0]);
+                shapesY.push(pos.skel[i][1]);
+            }
+
+            let xtl = Math.min(...shapesX); // xtl of bbox fitting skeleton joints
+            let ytl = Math.min(...shapesY); // ytl of fitting bbox
+            let xbr = Math.max(...shapesX);
+            let ybr = Math.max(...shapesY);
+        return (x >= xtl && x <= xbr && y >= ytl && y <= ybr);
     }
 
     static area(pos) {
         if (pos.outsided) return 0;
-        else return ((pos.xbr - pos.xtl) * (pos.ybr - pos.ytl));
+        else{
+
+            var shapesX = [];
+            var shapesY = [];
+            for (var i = 0; i < pos.skel.length; i++){
+                shapesX.push(pos.skel[i][0]);
+                shapesY.push(pos.skel[i][1]);
+            }
+
+            let xtl = Math.min(...shapesX); // xtl of bbox fitting skeleton joints
+            let ytl = Math.min(...shapesY); // ytl of fitting bbox
+            let xbr = Math.max(...shapesX);
+            let ybr = Math.max(...shapesY);
+
+            return ((xbr - xtl) * (ybr - ytl));
+
+        }
     }
 }

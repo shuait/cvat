@@ -22,7 +22,10 @@ class CollectionController {
         function setupCollectionShortkeys() {
             let deleteHandler = Logger.shortkeyLogDecorator(function(e) {
                 if (this._AAM) return;
-                this._collectionModel.removeactivetrack(e.shiftKey);
+
+                //TODO: Just commenting this out in case key pressed by accident.
+                // Also not interested in handling activeKeypoint scenario.
+                //this._collectionModel.removeactivetrack(e.shiftKey);
             }.bind(this));
 
             let lockHandler = Logger.shortkeyLogDecorator(function() {
@@ -75,14 +78,111 @@ class CollectionController {
                     if (this._drawMode || !target.hasClass('highlightedShape') || event.shiftKey) {
                         return;
                     }
-                    target.attr('x', +target.attr('x') + event.dx/scale);
-                    target.attr('y', +target.attr('y') + event.dy/scale);
+
+                    if (target[0].localName == 'circle'){
+
+                        // If target is "center" keypoint, move all keypoints and lines
+                        // in same skeleton
+
+                        let frameWidth = +$('#frameContent').css('width').slice(0,-2);
+                        let frameHeight = +$('#frameContent').css('height').slice(0,-2);
+
+                        if ($(target).attr('name') == 'center'){
+
+                            if(+$(target).attr('cy') <= 0 && event.dy < 0){
+                                event.dy = 0;
+                            }
+                            if(+$(target).attr('cy') >= frameHeight && event.dy > 0) {
+                                event.dy = 0;
+                            }
+                            if (+$(target).attr('cx') >= frameWidth && event.dx > 0){
+                                event.dx = 0;
+                            }
+                            if (+$(target).attr('cx') <= 0 && event.dx < 0){
+                                event.dx = 0;
+                            }
+
+                            target.attr('cx', +target.attr('cx') + event.dx/scale);
+                            target.attr('cy', +target.attr('cy') + event.dy/scale);
+
+                            $("[track_id ='" + $(target).attr('track_id') + "']").not(target).each( function(){
+
+                                if($(this)[0].localName == 'circle'){
+                                    $(this).attr('cx', +$(this).attr('cx') +event.dx/scale);
+                                    $(this).attr('cy', +$(this).attr('cy') +event.dy/scale);
+                                    $(this).trigger('drag',scale);
+                                }
+                                else if ($(this)[0].localName == 'line'){
+                                    $(this).attr('x1', +$(this).attr('x1') +event.dx/scale);
+                                    $(this).attr('y1', +$(this).attr('y1') +event.dy/scale);
+                                    $(this).attr('x2', +$(this).attr('x2') +event.dx/scale);
+                                    $(this).attr('y2', +$(this).attr('y2') +event.dy/scale);
+                                }
+                            })
+                        } else{
+
+                            var q = $("line[track_id ='" + $(target).attr('track_id') + "']");
+
+                            var q1 = q.filter("[id1 ='" + target.attr('name') + "']");
+                            var q2 = q.filter("[id2 ='" + target.attr('name') + "']");
+
+                            q1.attr('x1', +q1.attr('x1') + event.dx/scale);
+                            q1.attr('y1', +q1.attr('y1') + event.dy/scale);
+
+                            q2.attr('x2', +q2.attr('x2') + event.dx/scale);
+                            q2.attr('y2', +q2.attr('y2') + event.dy/scale);
+
+                            target.attr('cx', +target.attr('cx') + event.dx/scale);
+                            target.attr('cy', +target.attr('cy') + event.dy/scale);
+
+                        };
+                        /*
+                        if (target[0].attributes['name'].value == 'center' && center_in_image ){
+                            $("[track_id =" + target[0].attributes['track_id'].value + "]").not(target).each( function(){
+
+                                if($(this)[0].localName == 'circle'){
+                                    $(this).attr('cx', +$(this).attr('cx') +event.dx/scale);
+                                    $(this).attr('cy', +$(this).attr('cy') +event.dy/scale);
+                                    $(this).trigger('drag',scale);
+                                }
+                                else if ($(this)[0].localName == 'line'){
+                                    $(this).attr('x1', +$(this).attr('x1') +event.dx/scale);
+                                    $(this).attr('y1', +$(this).attr('y1') +event.dy/scale);
+                                    $(this).attr('x2', +$(this).attr('x2') +event.dx/scale);
+                                    $(this).attr('y2', +$(this).attr('y2') +event.dy/scale);
+                                }
+                            });
+                        }
+                    // Otherwise just move the keypoint and connected lines
+                        else{
+                            var q = $("line[track_id ='" + target[0].attributes['track_id'].value + "']");
+                            var q1 = q.filter("[id1 ='" + target.attr('name') + "']");
+                            var q2 = q.filter("[id2 ='" + target.attr('name') + "']");
+                            q1.attr('x1', +q1.attr('x1') + event.dx/scale);
+                            q1.attr('y1', +q1.attr('y1') + event.dy/scale);
+                            q2.attr('x2', +q2.attr('x2') + event.dx/scale);
+                            q2.attr('y2', +q2.attr('y2') + event.dy/scale);
+                        };
+
+                        */
+
+
+                    }
+
+                    else{
+                        target.attr('x', +target.attr('x') + event.dx/scale);
+                        target.attr('y', +target.attr('y') + event.dy/scale);
+                    }
+
                     target.trigger('drag', scale);
+
+
+
                 }.bind(this),
                 onend: function () {
                     this._moveMode = false;
                 }.bind(this)
-            }).resizable({
+            });/*.resizable({
                 margin: 8,
                 edges: { left: true, right: true, bottom: true, top: true },
                 restrict: {
@@ -114,7 +214,7 @@ class CollectionController {
                 onend: function () {
                     this._resizeMode = false;
                 }.bind(this)
-            });
+            }) */
         }   // end of setupInteract
     }
 
@@ -145,6 +245,9 @@ class CollectionController {
         this._collectionModel.updateFrame();
     }
 
+
+    // TODO: this function is called from collectionView.js if
+    // cursor leaves the UI element, need to adapt this to resetactivekeypoint.
     resetactivetrack(e) {
         if (this._moveMode || this._resizeMode || this._AAM || e.ctrlKey) return;
         this._collectionModel.resetactivetrack();

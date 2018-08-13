@@ -33,6 +33,8 @@ class ShapeBufferModel extends Listener  {
         }
     }
 
+    //TODO: not modifying this either; function isn't called anywhere in codebase
+    // most likely work in progress
     copyShape() {
         let activeTrack = this._collection.activeTrack;
         if (activeTrack === null) return;
@@ -163,6 +165,7 @@ class ShapeBufferView {
         }.bind(this));
 
         this._frameContent.on('mousedown.buffer', function(e) {
+
             let pos = translateSVGPos(this._frameContent['0'], e.clientX, e.clientY, this._playerScale);
 
             let [xtl, ytl, xbr, ybr] = this.computeBoxPosition(pos);
@@ -262,7 +265,7 @@ class ShapeBufferView {
         this._playerScale = player.geometry.scale;
         this._curFrame = player.frames.current;
         if (this._viewShape != null) {
-            this._viewShape.css('stroke-width', 2 / this._playerScale);
+            //this._viewShape.css('stroke-width', 2 / this._playerScale);
         }
     }
 }

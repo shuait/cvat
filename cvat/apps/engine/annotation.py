@@ -13,6 +13,7 @@ from abc import ABCMeta, abstractmethod
 import django_rq
 from django.conf import settings
 from django.db import transaction
+import pdb
 
 from . import models
 from .task import get_frame_path
@@ -59,9 +60,11 @@ def get(jid):
     """
     Get annotations for the job.
     """
+
     db_job = models.Job.objects.select_for_update().get(id=jid)
     annotation = _AnnotationForJob(db_job)
     annotation.init_from_db()
+
 
     return annotation.to_client()
 
@@ -73,7 +76,10 @@ def save_job(jid, data):
     db_job = models.Job.objects.select_for_update().get(id=jid)
     annotation = _AnnotationForJob(db_job)
     annotation.init_from_client(data)
-    annotation.save_boxes_to_db()
+
+
+    #annotation.save_skels_to_db()
+    #annotation.save_boxes_to_db()
     annotation.save_paths_to_db()
     db_job.segment.task.updated_date = timezone.now()
     db_job.updated_date = timezone.now()
@@ -109,6 +115,26 @@ def rq_handler(job, exc_type, exc_value, traceback):
 
 ##################################################
 
+names = ["nose",
+        "left eye",
+        "right eye",
+        "left ear",
+        "right ear",
+        "left shoulder",
+        "right shoulder",
+        "left elbow",
+        "right elbow",
+        "left wrist",
+        "right wrist",
+        "left hip",
+        "right hip",
+        "left knee",
+        "right knee",
+        "left ankle",
+        "right ankle",
+        "center"];
+
+
 class _Label:
     def __init__(self, db_label):
         self.id = db_label.id
@@ -122,6 +148,64 @@ class _Attribute:
             self.value = str(value).lower()
         else:
             self.value = str(value)
+
+# Defining Skeleton and keypoint classes, attributes and methods
+# May need to think a bit more about how to best merge skeletons.
+
+
+class _Skeleton:
+    def __init__(self, keypoints, frame,  attributes=None):
+        self.keypoints = keypoints
+        self.frame = frame
+        self.attributes = attributes if attributes else []
+        # Individual keypoints have "visibility" property
+        # that includes possibility of "outside" value
+        # but whole skeleton should also have this property
+        
+
+    # Not sure how to implement this for skeletons yet
+    '''
+    def merge(self, box):
+        # The occluded property and attributes cannot be merged. Let's keep
+        # original attributes and occluded property of the self object.
+        assert self.frame == box.frame
+        self.xtl = (self.xtl + box.xtl) / 2
+        self.ytl = (self.ytl + box.ytl) / 2
+        self.xbr = (self.xbr + box.xbr) / 2
+        self.ybr = (self.ybr + box.ybr) / 2
+    '''
+    
+    def add_attribute(self, attr):
+        self.attributes.append(attr)
+
+
+class _Keypoint:
+    def __init__(self,name,x,y,frame, visibility,attributes=None):
+        self.name = name
+        self.x = x
+        self.y = y
+        self.frame = frame
+        self.visibility = visibility
+        self.attributes = attributes if attributes else []
+
+
+class _LabeledSkeleton(_Skeleton):
+    def __init__(self, label, keypoints, frame, attributes=None):
+        super().__init__(keypoints, frame, attributes)
+        self.label = label
+
+
+class _TrackedSkeleton(_Skeleton):
+    def __init__(self, keypoints, frame, outside, activity, attributes=None):
+        super().__init__(keypoints, frame, attributes)
+        self.outside = outside
+        self.activity = activity
+
+class _InterpolatedSkeleton(_TrackedSkeleton):
+    def __init__(self, keypoints, frame, outside, keyframe, attributes=None):
+        super().__init__(keypoints, frame, outside, attributes)
+        self.keyframe = keyframe
+
 
 class _BoundingBox:
     def __init__(self, x0, y0, x1, y1, frame, occluded, attributes=None):
@@ -161,23 +245,42 @@ class _InterpolatedBox(_TrackedBox):
         self.keyframe = keyframe
 
 class _ObjectPath:
-    def __init__(self, label, start_frame, stop_frame, boxes=None, attributes=None):
+    def __init__(self, label, start_frame, stop_frame, boxes=None, skeletons=None, attributes=None): #
         self.label = label
         self.frame = start_frame
         self.stop_frame = stop_frame
         self.boxes = boxes if boxes else []
+
+        self.skeletons = skeletons if skeletons else []
+
         self.attributes = attributes if attributes else []
         self._interpolated_boxes = []
+        #self._interpolated_skeletons = []
+        '''
         assert not self.boxes or self.boxes[-1].frame <= self.stop_frame
+        '''
+        assert not self.boxes or self.boxes[-1].frame <= self.stop_frame \
+            or not self.skeletons or self.skeletons[-1].frame <= self.stop_frame
+
 
     def add_box(self, box):
         self.boxes.append(box)
+
+    def add_skeleton(self,skeleton):
+        self.skeletons.append(skeleton)
 
     def get_interpolated_boxes(self):
         if not self._interpolated_boxes:
             self._init_interpolated_boxes()
 
         return self._interpolated_boxes
+    '''
+     def get_interpolated_skeletons(self):
+         if not self._interpolated_skeletons:
+             self._init_interpolated_skeletons()
+
+         return self._interpolated_skeletons
+    '''
 
     def _init_interpolated_boxes(self):
         assert self.boxes[-1].frame <= self.stop_frame
@@ -216,6 +319,59 @@ class _ObjectPath:
 
         self._interpolated_boxes = boxes
 
+    # def _init_interpolated_skeletons(self):
+    #     assert self.skeletons[-1].frame <= self.stop_frame
+    #
+    #     skeletons = []
+    #     stop_skeleton = copy.copy(self.skeletons[1])
+    #     stop_skeleton.frame = self.stop_frame + 1
+    #     attributes = {}
+    #     for skel0, skel1 in zip(self.skeletons,self.skeletons[1:] + [stop_skeleton]):
+    #         assert skel0.frame <= skel1.frame
+    #
+    #         ## LOGIC FOR INTERPOLATING SKELETONS GOES HERE
+    #
+    #         distance = float(skel1.frame - skel0.frame)
+    #         deltas = []
+    #         for (keyp0,keyp1) in zip(skel0.keypoints,skel1.keypoints):
+    #             delta_x = (keyp1.x - keyp0.x)/distance
+    #             delta_y = (keyp1.y - keyp0.x)/distance
+    #             deltas.append((delta_x,delta_y))
+    #
+    #         # New box doesn't have all attributes (only first one does).
+    #         # Thus it is necessary to propagate them.
+    #
+    #         for attr in skel0.attributes:
+    #             attributes[attr.id] = attr
+    #
+    #         for frame in range(skel0.frame, skel1.frame):
+    #             off = frame - skel0.frame
+    #
+    #             keypoints = []
+    #
+    #
+    #         # Keypoints that are outside image shouldn't be interpolated,
+    #         # but ones that aren't should be.
+    #
+    #             # (Same for the visibility of each of the keypoints)
+    #             for i,(keyp0, keyp1) in enumerate(zip(skel0.keypoints, skel1.keypoints)):
+    #
+    #                 if not keyp0.visibility:
+    #                     # i.e. keypoint is either occluded or visible
+    #                     x = keyp0.x + deltas[i][0] * off
+    #                     y = keyp0.y + deltas[i][1] * off
+    #                 else:
+    #                     x = keyp0.x
+    #                     y = keyp0.y
+    #
+    #                 keypoint = _Keypoint(x, y, frame, skel0.keypoints[0].visibility)
+    #                 keypoints.append(keypoint)
+    #
+    #                 skeleton = _InterpolatedSkeleton(keypoints,frame,box0.frame == frame,
+    #                                                  list(attributes.values()))
+    #                 skeletons.append(skeleton)
+    #
+    # TODO: IMPLEMENT FOR SKELETONS
     def merge(self, path):
         assert self.label.id == path.label.id
         boxes = {box.frame:box for box in self.boxes}
@@ -237,11 +393,15 @@ class _Annotation:
     def __init__(self, start_frame, stop_frame):
         self.boxes = []
         self.paths = []
+        self.skeletons = []
+        self.skel_keypoints = []
         self.start_frame = start_frame
         self.stop_frame = stop_frame
 
     def reset(self):
         self.boxes = []
+        self.skeletons = []
+        self.skel_keypoints = []
         self.paths = []
 
     def to_boxes(self):
@@ -255,6 +415,17 @@ class _Annotation:
 
         return self.boxes + boxes
 
+    def to_skeletons(self):
+        skeletons = []
+        for path in self.paths:
+            for skeleton in path.get_interpolated_skeletons():
+                # TODO: Check if not checking if any keypoints are outside is OK:
+                skeleton  = _LabeledSkeleton(path.label,skeleton.keypoints,
+                                             skeleton.frame,skeleton.attributes \
+                                             + path.attributes)
+                skeletons.append(skeleton)
+        return self.skeletons + skeletons
+
     def to_paths(self):
         paths = []
         for box in self.boxes:
@@ -263,8 +434,20 @@ class _Annotation:
             box1 = copy.copy(box0)
             box1.outside = True
             box1.frame += 1
-            path = _ObjectPath(box.label, box.frame, box.frame + 1, [box0, box1], box.attributes)
+            path = _ObjectPath(box.label, box.frame, box.frame + 1,
+                               boxes = [box0, box1],
+                               attributes = box.attributes)
             paths.append(path)
+
+        # for skeleton in self.skeletons:
+        #     skeleton0 = _InterpolatedSkeleton(skeleton.keypoints,skeleton.frame,
+        #                                       False, True)
+        #     skeleton1 = copy.copy(skeleton0)
+        #     # TODO: no outsides
+        #     skeleton1.frame += 1
+        #     path = _ObjectPath(skeleton.label, skeleton.frame,skeleton.frame + 1,
+        #                        skeletons = [skeleton0,skeleton1],
+        #                        attributes = skeleton.attributes)
 
         return self.paths + paths
 
@@ -299,8 +482,14 @@ class _AnnotationForJob(_Annotation):
 
         # Group all rows by field_id. In grouped rows replace fields in
         # accordance with keys_for_merge structure.
+
+        # rows is a list of dicts
+
         for row in rows:
+            # for field_id == 'id': in our scenario grouped by track_id
             row_id = row[field_id]
+
+            # Each element in merged_rows
             if not row_id in merged_rows:
                 merged_rows[row_id] = dotdict(row)
                 for key in keys_for_merge:
@@ -323,41 +512,24 @@ class _AnnotationForJob(_Annotation):
     def init_from_db(self):
         self.reset()
 
-        db_boxes = list(self.db_job.labeledbox_set.prefetch_related('labeledboxattributeval_set') \
-            .values('id', 'frame', 'xtl', 'ytl', 'xbr', 'ybr', 'label_id', 'occluded',
-                'labeledboxattributeval__value', 'labeledboxattributeval__spec_id',
-                'labeledboxattributeval__id').order_by('frame'))
-
-        keys_for_merge = {
-            'attributes': [
-                'labeledboxattributeval__value',
-                'labeledboxattributeval__spec_id',
-                'labeledboxattributeval__id'
-            ]
-        }
-        db_boxes = self._merge_table_rows(db_boxes, keys_for_merge, 'id')
-
-        for db_box in db_boxes:
-            label = _Label(self.db_labels[db_box.label_id])
-            box = _LabeledBox(label, db_box.xtl, db_box.ytl,
-                db_box.xbr, db_box.ybr, db_box.frame, db_box.occluded)
-            for db_attr in db_box.attributes:
-                if db_attr.id != None:
-                    spec = self.db_attributes[db_attr.spec_id]
-                    attr = _Attribute(spec, db_attr.value)
-                    box.add_attribute(attr)
-            self.boxes.append(box)
-
-        db_paths = list(self.db_job.objectpath_set.prefetch_related('trackedbox_set') \
-            .prefetch_related('objectpathattributeval_set') \
-            .prefetch_related('trackedbox_set__trackedboxattributeval_set') \
-            .values('id', 'frame', 'objectpathattributeval__spec_id',
+        db_paths = list(self.db_job.objectpath_set.prefetch_related('trackedskeleton_set')
+                       .prefetch_related('objectpathattributeval_set')
+                       .prefetch_related('trackedskeleton_set__trackedskeletonattributeval_set')
+                        .values('id', 'frame', 'objectpathattributeval__spec_id',
                 'objectpathattributeval__id', 'objectpathattributeval__value',
-                'trackedbox__id', 'label_id', 'trackedbox__xtl', 'trackedbox__ytl',
-                'trackedbox__xbr', 'trackedbox__ybr', 'trackedbox__frame', 'trackedbox__occluded',
-                'trackedbox__outside', 'trackedbox__trackedboxattributeval__spec_id',
-                'trackedbox__trackedboxattributeval__value', 'trackedbox__trackedboxattributeval__id') \
-            .order_by('id', 'trackedbox__frame'))
+                'trackedskeleton__id', 'label_id',
+                'trackedskeleton__frame',
+                'trackedskeleton__outside',
+                'trackedskeleton__activity',
+                'trackedskeleton__trackedskeletonattributeval__spec_id',
+                'trackedskeleton__trackedskeletonattributeval__value',
+                'trackedskeleton__trackedskeletonattributeval__id',
+                                'trackedskeleton__keypoint__id',
+                                'trackedskeleton__keypoint__visibility',
+                                'trackedskeleton__keypoint__x',
+                                'trackedskeleton__keypoint__y',
+                                'trackedskeleton__keypoint__name')
+            .order_by('id', 'trackedskeleton__frame'))
 
         keys_for_merge = {
             'attributes': [
@@ -365,29 +537,46 @@ class _AnnotationForJob(_Annotation):
                 'objectpathattributeval__spec_id',
                 'objectpathattributeval__id'
             ],
-            'boxes': [
-                'trackedbox__id', 'trackedbox__xtl', 'trackedbox__ytl',
-                'trackedbox__xbr', 'trackedbox__ybr', 'trackedbox__frame',
-                'trackedbox__occluded', 'trackedbox__outside',
-                'trackedbox__trackedboxattributeval__value',
-                'trackedbox__trackedboxattributeval__spec_id',
-                'trackedbox__trackedboxattributeval__id'
+            'skeletons': [
+                'trackedskeleton__keypoint__id',
+                'trackedskeleton__frame',
+                'trackedskeleton__activity',
+                'trackedskeleton__id', 'trackedskeleton__keypoint__visibility',
+                'trackedskeleton__keypoint__x', 'trackedskeleton__keypoint__y',
+                'trackedskeleton__keypoint__name', 'trackedskeleton__outside',
+                'trackedskeleton__trackedskeletonattributeval__value',
+                'trackedskeleton__trackedskeletonattributeval__spec_id',
+                'trackedskeleton__trackedskeletonattributeval__id'
             ]
         }
+
+        # Grouping them here by TRACK id (I believe)
         db_paths = self._merge_table_rows(db_paths, keys_for_merge, 'id')
+
 
         keys_for_merge = {
             'attributes': [
-                'trackedboxattributeval__value',
-                'trackedboxattributeval__spec_id',
-                'trackedboxattributeval__id'
+                'trackedskeletonattributeval__value',
+                'trackedskeletonattributeval__spec_id',
+                'trackedskeletonattributeval__id'
+            ],
+            'keypoints':[
+                'keypoint__id',
+                'keypoint__x',
+                'keypoint__y',
+                'keypoint__visibility',
+                'keypoint__name'
             ]
         }
-        for db_path in db_paths:
-            db_path.boxes = self._merge_table_rows(db_path.boxes, keys_for_merge, 'id')
+
+        for db_path in db_paths: # Each db_path represents a SKELETON (with keypoints in 'skeletons'
+                                 # field) given how this was coded
+            db_path.skeletons = self._merge_table_rows(db_path.skeletons, keys_for_merge, 'id')
             db_path.attributes = list(set(db_path.attributes))
-            for db_box in db_path.boxes:
-                db_box.attributes = list(set(db_box.attributes))
+            for db_skel in db_path.skeletons:
+                db_skel.attributes = list(set(db_skel.attributes))
+
+
 
         for db_path in db_paths:
             label = _Label(self.db_labels[db_path.label_id])
@@ -398,19 +587,47 @@ class _AnnotationForJob(_Annotation):
                 path.add_attribute(attr)
 
             frame = -1
-            for db_box in db_path.boxes:
-                box = _TrackedBox(db_box.xtl, db_box.ytl, db_box.xbr, db_box.ybr,
-                    db_box.frame, db_box.occluded, db_box.outside)
-                assert box.frame > frame
-                frame = box.frame
 
-                for db_attr in db_box.attributes:
+
+            for db_skel in db_path.skeletons:
+
+                db_keyps = []
+
+                for db_keyp in db_skel.keypoints:
+
+                    keyp = _Keypoint(db_keyp.name, db_keyp.x,db_keyp.y,
+                                     db_skel.frame, db_keyp.visibility)
+
+                    db_keyps.append(keyp)
+
+
+                skel = _TrackedSkeleton(db_keyps, db_skel.frame,
+                                        db_skel.outside, db_skel.activity)
+
+                # TODO: reliant on activity label placeholder for the moment
+
+
+
+                assert skel.frame > frame
+                frame = skel.frame
+
+                for db_attr in db_skel.attributes:
                     spec = self.db_attributes[db_attr.spec_id]
                     attr = _Attribute(spec, db_attr.value)
-                    box.add_attribute(attr)
-                path.add_box(box)
+                    skel.add_attribute(attr)
+
+                path.add_skeleton(skel)
+
+
+            # Given we are only saving skeletons belonging to one frame
+            # and that it is difficult to design database queries without
+            # existing examples of skeletons across multiple frames,
+            # the preceding logic will only choose one out of the several
+            # skeletons in the same frame. This will be fixed once we
+            # can save skeleton tracks that cover multiple frames.
 
             self.paths.append(path)
+
 
     def init_from_client(self, data):
         # All fields inside data should be converted to correct type explicitly.
@@ -418,6 +635,7 @@ class _AnnotationForJob(_Annotation):
         # accept "23".
         self.reset()
 
+        # Think this is just for frame-wise annotations
         for box in data['boxes']:
             label = _Label(self.db_labels[int(box['label_id'])])
 
@@ -434,8 +652,10 @@ class _AnnotationForJob(_Annotation):
 
         for track in data['tracks']:
             label = _Label(self.db_labels[int(track['label_id'])])
-            boxes = []
+
             frame = -1
+
+            boxes = []
             for box in track['boxes']:
                 if int(box['frame']) <= self.stop_frame:
                     tracked_box = _TrackedBox(float(box['xtl']), float(box['ytl']),
@@ -455,6 +675,34 @@ class _AnnotationForJob(_Annotation):
                     self.logger.error("init_from_client: ignore frame #%d " +
                         "because stop_frame is %d", box['frame'], self.stop_frame)
 
+            skels = []
+            for skel in track['skels']:
+
+                keypoints = []
+                if int(skel['frame']) <= self.stop_frame:
+
+                    for keypoint,value in skel.items():
+
+                        if keypoint in names:
+
+                            keypoints.append(_Keypoint(keypoint, #its name
+                                                         value[0],value[1],
+                                                        skel['frame'],value[2]))
+
+                    # Putting a placeholder in "outside" for now
+                    tracked_skel = _TrackedSkeleton(keypoints,skel['frame'],
+                                                    skel['outside'],skel['activity'])
+                    assert tracked_skel.frame > frame
+                    frame = tracked_skel.frame
+
+                    for attr in skel['attributes']:
+                        spec = self.db_attributes[int(attr['id'])]
+                        assert spec.is_mutable()
+                        attr = _Attribute(spec, str(attr['value']))
+                        tracked_skel.add_attribute(attr)
+
+                    skels.append(tracked_skel)
+
             attributes = []
             for attr in track['attributes']:
                 spec = self.db_attributes[int(attr['id'])]
@@ -463,8 +711,10 @@ class _AnnotationForJob(_Annotation):
                 attributes.append(attr)
 
             assert frame <= self.stop_frame
-            object_path = _ObjectPath(label, int(track['frame']), self.stop_frame,
-                boxes, attributes)
+
+
+            object_path = _ObjectPath(label, int(track['frame']), self.stop_frame, boxes=boxes,
+                                          skeletons = skels, attributes = attributes)
             self.paths.append(object_path)
 
     def save_boxes_to_db(self):
@@ -502,14 +752,35 @@ class _AnnotationForJob(_Annotation):
         for db_attrval in db_attrvals:
             db_attrval.box_id = db_boxes[db_attrval.box_id].id
         models.LabeledBoxAttributeVal.objects.bulk_create(db_attrvals)
+    '''
+    def save_skels_to_db(self):
+        self.db_job.labeledskeleton_set.all().delete()
+        db_skeletons = []
+        db_attrvals = []
+
+        for skel in self.skeletons:
+            db_skel = models.LabeledSkeleton()
+            db_skel = self.db_job
+            db_skel.label = self.db_labels[skel.label.id]
+            db_skel.frame = skel.frame
+            for keypoint in keypoints:
+    '''
 
     def save_paths_to_db(self):
+
         self.db_job.objectpath_set.all().delete()
 
         db_paths = []
         db_path_attrvals = []
         db_boxes = []
+        db_skels = []
         db_box_attrvals = []
+        db_skel_attrvals = []
+        # Will be a list of lists containing each skel's keypoints
+        db_skel_keypoints = []
+
+
+
 
         for path in self.paths:
             db_path = models.ObjectPath()
@@ -548,6 +819,41 @@ class _AnnotationForJob(_Annotation):
                     db_box_attrvals.append(db_attrval)
 
                 db_boxes.append(db_box)
+
+            for skel in path.skeletons:
+                db_skel = models.TrackedSkeleton()
+                db_skel.track_id = len(db_paths)
+
+                # What to do with keypoints? Think need to initialize them
+                # after creating skeletons, then associate them with skels.
+                db_skel.frame = skel.frame
+                db_skel.activity = skel.activity
+                db_skel.outside = skel.outside
+
+                for attr in skel.attributes:
+                    db_attrspec = self.db_attributes[attr.id]
+
+                    db_attrval = models.TrackedSkeletonAttributeVal()
+                    db_attrval.skel_id = len(db_skels)
+                    db_attrval.spec = db_attrspec
+                    db_attrval.value = attr.value
+                    db_skel_attrvals.append(db_attrval)
+
+                keyp_list = []
+
+                for keypoint in skel.keypoints:
+                    db_keyp = models.Keypoint()
+                    db_keyp.name = keypoint.name
+                    db_keyp.skeleton_id = len(db_skels)
+                    db_keyp.x = keypoint.x
+                    db_keyp.y = keypoint.y
+                    db_keyp.visibility = keypoint.visibility
+                    db_keyp.frame = keypoint.frame
+                    keyp_list.append(db_keyp)
+
+                db_skels.append(db_skel)
+                db_skel_keypoints.append(keyp_list)
+
             db_paths.append(db_path)
 
         db_paths = models.ObjectPath.objects.bulk_create(db_paths)
@@ -564,7 +870,38 @@ class _AnnotationForJob(_Annotation):
         for db_box in db_boxes:
             db_box.track_id = db_paths[db_box.track_id].id
 
+        for db_skel in db_skels:
+            db_skel.track_id = db_paths[db_skel.track_id].id
+
+
         db_boxes = models.TrackedBox.objects.bulk_create(db_boxes)
+
+
+        # Can't use bulk_create in this scenario!
+        for db_skel in db_skels:
+            db_skel.save()
+
+        #if all(db_skels) and db_skels[0].id == None:
+        saved_skels = list(models.TrackedSkeleton.objects.filter(track__job_id=self.db_job.id))
+
+        # skeletons we added in this transaction
+        for db_skel in db_skels:
+            # sets of keypoints added in this transaction
+            for db_keyp in db_skel_keypoints[db_skels.index(db_skel)]:
+
+                #
+                db_keyp.skeleton_id = saved_skels[db_keyp.skeleton_id].id
+
+
+
+            models.Keypoint.objects.bulk_create(db_skel_keypoints[db_skels.index(db_skel)])
+
+
+                #new_db_skels.append(models.TrackedSkeleton.objects.save(db_skel))
+        #db_skels = models.TrackedSkeleton.objects.bulk_create(db_skels)
+
+
+
         if db_boxes and db_boxes[0].id == None:
             # Try to get primary keys. Probably the code will work for sqlite
             # but it definetely doesn't work for Postgres. Need to say that
@@ -576,7 +913,13 @@ class _AnnotationForJob(_Annotation):
             db_attrval.box_id = db_boxes[db_attrval.box_id].id
         models.TrackedBoxAttributeVal.objects.bulk_create(db_box_attrvals)
 
+        for db_attrval in db_skel_attrvals:
+            db_attrval.skeleton_id = db_skels[db_attrval.skel_id].id
+
+        models.TrackedSkeletonAttributeVal.objects.bulk_create(db_skel_attrvals)
+
     def to_client(self):
+
         data = {"boxes": [], "tracks": []}
         for box in self.boxes:
             labeled_box = {
@@ -595,34 +938,45 @@ class _AnnotationForJob(_Annotation):
             data["boxes"].append(labeled_box)
 
         for path in self.paths:
-            boxes = []
-            for box in path.boxes:
-                tracked_box = {
-                    "frame": box.frame,
-                    "xtl": box.xtl,
-                    "ytl": box.ytl,
-                    "xbr": box.xbr,
-                    "ybr": box.ybr,
-                    "occluded": box.occluded,
-                    "outside": box.outside,
+            skeletons = []
+            for skeleton in path.skeletons:
+
+                keypoints = []
+                for keypoint in skeleton.keypoints:
+
+                    js_keypoint = {
+                        "x" : keypoint.x,
+                        "y" : keypoint.y,
+                        "visibility" : keypoint.visibility,
+                        "name" : keypoint.name
+                    }
+
+                    keypoints.append(js_keypoint)
+
+                tracked_skeleton = {
+                    "frame" : skeleton.frame,
+                    "activity" : skeleton.activity,
+                    "keypoints" : keypoints,
                     "attributes": [{
                         "id": attr.id,
                         "value": attr.value
-                    } for attr in box.attributes]
+                    } for attr in skeleton.attributes],
+                    "outside" : skeleton.outside,
                 }
-                boxes.append(tracked_box)
+
+                skeletons.append(tracked_skeleton)
 
             track = {
-                "label_id": path.label.id,
-                "frame": path.frame,
-                "attributes": [{
+                    "frame" : path.frame,
+                    "skeletons" : skeletons,
+                    "label" : path.label.id,
+                    "attributes": [{
                     "id": attr.id,
                     "value": attr.value
-                 } for attr in path.attributes],
-                "boxes": boxes,
+                 } for attr in path.attributes]
             }
-            data["tracks"].append(track)
 
+            data["tracks"].append(track)
         return data
 
 
@@ -642,6 +996,7 @@ class _AnnotationForSegment(_Annotation):
         annotation.init_from_db()
         self.boxes = annotation.boxes
         self.paths = annotation.paths
+
 
 @transaction.atomic
 def _dump(tid, data_format, scheme, host):

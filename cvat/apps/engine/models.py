@@ -15,12 +15,12 @@ class Task(models.Model):
     name = models.CharField(max_length=256)
     size = models.PositiveIntegerField()
     path = models.CharField(max_length=256)
-    mode = models.CharField(max_length=32)
+    mode = models.CharField(max_length=32,default = "interpolation")
     owner = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
     bug_tracker = models.CharField(max_length=2000, default="")
     created_date = models.DateTimeField(auto_now_add=True)
     updated_date = models.DateTimeField(auto_now_add=True)
-    status = models.CharField(max_length=32, default="annotate")
+    status = models.CharField(max_length=32, default="interpolate")
     overlap = models.PositiveIntegerField(default=0)
 
     # Extend default permission model
@@ -198,3 +198,42 @@ class TrackedBox(TrackedObject, BoundingBox):
 
 class TrackedBoxAttributeVal(AttributeVal):
     box = models.ForeignKey(TrackedBox, on_delete=models.CASCADE)
+
+
+class Skeleton(models.Model):
+    # TODO: define exactly what "outside" attribute would be
+    pass
+
+class Keypoint(models.Model):
+
+    VISIBILITY= (
+        (0, 'NOT IN IMAGE'),
+        (1, 'INVISIBLE'),
+        (2, 'VISIBLE')
+    )
+    name = models.CharField(max_length = 256)
+    skeleton = models.ForeignKey(Skeleton, on_delete=models.CASCADE)
+    x = models.FloatField()
+    y = models.FloatField()
+    visibility = models.PositiveIntegerField(default=2, choices=VISIBILITY)
+
+class LabeledSkeleton(Annotation, Skeleton):
+    pass
+
+class LabeledSkeletonAttributeVal(AttributeVal):
+    skeleton = models.ForeignKey(LabeledSkeleton, on_delete=models.CASCADE)
+
+class TrackedSkeleton(TrackedObject,Skeleton):
+
+    # TODO: Is this most appropriate place to define "activity" field?
+    # It is a property specific to a tracked skeleton
+    # but could also be defined as an attribute
+    activity = models.CharField(max_length=64)
+    pass
+
+class TrackedSkeletonAttributeVal(AttributeVal):
+    skeleton = models.ForeignKey(TrackedSkeleton, on_delete=models.CASCADE)
+
+
+
+

@@ -15,6 +15,7 @@ class CollectionModel extends Listener {
         this._interpolationTracks = new Object();
         this._currentTracks = [];
         this._activeTrack = null;
+        this._activeKeypoint = null;
         this._drawing = false;
         this._allInterTracks = false;
         this._trackFilter = trackFilterModel;
@@ -41,6 +42,8 @@ class CollectionModel extends Listener {
 
 
     _interpolate(tracks, frame) {
+
+
         let result = [];
         for (let trackId in tracks) {
             let track = tracks[trackId];
@@ -52,6 +55,10 @@ class CollectionModel extends Listener {
              * track.isKeyFrame(frame) is provide the adding tracks if frame is keyframe (needed in cases when track become outsided on this frame)
              * this._allInterTracks is provide the adding any tracks (in mode when right panel show all tracks)  */
             if (!outsided || track.isKeyFrame(frame) || this._allInterTracks) {
+                //list of (number of tracks) track informations
+                // with (I think) information concerning the interpolated
+                // track info at the current (later) frame
+                // and the track info of the previous frame
                 result.push({
                     trackModel: track,
                     interpolation: interpolation
@@ -111,12 +118,17 @@ class CollectionModel extends Listener {
         this._interpolationTracks = new Object();
         this._currentTracks = [];
         this._activeTrack = null;
+        this._activeKeypoint = null;
         this._trackCounter = 0;
         this.notify();
     }
 
     importTracks(data) {
+
+
         let tracks = [];
+
+        /*
         for (let box of data.boxes) {
             let box0 = [box.xtl, box.ytl, box.xbr, box.ybr, box.frame, false, box.occluded];
             let box1 = box0.slice();
@@ -133,7 +145,33 @@ class CollectionModel extends Listener {
                 boxes: [box0, box1],
                 attributes: attributes
             });
+        }*/
+
+        let keypoint_names = ["nose",
+                                "left eye",
+                                "right eye",
+                                "left ear",
+                                "right ear",
+                                "left shoulder",
+                                "right shoulder",
+                                "left elbow",
+                                "right elbow",
+                                "left wrist",
+                                "right wrist",
+                                "left hip",
+                                "right hip",
+                                "left knee",
+                                "right knee",
+                                "left ankle",
+                                "right ankle",
+                                "center"];
+
+        function comparator(a, b) {
+            if (keypoint_names.indexOf(a.name) < keypoint_names.indexOf(b.name)) return -1;
+            if (keypoint_names.indexOf(b.name) < keypoint_names.indexOf(a.name)) return 1;
+            return 0;
         }
+
 
         for (let track of data.tracks) {
             let attributes = [];
@@ -141,6 +179,29 @@ class CollectionModel extends Listener {
                 attributes.push([attr.id, 0, attr.value]);
             }
 
+            let skeletons = [];
+            for (let skel of track.skeletons) {
+                var keypoints = [];
+                //TODO: skeleton requires "occluded" property at the moment
+                // need to change that
+
+                skel.keypoints.sort(comparator);
+
+                for (let keyp of skel.keypoints){
+                    keypoints.push([keyp.x,keyp.y,keyp.name,keyp.visibility])
+
+                }
+
+                //TODO: activity successfully loaded and retrieved from the back-end
+
+                skeletons.push([keypoints,skel.frame,skel.outside,0, skel.activity]);
+                for (let attr of skel.attributes) {
+                    attributes.push([attr.id, skel.frame, attr.value]);
+                }
+            }
+
+
+            /*
             let boxes = [];
             for (let box of track.boxes) {
                 boxes.push([box.xtl, box.ytl, box.xbr, box.ybr, box.frame,
@@ -149,21 +210,37 @@ class CollectionModel extends Listener {
                     attributes.push([attr.id, box.frame, attr.value]);
                 }
             }
-
             tracks.push({
                 label: track.label_id,
                 boxes: boxes,
                 attributes: attributes
             });
+
+            for (let i = 0; i < tracks.length; i ++) {
+            if (!tracks[i].boxes.length) continue;    // Remove saved wrong tracks with empty path
+            this.add(tracks[i]);
+            }
+            */
+
+            tracks.push({
+                label: track.label,
+                skels: skeletons,
+                attributes: attributes
+            });
+
+
         }
 
         for (let i = 0; i < tracks.length; i ++) {
-            if (!tracks[i].boxes.length) continue;    // Remove saved wrong tracks with empty path
-            this.add(tracks[i]);
-        }
+                if (!tracks[i].skels.length) continue;    // Remove saved wrong tracks with empty path
+                this.add(tracks[i]);
+            }
+
+
     }
 
     exportTracks() {
+
         let response = {"boxes": [], "tracks": []};
         for (let i = 0; i < this._allTracks.length; i ++ ) {
             let track = this._allTracks[i];
@@ -174,15 +251,24 @@ class CollectionModel extends Listener {
             } else {
                 response["tracks"].push(track.export());
             }
-
         }
         return JSON.stringify(response);
     }
 
     add(data) {
         let colors = this.getColors();
-        let trackModel = new TrackModel('box', data, this._trackCounter,
-            this._labelsInfo, this._stopFrame, this._startFrame, colors);
+
+
+
+        var trackModel;
+        if (data.hasOwnProperty('boxes')){
+            trackModel = new TrackModel('box', data, this._trackCounter,
+           this._labelsInfo, this._stopFrame, this._startFrame, colors);
+        }
+        else if (data.hasOwnProperty('skels')){
+            trackModel = new TrackModel('skel', data, this._trackCounter,
+          this._labelsInfo, this._stopFrame, this._startFrame, colors);
+        }
         let trackType = trackModel.trackType;
         if (trackType === 'interpolation') {
             this._interpolationTracks[this._trackCounter] = trackModel;
@@ -196,6 +282,7 @@ class CollectionModel extends Listener {
         }
         this._allTracks.push(trackModel);
         this._trackCounter ++;
+
     }
 
 
@@ -219,6 +306,26 @@ class CollectionModel extends Listener {
         this.onchangeframe(this._curFrame);
     }
 
+    createFromSkel(skel,label,type){
+
+        //Just to enforce this for debugging purposes
+        if (!(type == 'interpolation')){
+            throw new Error('Should be in interpolation mode')
+        }
+        let skels = [];
+        let current = [skel,this._curFrame,0,0];
+        skels.push(current);
+
+        this.add({
+            attributes: [],
+            skels: skels,
+            label: label
+        });
+
+        this.onchangeframe(this._curFrame);
+
+    }
+
 
     update() {
         if (this._curFrame != null) {
@@ -233,11 +340,14 @@ class CollectionModel extends Listener {
         }
         this._currentTracks = [];
         this._activeTrack = null;
+        this._activeKeypoint = null;
         this._frameChanged = this._curFrame != newframe;
         this._curFrame = newframe;
 
         let annotationTracks = [];
         let interpolationTracks = [];
+
+
 
         if (newframe in this._annotationTracks) {
             for (let trackId in this._annotationTracks[newframe]) {
@@ -249,8 +359,11 @@ class CollectionModel extends Listener {
         for (let trackId in this._interpolationTracks) {
             this._interpolationTracks[trackId].curFrame = newframe;
         }
+
         interpolationTracks = this._interpolate(this._interpolationTracks, newframe);
         this._currentTracks = annotationTracks.concat(interpolationTracks);
+
+        // TODO: given we're not filtering, we should mask this for now
         this._trackFilter.filter(this._currentTracks);
         this.notify();
     }
@@ -282,6 +395,9 @@ class CollectionModel extends Listener {
     }
 
     switchLockForActive() {
+
+        //TODO: necessary to define behavior here for keypoints?
+        // given we are not interested in working with "lock"
         if (this._activeTrack != null) {
             let value = this._allTracks[this._activeTrack].lock;
             this._allTracks[this._activeTrack].lock = !value;
@@ -345,6 +461,30 @@ class CollectionModel extends Listener {
         }
     }
 
+    setactivekeypoint(keypointID, trackID) {
+
+        if (keypointID != this._activeKeypoint){
+            this.resetactivekeypoint();
+            this._activeKeypoint = keypointID;
+            this._activeTrack = trackID;
+            this._allTracks[this._activeTrack].active = true;
+            this._allTracks[this._activeTrack].activeKeypoint = keypointID;
+
+
+        }
+
+    }
+
+    resetactivekeypoint(){
+        if (this._activeKeypoint != null && this._activeTrack != null) {
+            this._allTracks[this._activeTrack].active = false;
+            this._allTracks[this._activeTrack].activeKeypoint = null;
+            this._activeTrack = null;
+            this._activeKeypoint = null;
+        }
+
+    }
+
     resetactivetrack() {
         if (this._activeTrack != null) {
             this._allTracks[this._activeTrack].active = false;
@@ -352,6 +492,8 @@ class CollectionModel extends Listener {
         }
     }
 
+
+    //TODO: removeactivetrack
     removeactivetrack(force) {
         if (this._activeTrack != null) {
             this._allTracks[this._activeTrack].remove(force);
@@ -361,29 +503,68 @@ class CollectionModel extends Listener {
     onmousemove(x, y, modKeysStates) {
         if (this._activeTrack != null && modKeysStates.ctrl) return;
         let activeTrack = null;
+        let activeKeypoint = null;
         let minArea = Number.MAX_SAFE_INTEGER;
+        let minDist = Number.MAX_SAFE_INTEGER;
         this._currentTracks.forEach((item) => {
             if (item.trackModel.removed) return;
             let pos = item.trackModel._shape.interpolatePosition(this._curFrame, item.trackModel.firstFrame);
             let type = item.trackModel.shapeType;
             if (pos.outsided || item.trackModel.hidden) return;
+
+            // We'll search for active keypoint directly
+            // (distinguishing between center keypoint and others)
+            // instead of finding an active track first to avoid potential
+            // issues with overlap of skeleton bounding boxes.
+
+            if(TrackModel.ShapeContain(pos,x,y,type)){
+
+                for(var i = 0; i < pos.skel.length; i++){
+
+                    // Calculate distance between cursor and keypoint
+                    let keyp_x = pos.skel[i][0];
+                    let keyp_y = pos.skel[i][1];
+                    let dist = Math.hypot(x - keyp_x,y - keyp_y);
+
+                    if (dist < minDist){
+                        minDist = dist;
+                        activeTrack = item.trackModel.id;
+                        activeKeypoint = i;
+                    }
+
+                    //if(dist < minArea || this._allTracks[activeTrack].lock) {
+                }
+            }
+
+
+            /*
             if (TrackModel.ShapeContain(pos, x, y, type)) {
                 let area = TrackModel.ShapeArea(pos, type);
+
+                // If cursor is sufficiently contained within bbox
+                // set the corresponding track as active.
                 if (area < minArea || this._allTracks[activeTrack].lock) {
                     if (activeTrack != null) {
                         if (!this._allTracks[activeTrack].lock && this._allTracks[item.trackModel.id].lock) {
                             return;
                         }
                     }
+
                     minArea = area;
                     activeTrack = item.trackModel.id;
                 }
-            }
+            }*/
         });
-        if (activeTrack != null) {
-            this.setactivetrack(activeTrack);
+        if (activeKeypoint != null) {
+
+            this.setactivekeypoint(activeKeypoint,activeTrack);
+            //this.setactivetrack(activeTrack);
+
         }
-        else this.resetactivetrack();
+        else {
+            this.resetactivekeypoint();
+            //this.resetactivetrack();
+        }
         return activeTrack;
     }
 

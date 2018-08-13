@@ -284,17 +284,17 @@ class MergerController {
 
 class MergerView {
     constructor (mergerModel, mergerController) {
-        this._mergeButton = $('#mergeTracksButton');
+        //this._mergeButton = $('#mergeTracksButton');
         this._controller = mergerController;
 
-        this._mergeButton.on('click', () => this._controller.onMergePressed.call(this._controller));
+       // this._mergeButton.on('click', () => this._controller.onMergePressed.call(this._controller));
 
         mergerModel.subscribe(this);
     }
 
     onMergerUpdate(merger) {
         if (merger.mergeMode) {
-            this._mergeButton.text('Apply Merge');
+           // this._mergeButton.text('Apply Merge');
             let checkStatus = merger.checkStatus;
             if (checkStatus != null) {
                 let journal = checkStatus.journal;
@@ -321,11 +321,12 @@ class MergerView {
             }
         }
         else {
-            this._mergeButton.text('Merge Tracks');
+            //this._mergeButton.text('Merge Tracks');
         }
     }
 
     onDrawerUpdate(drawer) {
-        this._mergeButton.prop('disabled', drawer.drawMode);
+        //TODO: Delete, or adapt, merger functionality
+        //this._mergeButton.prop('disabled', drawer.drawMode);
     }
 }

@@ -55,6 +55,14 @@
     transform: rotate(-45deg);
   }
 
+  .slider {
+    transition:all 2s ease-in-out;
+    height:0px;
+    }
+
+  .slider.open {
+    height: auto;
+    }
 
 
   .graphicButton {
@@ -105,6 +113,23 @@
     background-size: 20px;
 }
 
+.flipButton {
+    background: url("icons/index.png") no-repeat;
+    background-size: 20px;
+}
+
+
+.dropButton {
+    background: url("icons/chevronright.png") no-repeat;
+    background-size: 20px;
+}
+
+.right {
+     text-align: right;
+     /*display: inline-block;*/
+     padding: 5px;
+}
+
 
 
 .uiElement {
@@ -140,12 +165,10 @@
 }
 
 
-
-
 .shape {
     stroke-location: inside;
     fill-opacity: 0;
-    stroke-width: 2px;
+    /*stroke-width: 2px;*/
     position: relative;
     shape-rendering: optimizespeed;
     color-rendering: optimizeSpeed;
@@ -211,7 +234,8 @@
     background-color: #B0C4DE;
     padding: 8px 0;
     height: auto;
-    width: 700px;
+    width: 270px;
+    z-index: 100;
     z-index: 100;
     float: left;
     position: absolute;

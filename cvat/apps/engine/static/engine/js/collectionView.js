@@ -83,7 +83,10 @@ class CollectionView {
             let trackView = new TrackView(trackController, trackModel, interpolation, this._labelsInfo, colors);
             trackModel.notify();
             trackView.revscale = this._revPlayerScale;
+
             trackView.updateViewGeometry();
+
+            // TODO: integrate this with what Wilfredo is working on
             trackView.onoverUI = (id, e) => this._collectionController.setactivetrack(id, e);
             trackView.onoutUI = (e) => this._collectionController.resetactivetrack(e);
             trackView.onshift = (frame) => this._playerModel.shift(frame, true);
@@ -126,6 +129,8 @@ class CollectionView {
     }
 
     lockChange(value) {
+        //TODO: check fo rthis
+        /*
         if (value) {
             for (let track of this._tracks) {
                 track.view._shape.removeClass('changeable');
@@ -136,5 +141,6 @@ class CollectionView {
                 track.view._shape.addClass('changeable');
             }
         }
+        */
     }
 }

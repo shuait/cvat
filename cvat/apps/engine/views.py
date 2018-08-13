@@ -2,6 +2,7 @@ import os
 import json
 import logging
 import traceback
+import pdb
 
 from django.http import HttpResponse, HttpResponseBadRequest, JsonResponse
 from django.shortcuts import redirect, render
@@ -175,6 +176,8 @@ def get_job(request, jid):
     try:
         job_logger[jid].info("get job #{} request".format(jid))
         response = task.get_job(jid)
+
+
     except Exception as e:
         job_logger[jid].error("cannot get job #{}".format(jid), exc_info=True)
         return HttpResponseBadRequest(str(e))
@@ -230,6 +233,7 @@ def get_annotation(request, jid):
     try:
         job_logger[jid].info("get annotation for {} job".format(jid))
         response = annotation.get(jid)
+
     except Exception as e:
         job_logger[jid].error("cannot get annotation for job {}".format(jid), exc_info=True)
         return HttpResponseBadRequest(str(e))
@@ -239,9 +243,14 @@ def get_annotation(request, jid):
 @login_required
 @permission_required(perm=['engine.view_task', 'engine.change_annotation'], raise_exception=True)
 def save_annotation_for_job(request, jid):
+
+
+
     try:
+
         job_logger[jid].info("save annotation for {} job".format(jid))
         data = request.POST.dict()
+
         if 'annotation' in data:
             annotation.save_job(jid, json.loads(data['annotation']))
         if 'logs' in data:
@@ -259,6 +268,7 @@ def save_annotation_for_job(request, jid):
 @login_required
 @permission_required(perm=['engine.view_task', 'engine.change_annotation'], raise_exception=True)
 def save_annotation_for_task(request, tid):
+
     try:
         task_logger[tid].info("save annotation request")
         data = json.loads(request.body.decode('utf-8'))
@@ -271,6 +281,7 @@ def save_annotation_for_task(request, tid):
 
 @login_required
 def get_username(request):
+
     response = {'username': request.user.username}
     return JsonResponse(response, safe=False)
 

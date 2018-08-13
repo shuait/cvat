@@ -96,11 +96,16 @@
             </svg>
             <input type = "range" id = "playerProgress"/>
         </div>  <!-- END of PLAYER PANEL -->
+
+
         <div style="margin-top: 20px">
             <button id="menuButton" class="regular h1"> Open Menu </button>
+            <!--
             <label class="regular h1" style="margin-left: 50px"> Filter: </label>
             <input type="text" id="filterInputString" class="regular h2"/>
             <button id="resetFilterButton" class="regular h1"> Reset </button>
+            -->
+
             <div style="float: right;">
                 <label class="regular h1"> Frame </label>
                 <input class="regular h2" style="width: 3.5em;" type="number" id="frameNumber">
@@ -244,15 +249,19 @@
     </div>
 
     <div id="taskAnnotationMenu" class="hidden regular">
-        <div style="float:left; width: 40%; height: 100%;" id="engineMenuButtons">
+        <div style="float:left; width: 100%; height: 100%;" id="engineMenuButtons">
+
+            <!--
             <button id="downloadAnnotation" class="menuButton semiBold h2"> Dump Annotation </button>
             <button id="uploadAnnotation" class="menuButton semiBold h2"> Upload Annotation </button>
+            -->
             <button id="removeAnnotationButton" class="menuButton semiBold h2"> Remove Annotation </button>
             <button id="settingsButton" class="menuButton semiBold h2"> Settings </button>
             <button id="helpButton" class="menuButton semiBold h2"> Help </button>
             <button id="saveButton" class="menuButton semiBold h2"> Save Work </button>
             <input type="file" id="annotationFileSelector" style="display: none"/>
         </div>
+        <!--
         <div style="float:left; width: 58%; height: 100%; text-align: left;" class="selectable">
             <center>
                 <label id="statTaskName" class="semiBold h2"> </label>  <br>
@@ -265,6 +274,7 @@
             <center> <label class="semiBold h2"> Job Statistic </label> </center>
             <div id="statByLabels" style="text-align: center;"> </div>
         </div>
+        -->
     </div>
 </div>
 
@@ -273,12 +283,13 @@
     <div id="uiContent"> </div>
     <div id="trackManagement">
         <button id="createTrackButton" class="regular h2" style="width: 80%;"> Create Track </button>
-        <button id="mergeTracksButton" class="regular h2" style="width: 80%; margin-top: 5px;"> Merge Tracks </button>
-        <select id="labelSelect" class="regular h2"> </select>
+        <!-- <button id="mergeTracksButton" class="regular h2" style="width: 80%; margin-top: 5px;"> Merge Tracks </button>-->
+        <select id="labelSelect" class="regular h2 hidden"> </select>
+
+        <!-- Going to enforce that the trackType be interpolation for our purposes
         <select id="trackTypeSelect" class="regular h2">
-            <option value="annotation" class="regular"> Annotation </option>
             <option value="interpolation" class="regular"> Interpolation </option>
-        </select>
+        </select>-->
     </div>
     <div id="aamMenu" class="hidden">
         <label class="regular h1"> AAM Mode </label>
