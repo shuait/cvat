@@ -82,6 +82,8 @@ def save_job(jid, data):
     #annotation.save_boxes_to_db()
     annotation.save_paths_to_db()
     db_job.segment.task.updated_date = timezone.now()
+    db_job.updated_date = timezone.now()
+    db_job.save()
     db_job.segment.task.save()
 
 # pylint: disable=unused-argument

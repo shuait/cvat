@@ -73,11 +73,13 @@ def DetailTaskInfo(request, task, segments, dst_dict):
     for segment in segments:
         for job in segment.job_set.all():
             segment_url = "{0}://{1}/?id={2}".format(scheme, host, job.id)
+            # jobUrlState = True
             dst_dict["segments"].append({
                 'id': job.id,
                 'start': segment.start_frame,
                 'stop': segment.stop_frame,
-                'url': segment_url
+                'url': segment_url,
+                'urlState': job.get_deltatime()
             })
 
     db_labels = task.label_set.prefetch_related('attributespec_set').all()
@@ -106,6 +108,7 @@ def DashboardView(request):
             DetailTaskInfo(request, task, segments, task_info)
             data.append(task_info)
 
+    # pdb.set_trace()
     return render(request, 'dashboard/dashboard.html', {
         'data': data,
         'max_upload_size': settings.LOCAL_LOAD_MAX_FILES_SIZE,
