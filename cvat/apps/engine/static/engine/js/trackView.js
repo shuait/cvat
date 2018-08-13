@@ -651,10 +651,12 @@ class TrackView {
         let lockShortkeys = `(${shortkeys["switch_lock_property"].view_value}), (${shortkeys["switch_all_lock_property"].view_value})`;
         let occludedShortkey = `(${shortkeys["switch_occluded_property"].view_value})`;
 
+
+/*
         let lockButton = $(`<button title="Lock Property ${lockShortkeys}"></button>`)
             .addClass('graphicButton lockButton').appendTo(propManagement);
         let occludedButton = $(`<button title="Occluded Property ${occludedShortkey}"></button>`)
-            .addClass('graphicButton occludedButton').appendTo(propManagement);
+            .addClass('graphicButton occludedButton').appendTo(propManagement); */
         let outsidedButton = $(`<button title="Outsided Property"></button>`).addClass('graphicButton outsidedButton');
         let keyFrameButton = $(`<button title="KeyFrame Property"></button>`).addClass('graphicButton keyFrameButton');
         let flipButton = $(`<button title="Flip L/R"></button>`).addClass('graphicButton flipButton');
@@ -680,6 +682,7 @@ class TrackView {
         let hidden = interpolation.position.outsided;
 
         ui.extend({
+            /*
             lock : function(value) {
                 if (value) lockButton.addClass('locked');
                 else lockButton.removeClass('locked');
@@ -694,7 +697,7 @@ class TrackView {
                 if (value) occludedButton.addClass('occluded');
                 else occludedButton.removeClass('occluded');
                 occludedState = value;
-            },
+            },*/
 
             outsided : function(value) {
                 if (value) outsidedButton.addClass('outsided');
@@ -764,12 +767,13 @@ class TrackView {
                 }
             }
         });
-
+        /*
         ui.lock(lockedState);
-        ui.occluded(occludedState);
+        ui.occluded(occludedState); */
         ui.outsided(outsidedState);
         ui.keyFrame(keyFrameState);
 
+        /*
         lockButton.on('click', function() {
             lockedState = !lockedState;
             trackModel.lock = lockedState;
@@ -778,10 +782,9 @@ class TrackView {
         occludedButton.on('click', function() {
             occludedState = !occludedState;
             trackModel.occluded = occludedState;
-        });
+        }); */
 
         outsidedButton.on('click', function() {
-
             //TODO: restore functionality of outsided Button
             //trackModel.outside = !outsidedState;
         });
@@ -1080,8 +1083,8 @@ class TrackView {
                  'x2': keyp2.cx.animVal.value,
                  'y2': keyp2.cy.animVal.value,
                  'track_id' : id,
-                  'id1' : keyp1.attributes['name'].value,
-                  'id2' : keyp2.attributes['name'].value
+                 'id1' : keyp1.attributes['name'].value,
+                 'id2' : keyp2.attributes['name'].value
                     }).addClass('shape changeable');
 
             svgLine.updatePos = function(pos){
