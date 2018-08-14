@@ -1413,7 +1413,7 @@ class TrackView {
         //select.style['margin-left'] = '5px';
 
         //TODO: added margin right
-        select.style['margin-right'] = '10px';
+        select.style['margin-right'] = '0px';
 
         select.className += " uiSelect";
 
