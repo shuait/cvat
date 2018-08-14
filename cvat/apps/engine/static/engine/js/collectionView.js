@@ -19,7 +19,7 @@ class CollectionView {
         this._labelsInfo = labelsInfo;
         this._playerModel = playerModel;
 
-        this._hideLabelsCheck.prop('checked', true);
+        this._hideLabelsCheck.prop('checked', false);
         //this._showAllInterBox.prop('checked', collectionModel.allInterTracks);
         playerModel.subscribe(this);
         collectionModel.subscribe(this);
