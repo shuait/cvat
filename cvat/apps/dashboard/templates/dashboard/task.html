@@ -3,7 +3,7 @@
         <label class="semiBold h1 dashboardTaskNameLabel selectable"> {{ item.name }} </label>
     </center>
     <center class="dashboardTitleWrapper">
-        <label class="regular dashboardStatusLabel"> {{ item.status }} </label>
+        <label class="regular dashboardStatusLabel"> <!--{{ item.status }}--> </label>
     </center>
     <div class="dashboardTaskIntro" style='background-image: url("/get/task/{{item.task_id}}/frame/0")'>  </div>
     <div class="dashboardButtonsUI">
@@ -26,7 +26,7 @@
             {% for segment in item.segments %}
             <tr>
                 <td>
-                    <a id="test" href="{{segment.url}}"'>{{segment.url}}</a>
+                    <a id="test" href="{{segment.url}}">{{segment.url}}</a>
                 </td>
             </tr>
             {% endfor %}
