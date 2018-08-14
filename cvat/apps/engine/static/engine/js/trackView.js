@@ -57,16 +57,12 @@ class TrackView {
 
         this._connectors = TrackView.makeConnections(this._shape,this._connections,
                                                      this._keypoint_names, trackModel.id);
-
         // this returns an HTML text box object
         // TODO: return individual text box objects for individual keypoints
         this._text = TrackView.makeText(interpolation, labelsInfo.labels()[trackModel.label],
                                         trackModel.id);
 
-
-
         this._keypoint_texts = TrackView.makeKeypointTexts(interpolation);
-
 
         this._ui = TrackView.makeUI(interpolation, labelsInfo, colors, trackModel,
                                     this._shape, this._connectors, this._keypoint_texts,
@@ -97,12 +93,11 @@ class TrackView {
 
         this._outsideShape = null;
 
-
-        // TODO: implement "editing" functionality
-
         this._shape.forEach((keypoint,ind) => {
 
             keypoint.on('drag', function(event, scale) {
+
+            $("[activeKeypointText]").remove();
 
             //TODO: logger.
             /*let type = event.type === 'drag' ? Logger.EventType.dragObject;
@@ -232,9 +227,6 @@ class TrackView {
 
             if (state.model._shapeType == 'skel'){
 
-                // Insert circles
-
-
                 // Insert connectors
                 for(var conn = 0; conn < this._connectors.length; conn++) {
 
@@ -259,18 +251,16 @@ class TrackView {
                     this._framecontent.append(this._connectors[conn]);
                 }
 
-                for (var i = 0; i < state.position.skel.length; i++){
+                // Insert circles
+                for (var i = 0; i < state.position.skel.length; i++) {
                     this._shape[i].updatePos(state.position.skel[i]);
                     this._framecontent.append(this._shape[i]);
                 }
-
-
 
                 // Insert lines
                 for(var i =0; i < this._keypoint_texts.length; i++){
                     this._framecontent.append($(this._keypoint_texts[i]));
                 }
-
 
             } else{
                 this._shape.updatePos(state.position);
@@ -306,12 +296,32 @@ class TrackView {
 
         if (state.model._activeKeypoint != null && !(state.lock || state.model.outside || state.model.hidden)){
 
+            // Introduce keypoint labels before keypoint to avoid issues
+            // with hovering over keypoint.
+
+            let svgText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+
+            svgText.setAttribute('x', $(this._shape[state.model._activeKeypoint]).attr('cx'));
+            svgText.setAttribute('y',
+                +$(this._shape[state.model._activeKeypoint]).attr('cy') + $(this._shape[state.model._activeKeypoint]).attr('r') + 3);
+            svgText.setAttribute('class', 'shapeText regular');
+
+            let labelNameText = document.createElementNS('http://www.w3.org/2000/svg', 'tspan');
+
+            // Defines text
+            labelNameText.innerHTML = `${$(this._shape[state.model._activeKeypoint]).attr('name')}`;
+            //
+            labelNameText.setAttribute('dy', '1em');
+            labelNameText.setAttribute('x', $(this._shape[state.model._activeKeypoint]).attr('cx'));
+            labelNameText.setAttribute('class', 'bold');
+            labelNameText.setAttribute('activeKeypointText',true);
+            svgText.appendChild(labelNameText);
+            $(svgText).appendTo(this._framecontent);
+
             this._shape[state.model._activeKeypoint].addClass('highlightedShape');
             if (this._framecontent.has(this._shape)) {
                 this._shape[state.model._activeKeypoint].appendTo(this._framecontent);
             }
-
-            // TODO: add class to UI once Will finishes
 
         } else{
             //We will have resetted ._activeKeypoint to null by now.
@@ -319,7 +329,8 @@ class TrackView {
             // if exists.
             this._shape.forEach((keypoint) => {
                 keypoint.removeClass('highlightedShape');
-            })
+            });
+            $("[activeKeypointText]").remove();
         }
 
         /*
@@ -373,7 +384,6 @@ class TrackView {
         /*
         this._ui.occluded(occluded);
         */
-
         this._ui.outsided(outsided);
         /*
         if (occluded) {R
@@ -1054,6 +1064,20 @@ class TrackView {
             occludedButtons[i_keypoint] = $(`<button title="Occluded Property"></button>`)
                 .addClass('graphicButton occludedButton'); //.appendTo(this._skelKeypoints);
 
+            occludedButtons[i_keypoint].on('mouseover', function() {
+                 shape[i_keypoint].addClass('highlightedShape');
+                 $(shape[i_keypoint]).attr({
+                     r : 3*$(shape[i_keypoint]).attr('r')
+                     })
+            })
+
+            occludedButtons[i_keypoint].on('mouseout', function() {
+                 shape[i_keypoint].addClass('highlightedShape');
+                 $(shape[i_keypoint]).attr({
+                     r : $(shape[i_keypoint]).attr('r')/3
+                     })
+            })
+
             occludedButtons[i_keypoint].on('click', function(){
                 occludedStates[i_keypoint] = (occludedStates[i_keypoint] == "2") ?  "1" : "2";
                 shape[i_keypoint].updateVisibility(occludedStates[i_keypoint]);
@@ -1315,6 +1339,7 @@ class TrackView {
             return svgTextList;
         }
     }
+
 
     static makeAttr(type, name, value, values, key, id) {
         if (type === 'checkbox') {
