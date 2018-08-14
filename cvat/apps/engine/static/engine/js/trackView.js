@@ -120,16 +120,12 @@ class TrackView {
             this.updateViewGeometry();
             this._trackController.onchangegeometry(this._shape);
             modifyObjEvent.close();
-        }.bind(this)); */
-
-
-/*
+        }.bind(this));
         this._shape.on('mousedown', function() {
             this._trackController.onclick();
             this._uicontent.scrollTop(0);
             this._uicontent.scrollTop(this._ui.offset().top - 10);
         }.bind(this));
-
 
         /*
         for(var i = 0; i < this._shape.length; i++){
@@ -145,7 +141,6 @@ class TrackView {
         this._ui.onshift = function(frame) {
             this.onshift(frame);
         }.bind(this);
-
 
         this._layout = [[0,-15], //nose
                       [-1,-15], //left eye
@@ -165,9 +160,6 @@ class TrackView {
                       [-3.5,10], //left ankle
                       [3.5,10], //right ankle
                       [0,-3]];  // center (will be displayed in different color)
-
-
-
 
         trackModel.subscribe(this);
     }
@@ -217,7 +209,7 @@ class TrackView {
             this.removeView();
             return;
         }
-        /*
+
         if (state.model.outside || state.model.hidden) {
 
             // Detach shape, connector, keypoint texts
@@ -230,20 +222,46 @@ class TrackView {
             for(var i =0; i < this._keypoint_texts.length; i++){
                 $(this._keypoint_texts[i]).detach();
             }
-        }*/
+        }
 
         else {
 
             if (state.model._shapeType == 'skel'){
 
-                for (var i = 0; i < state.position.skel.length; i++){
+                // Insert connectors
+                for(var conn = 0; conn < this._connectors.length; conn++) {
 
-                    // I assigned the updatePos function to each
-                    // svgCircle element for skel _shapes, so just choose
-                    // the first element's updatePos function, for instance
+                    // For each connection
+                    var keyp1, keyp2 = null;
+                    for (var i = 0; i < this._shape.length; i++) {
+                        if (this._keypoint_names.indexOf($(this._shape[i]).attr('name')) == (this._connections[conn][0] - 1)) {
+                            keyp1 = this._shape[i];
+                        }
+                        else if (this._keypoint_names.indexOf($(this._shape[i]).attr('name')) == (this._connections[conn][1] - 1)) {
+                            keyp2 = this._shape[i];
+                        };
+                    }
+                    this._connectors[conn].updatePos({
+                        'x1' : $(keyp1).attr('cx'),
+                        'y1' : $(keyp1).attr('cy'),
+                        'x2' : $(keyp2).attr('cx'),
+                        'y2' : $(keyp2).attr('cy')
+                    })
+                    this._framecontent.append(this._connectors[conn]);
+                }
+
+                // Insert circles
+                for (var i = 0; i < state.position.skel.length; i++){
                     this._shape[i].updatePos(state.position.skel[i]);
                     this._framecontent.append(this._shape[i]);
                 }
+
+                // Insert lines
+                for(var i =0; i < this._keypoint_texts.length; i++){
+                    this._framecontent.append($(this._keypoint_texts[i]));
+                }
+
+
             } else{
                 this._shape.updatePos(state.position);
                 this._framecontent.append(this._shape);
@@ -267,18 +285,13 @@ class TrackView {
             this._shape.removeClass('lockedShape');
             this._text.removeClass('lockedText');
         }
-
+        */
         if (!(state.model.hiddenLabel || state.model.outside || state.model.hidden)) {
             this._text.appendTo(this._framecontent);
         }
         else {
             this._text.detach();
         }
-        */
-
-        // State isn't active upon creation,
-        // but on mouseover it is
-
 
         if (state.model._activeKeypoint != null && !(state.lock || state.model.outside || state.model.hidden)){
 
@@ -345,13 +358,14 @@ class TrackView {
 
         this._ui.keyFrame(keyFrame);
 
-        /*
+
         let outsided = state.position.outsided;
-
+        /*
         this._ui.occluded(occluded);
-        this._ui.keyFrame(keyFrame);
-        this._ui.outsided(outsided);
+        */
 
+        this._ui.outsided(outsided);
+        /*
         if (occluded) {R
             this._shape.addClass('occludedShape');
         }
@@ -770,6 +784,7 @@ class TrackView {
         /*
         ui.lock(lockedState);
         ui.occluded(occludedState); */
+
         ui.outsided(outsidedState);
         ui.keyFrame(keyFrameState);
 
@@ -786,7 +801,7 @@ class TrackView {
 
         outsidedButton.on('click', function() {
             //TODO: restore functionality of outsided Button
-            //trackModel.outside = !outsidedState;
+            trackModel.outside = !outsidedState;
         });
 
         flipButton.on('click', function() {
@@ -1036,7 +1051,6 @@ class TrackView {
             })
 
             if (trackModel.trackType == 'interpolation') {
-                //outsidedButtons[i_keypoint].appendTo(skelKeypoints); //.appendTo(this._skelKeypoints);
                 occludedButtons[i_keypoint].appendTo(skelKeypoints);
             }
         }
@@ -1088,7 +1102,7 @@ class TrackView {
                     }).addClass('shape changeable');
 
             svgLine.updatePos = function(pos){
-                    svgLine.attr({
+                    $(this).attr({
                         'x1' : pos.x1,
                         'y1' : pos.y1,
                         'x2' : pos.x2,
@@ -1227,7 +1241,7 @@ class TrackView {
         labelNameText.innerHTML = `Worker ${id}`;
         //
         labelNameText.setAttribute('dy', '1em');
-        labelNameText.setAttribute('x', shapeX + shapeW + 5);
+        labelNameText.setAttribute('x', shapeX + shapeW);
         labelNameText.setAttribute('class', 'bold');
         svgText.appendChild(labelNameText);
         for (let attrKey in attributes) {
@@ -1241,7 +1255,7 @@ class TrackView {
             //
 
             attrRow.setAttribute('dy', '1em');
-            attrRow.setAttribute('x', shapeX + shapeW + 5);
+            attrRow.setAttribute('x', shapeX + shapeW);
             svgText.appendChild(attrRow);
         }
         return $(svgText);

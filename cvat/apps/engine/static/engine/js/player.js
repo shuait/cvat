@@ -128,8 +128,6 @@ class PlayerModel extends Listener {
             resetZoom: job.mode === 'annotation'
         };
 
-        debugger;
-
         this._playInterval = null;
         this._pauseFlag = null;
         this._frameProvider = new FrameProvider(this._frame.stop, job.taskid);

@@ -27,7 +27,7 @@ def dispatch_request(request):
     if request.method == 'GET' and 'id' in request.GET:
         job = models.Job.objects.get(id=request.GET['id'])
         segment = job.segment
-        if job.get_deltatime() == 'False':
+        if job.get_deltatime() == 'False' and not request.user.is_superuser:
             return HttpResponseBadRequest("This job is being edited")
         if segment.check_user_access(request.user):          
             return render(request, 'engine/annotation.html', {

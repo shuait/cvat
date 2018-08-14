@@ -107,12 +107,9 @@ class TrackModel extends Listener {
         }
         const pos = this._shape.interpolatePosition(this._curFrame, this._firstFrame);
         let newPos = {
-            xtl: pos.xtl,
-            ytl: pos.ytl,
-            xbr: pos.xbr,
-            ybr: pos.ybr,
+            skel: pos.skel,
             outsided: value ? 1 : 0,
-            occluded: pos.occluded
+            occluded: 0
         };
         this.recordPosition(newPos, this._curFrame);
         this._firstFrame = TrackModel.computeFirstFrame(this._shape._positionJournal);
@@ -895,8 +892,6 @@ class Skeleton {
         for (let i = 0; i < data.length; i ++) {
             let frameNumber = data[i][1];
 
-            // Keypoints content will be passed on to another variable
-            // Should also contain information concerning "outsided" variable
             this._positionJournal[frameNumber] = {
                 skel: data[i][0], //contains x,y,name,visibility now
                 outsided: data[i][2],
@@ -994,7 +989,6 @@ class Skeleton {
         let leftCurDifference = frameNumber - leftPos;
         let leftRightDifference = rightPos - leftPos;
         let relativeOffset = leftCurDifference / leftRightDifference;
-
 
         let interpolatedPos = {
             skel: pJ[leftPos].skel,
