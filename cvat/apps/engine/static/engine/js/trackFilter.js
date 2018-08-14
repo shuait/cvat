@@ -112,7 +112,7 @@ class TrackFilterController {
 
         function setupFilterShortkeys() {
             let hideFilteredTracksHandler = Logger.shortkeyLogDecorator(function() {
-                $('#hideFilteredBox').click();
+                //$('#hideFilteredBox').click();
             });
 
             let shortkeys = userConfig.shortkeys;
@@ -135,9 +135,9 @@ class TrackFilterView {
         this._controller = filterController;
         this._filterString = $('#filterInputString');
         //this._resetFilterButton = $('#resetFilterButton');
-        this._hideFilteredBox = $('#hideFilteredBox');
+        //this._hideFilteredBox = $('#hideFilteredBox');
 
-        this._hideFilteredBox.prop('checked', filterModel.hideFiltered);
+        //this._hideFilteredBox.prop('checked', filterModel.hideFiltered);
 
         this._filterString.on('keypress keydown keyup', function(e) {
             e.stopPropagation();
@@ -157,11 +157,11 @@ class TrackFilterView {
         this._resetFilterButton.on('click', function() {
             this._filterString.prop('value', '');
             this._controller.updateQuery('');
-        }.bind(this));*/
+        }.bind(this));
 
         this._hideFilteredBox.on('change', function(e) {
             let value = e.target.checked;
             this._controller.hideFiltered(value);
-        }.bind(this));
+        }.bind(this));*/
     }
 }

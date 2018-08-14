@@ -153,9 +153,9 @@ function buildAnnotationUI(job, trackData, loadJobEvent) {
 
     //$('#labelSelect').attr('title',
     //    `${shortkeys["change_default_label"].view_value} - ${shortkeys["change_default_label"].description}`);
-    $('#hideBoxesBox').attr('title', `${shortkeys["hide_shapes"].view_value}`);
+    //$('#hideBoxesBox').attr('title', `${shortkeys["hide_shapes"].view_value}`);
     $('#hideLabelsBox').attr('title', `${shortkeys["hide_labels"].view_value}`);
-    $('#hideFilteredBox').attr('title', `${shortkeys["hide_filtered_tracks"].view_value}`);
+    //$('#hideFilteredBox').attr('title', `${shortkeys["hide_filtered_tracks"].view_value}`);
 }
 
 
@@ -469,7 +469,7 @@ function setupAnnotationShortkeys() {
     };
 
     let hideBoxesHandler = Logger.shortkeyLogDecorator(function() {
-        $('#hideBoxesBox').click();
+        //$('#hideBoxesBox').click();
     });
 
     let hideLabelsHandler = Logger.shortkeyLogDecorator(function() {

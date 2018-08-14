@@ -210,7 +210,7 @@ class DrawerView {
         this._playerScale = 1;
 
 
-                    //  x , y
+                    // (relative) x , y
         this._layout = [[0,-15], //nose
                       [-1,-15], //left eye
                       [1,-15], //right eye
