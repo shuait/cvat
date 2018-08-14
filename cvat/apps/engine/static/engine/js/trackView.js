@@ -10,26 +10,7 @@ class TrackView {
 
         this._shape = TrackView.makeShape(interpolation.position, trackModel.shapeType, colors,
                                             trackModel.id);
-        this._connections = [[16,14],
-                            [14,12],
-                            [17,15],
-                            [15,13],
-                            [12,13],
-                            [6,12],
-                            [7,13],
-                            [6,7],
-                            [6,8],
-                            [7,9],
-                            [8,10],
-                            [9,11],
-                            [2,3],
-                            [1,2],
-                            [1,3],
-                            [2,4],
-                            [3,5],
-                            [4,6],
-                            [5,7]];
-        this._connections_length = this._connections.length;
+
 
         this._keypoint_names = ["nose",
                                 "left eye",
@@ -49,6 +30,29 @@ class TrackView {
                                 "left ankle",
                                 "right ankle",
                                 "center"];
+
+        let kp = this._keypoint_names;
+
+        this._connections = [[kp[16-1],kp[14-1]],
+                            [kp[14-1],kp[12-1]],
+                            [kp[17-1],kp[15-1]],
+                            [kp[15-1],kp[13-1]],
+                            [kp[12-1],kp[13-1]],
+                            [kp[6-1],kp[12-1]],
+                            [kp[7-1],kp[13-1]],
+                            [kp[6-1],kp[7-1]],
+                            [kp[6-1],kp[8-1]],
+                            [kp[7-1],kp[9-1]],
+                            [kp[8-1],kp[10-1]],
+                            [kp[9-1],kp[11-1]],
+                            [kp[2-1],kp[3-1]],
+                            [kp[1-1],kp[2-1]],
+                            [kp[1-1],kp[3-1]],
+                            [kp[2-1],kp[4-1]],
+                            [kp[3-1],kp[5-1]],
+                            [kp[4-1],kp[6-1]],
+                            [kp[5-1],kp[7-1]]];
+        this._connections_length = this._connections.length;
 
 
         this._connectors = TrackView.makeConnections(this._shape,this._connections,
@@ -228,16 +232,19 @@ class TrackView {
 
             if (state.model._shapeType == 'skel'){
 
+                // Insert circles
+
+
                 // Insert connectors
                 for(var conn = 0; conn < this._connectors.length; conn++) {
 
                     // For each connection
                     var keyp1, keyp2 = null;
                     for (var i = 0; i < this._shape.length; i++) {
-                        if (this._keypoint_names.indexOf($(this._shape[i]).attr('name')) == (this._connections[conn][0] - 1)) {
+                        if ($(this._shape[i]).attr('name') == (this._connections[conn][0])) {
                             keyp1 = this._shape[i];
                         }
-                        else if (this._keypoint_names.indexOf($(this._shape[i]).attr('name')) == (this._connections[conn][1] - 1)) {
+                        else if ($(this._shape[i]).attr('name') == (this._connections[conn][1])) {
                             keyp2 = this._shape[i];
                         };
                     }
@@ -245,16 +252,19 @@ class TrackView {
                         'x1' : $(keyp1).attr('cx'),
                         'y1' : $(keyp1).attr('cy'),
                         'x2' : $(keyp2).attr('cx'),
-                        'y2' : $(keyp2).attr('cy')
+                        'y2' : $(keyp2).attr('cy'),
+                        'id1' : $(keyp1).attr('name'),
+                        'id2' : $(keyp2).attr('name')
                     })
                     this._framecontent.append(this._connectors[conn]);
                 }
 
-                // Insert circles
                 for (var i = 0; i < state.position.skel.length; i++){
                     this._shape[i].updatePos(state.position.skel[i]);
                     this._framecontent.append(this._shape[i]);
                 }
+
+
 
                 // Insert lines
                 for(var i =0; i < this._keypoint_texts.length; i++){
@@ -1080,10 +1090,10 @@ class TrackView {
             var keyp1, keyp2 = null;
             for(var i =0; i < shape.length; i++){
 
-                if (keypoint_names.indexOf(shape[i][0].attributes.name.value) == (connections[conn][0] -1)){
+                if ($(shape[i]).attr("name") == connections[conn][0]){
                     keyp1 = shape[i][0];
                 }
-                else if (keypoint_names.indexOf(shape[i][0].attributes.name.value) == (connections[conn][1] -1)){
+                else if ($(shape[i]).attr("name") == connections[conn][1]){
                     keyp2 = shape[i][0];
                 };
             }
@@ -1106,7 +1116,9 @@ class TrackView {
                         'x1' : pos.x1,
                         'y1' : pos.y1,
                         'x2' : pos.x2,
-                        'y2' : pos.y2
+                        'y2' : pos.y2,
+                        'id1' : pos.id1,
+                        'id2' : pos.id2
                     })
                 };
 
