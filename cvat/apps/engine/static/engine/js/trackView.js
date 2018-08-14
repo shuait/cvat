@@ -287,6 +287,7 @@ class TrackView {
         }
         */
         if (!(state.model.hiddenLabel || state.model.outside || state.model.hidden)) {
+            this.updateAndViewText(state);
             this._text.appendTo(this._framecontent);
         }
         else {
@@ -357,7 +358,6 @@ class TrackView {
         let keyFrame = state.position.keyFrame === true;
 
         this._ui.keyFrame(keyFrame);
-
 
         let outsided = state.position.outsided;
         /*
@@ -433,7 +433,7 @@ class TrackView {
             });
 
             //text transformation
-            let xmargin = -6;
+            let xmargin = -12;
             let ymargin = 5;
 
             let cxpos = +shape.attr('cx') + xmargin;

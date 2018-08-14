@@ -32,7 +32,7 @@ class TrackModel extends Listener {
         this._activeKeypoint = null;
         this._merge = false;
         this._hidden = false;
-        this._hiddenLabel = true;
+        this._hiddenLabel = false;
         this._selected = false;
         this._activeAAMTrack = false;
         this._activeAttribute = null;
