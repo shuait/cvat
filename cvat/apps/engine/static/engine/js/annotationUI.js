@@ -276,11 +276,11 @@ function setupMenu(job, collectionModel, collectionController, annotationParser)
         fillStat(statistic, job); */
         annotationMenu.removeClass('hidden');
         clearTimeout(visibleTimer);
-        visibleTimer = setTimeout(hideMenu, 500);
+        visibleTimer = setTimeout(hideMenu, 1500);
     });
 
     annotationMenu.on('mouseout', function() {
-        visibleTimer = setTimeout(hideMenu, 500);
+        visibleTimer = setTimeout(hideMenu, 1500);
     });
 
     annotationMenu.on('mouseover', function() {

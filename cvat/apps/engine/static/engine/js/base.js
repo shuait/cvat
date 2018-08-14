@@ -157,7 +157,8 @@ $.ajaxSetup({
 
 $(document).ready(function(){
     $('body').css({
-        width: window.screen.width * 0.97 + 'px',
-        height: window.screen.height * 0.97 + 'px'
+        //width: window.screen.width * 0.97 + 'px',
+        height: '100%',
+        margin :'0px'//window.screen.height * 0.97 + 'px'
     });
 });
