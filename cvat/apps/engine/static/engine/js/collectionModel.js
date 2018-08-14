@@ -581,13 +581,13 @@ class CollectionModel extends Listener {
         return colors;
     }
 
-    set allInterTracks(value) {
+    /*set allInterTracks(value) {
         if (value != true && value != false) {
             throw new Error(`Value must be boolean, but ${typeof(value)} extracted.`);
         }
         this._allInterTracks = value;
         this.update();
-    }
+    }*/
 
     get currentTracks() {
         return this._currentTracks;

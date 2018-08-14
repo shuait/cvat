@@ -8,9 +8,9 @@ class CollectionView {
         this._mergeTracksButton = $('#mergeTracksButton');
         this._labelSelect = $('#labelSelect');
         this._trackTypeSelect = $('#trackTypeSelect');
-        this._hideBoxesCheck = $('#hideBoxesBox');
+        //this._hideBoxesCheck = $('#hideBoxesBox');
         this._hideLabelsCheck = $('#hideLabelsBox');
-        this._showAllInterBox = $('#showAllInterBox');
+        //this._showAllInterBox = $('#showAllInterBox');
         this._uiContent = $('#uiContent');
         this._collectionController = collectionController;
         this._playerScale = 1;
@@ -20,14 +20,14 @@ class CollectionView {
         this._playerModel = playerModel;
 
         this._hideLabelsCheck.prop('checked', true);
-        this._showAllInterBox.prop('checked', collectionModel.allInterTracks);
+        //this._showAllInterBox.prop('checked', collectionModel.allInterTracks);
         playerModel.subscribe(this);
         collectionModel.subscribe(this);
 
         this._frameContent.on('mousemove', collectionController.onmousemove.bind(collectionController));
-        this._hideBoxesCheck.on('change', this.hideBoxes.bind(this));
+        //this._hideBoxesCheck.on('change', this.hideBoxes.bind(this));
         this._hideLabelsCheck.on('change', this.hideLabels.bind(this));
-        this._showAllInterBox.on('change', (e) => collectionController.setShowAllInterTracks(e.target.checked));
+        //this._showAllInterBox.on('change', (e) => collectionController.setShowAllInterTracks(e.target.checked));
     }
 
     hideBoxes(e) {

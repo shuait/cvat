@@ -119,27 +119,6 @@
                 <div>
                     <label class="h1 semiBold"> Shortkeys: </label> <br>
                     <table class="regular" id="shortkeyHelpTable"> </table>
-                    <label class="h1 semiBold"> <br> Hints: <br> </label>
-                    <label class="regular"> - Hold SHIFT key when move the frame and boxes will be fixed. </label> <br>
-                    <label class="regular"> - Hold CTRL key when track highlighted and fix it. </label> <br>
-                    <label class="regular"> - Hold CTRL key when paste shape from buffer for multiple pasting. </label> <br>
-                    <label class="h1 semiBold"> <br> Filter Help: <br> </label>
-                    <label class="regular">
-                        Filter Format: //label[property operator "value"] (USE LOWER CASE ONLY) <br>
-                        Label is a type of bounding box (car, person, etc). Use "*" for any label. <br>
-                        Property is a limited set of values: id, type, lock, occluded, attr. <br>
-                        Operator is "=", "!=" for any properties and ">", "<", ">=", "<=" for numeric properties. <br>
-                        For complex conditions please use 'or', 'and' (for properties) "|" (for labels) operators. <br> <br>
-                        Examples: <br>
-                        //*[type="annotation"] - only annotation tracks <br>
-                        //car[occluded="true"] - only occluded cars <br>
-                        //*[lock!="true"] - only unlocked tracks <br>
-                        //person[attr/age>="25" and attr/age<="35"] - persons with age (number) beetween [25,40] years <br>
-                        //car[attr/parked="true"] - only parked cars <br>
-                        //person[attr/race="asian"] | //car[attr/model="bmw"] - asians and BMW cars <br>
-                        //face[attr/glass="sunglass" or attr/glass="no"] - faces with sunglass or without glass <br>
-                        //*[attr/*="__undefined__"] - any tracks with any unlabeled attributes <br>
-                     </label>
                 </div>
             </div>
             <center> <button id="closeHelpButton" class="regular h1" style="margin-top: 15px;"> Close </button> </center>
@@ -170,10 +149,11 @@
                             </select>
                         </td>
                     </tr>
+                    <!--
                     <tr>
                         <td> <label class="regular h2"> Hide Boxes </label> </td>
                         <td> <input type = "checkbox" id="hideBoxesBox" class="settingsBox"/> </td>
-                    </tr>
+                    </tr> -->
                     <tr>
                         <td> <label class="regular h2"> Hide Labels </label> </td>
                         <td> <input type = "checkbox"  id="hideLabelsBox" class="settingsBox"/> </td>
@@ -207,6 +187,7 @@
             <div id="otherSettigns" style="width: 48%; height: 90%; float: left;">
                 <center> <label class="semiBold h1"> Other Settings </label> </center>
                 <table style="border-collapse: separate; border-spacing: 10px; overflow-y: auto;">
+                    <!--
                     <tr>
                         <td> <label class="regular h2"> Show All Interpolation Tracks </label> </td>
                         <td> <input type = "checkbox"  id="showAllInterBox" class="settingsBox"/> </td>
@@ -214,13 +195,14 @@
                     <tr>
                         <td> <label class="regular h2"> Zoom boxes in Attribute Annotation Mode </label> </td>
                         <td> <input type = "checkbox"  id="zoomAAMBoxesBox" class="settingsBox"/> </td>
-                    </tr>
+                    </tr> -->
                     <tr >
                         <td colspan="2">
                             <label class="regular h2"> Zoom Margin </label>
                             <input type="range" min="0" max="500" value="100" id="aamZoomMargin"/>
                         </td>
                     </tr>
+                    <!--
                     <tr>
                         <td> <label class="regular h2"> Hide Other in Attribute Annotation Mode </label> </td>
                         <td> <input type = "checkbox"  id="hideNonActiveBox" class="settingsBox"/> </td>
@@ -228,7 +210,7 @@
                     <tr>
                         <td> <label class="regular h2"> Hide Filtered Tracks </label> </td>
                         <td> <input type = "checkbox"  id="hideFilteredBox" class="settingsBox"/> </td>
-                    </tr>
+                    </tr>-->
                     <tr>
                         <td> <label class="regular h2"> Enable Auto Saving </label> </td>
                         <td> <input type = "checkbox"  id="autoSaveBox" class="settingsBox"/> </td>

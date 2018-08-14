@@ -412,7 +412,7 @@ class AAMView {
         this._aamHelpContainer = $('#aamHelpContainer');
         this._removeAnnotationButton = $('#removeAnnotationButton');
         this._zoomBoxesBox = $('#zoomAAMBoxesBox');
-        this._hideNonActiveBox = $('#hideNonActiveBox');
+        //this._hideNonActiveBox = $('#hideNonActiveBox');
         this._zoomMargin = $('#aamZoomMargin');
 
         this._zoomBoxesBox.prop('checked', model.zoomBoxes);
@@ -427,11 +427,12 @@ class AAMView {
             this._controller.zoomMargin(value);
         }.bind(this));
 
+        /*
         this._hideNonActiveBox.prop('checked', model.hideNonActive);
         this._hideNonActiveBox.on('change', function(e) {
             let value = e.target.checked;
             this._controller.hideNonActive(value);
-        }.bind(this));
+        }.bind(this));*/
 
         model.subscribe(this);
     }
