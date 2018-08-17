@@ -40,7 +40,6 @@ class CollectionView {
         this._collectionController.setHiddenLabelForAll(value);
     }
 
-
     onPlayerUpdate(player) {
         let geometry = player.geometry;
         let frames = player.frames;
@@ -73,7 +72,6 @@ class CollectionView {
 
         let newcollection = collection.currentTracks;
         newcollection.sort(trackComparator);
-
 
         for (let i = 0; i < newcollection.length; i ++ ) {
             let interpolation = newcollection[i].interpolation;

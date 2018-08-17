@@ -23,6 +23,8 @@ class CollectionModel extends Listener {
 
         this._colorIndex = 0;
         this._colorSets = {
+
+            /*1, 3, 5, 6, 7, 8, 9, 12, 13, 15, 17 --> 10 different colors.*/
             background: ["#FFFFCC", "#FFFF66", "#FFCC66", "#FF9900", "#FF6633", "#FF6666", "#FF9999",
                 "#FF6699", "#27EBF9", "#FF99CC", "#FF99FF", "#CC66FF", "#CC99FF", "#16E532",
                 "#6666FF", "#0099FF", "#66CCCC", "#99FFFF", "#99FFCC", "#66FF99", "#CCFF99"],
@@ -182,8 +184,6 @@ class CollectionModel extends Listener {
             let skeletons = [];
             for (let skel of track.skeletons) {
                 var keypoints = [];
-                //TODO: skeleton requires "occluded" property at the moment
-                // need to change that
 
                 skel.keypoints.sort(comparator);
 
@@ -191,8 +191,6 @@ class CollectionModel extends Listener {
                     keypoints.push([keyp.x,keyp.y,keyp.name,keyp.visibility])
 
                 }
-
-                //TODO: activity successfully loaded and retrieved from the back-end
 
                 skeletons.push([keypoints,skel.frame,skel.outside,0, skel.activity]);
                 for (let attr of skel.attributes) {
@@ -221,22 +219,17 @@ class CollectionModel extends Listener {
             this.add(tracks[i]);
             }
             */
-
             tracks.push({
                 label: track.label,
                 skels: skeletons,
                 attributes: attributes
             });
-
-
         }
 
         for (let i = 0; i < tracks.length; i ++) {
                 if (!tracks[i].skels.length) continue;    // Remove saved wrong tracks with empty path
                 this.add(tracks[i]);
             }
-
-
     }
 
     exportTracks() {

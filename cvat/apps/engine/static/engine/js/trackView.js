@@ -56,13 +56,13 @@ class TrackView {
 
 
         this._connectors = TrackView.makeConnections(this._shape,this._connections,
-                                                     this._keypoint_names, trackModel.id);
+                                                     this._keypoint_names, trackModel.id,colors);
         // this returns an HTML text box object
         // TODO: return individual text box objects for individual keypoints
         this._text = TrackView.makeText(interpolation, labelsInfo.labels()[trackModel.label],
-                                        trackModel.id);
+                                        trackModel.id,colors);
 
-        this._keypoint_texts = TrackView.makeKeypointTexts(interpolation);
+        this._keypoint_texts = TrackView.makeKeypointTexts(interpolation,colors);
 
         this._ui = TrackView.makeUI(interpolation, labelsInfo, colors, trackModel,
                                     this._shape, this._connectors, this._keypoint_texts,
@@ -200,6 +200,29 @@ class TrackView {
 
     }
 
+    centroid(pos){
+
+        let frameWidth = +$('#frameContent').css('width').slice(0,-2);
+        let frameHeight = +$('#frameContent').css('height').slice(0,-2);
+
+        var shapesX = [];
+        var shapesY = [];
+
+        for (var i = 0; i < pos.skel.length; i++) {
+            shapesX.push(pos.skel[i][0]);
+            shapesY.push(pos.skel[i][1]);
+        }
+
+        let xtl = Math.max(0,Math.min(...shapesX)); // xtl of bbox fitting skeleton joints
+        let ytl = Math.max(0,Math.min(...shapesY)); // ytl of fitting bbox
+        let xbr = Math.min(frameWidth,Math.max(...shapesX));
+        let ybr = Math.min(frameHeight,Math.max(...shapesY));
+        return [(xbr + xtl) / 2,  (ybr + ytl) / 2, 'center',"2"]; };
+
+
+
+
+
     onTrackUpdate(state) {
 
         this._removeOutsideShape();
@@ -212,23 +235,23 @@ class TrackView {
         if (state.model.outside || state.model.hidden) {
 
             // Detach shape, connector, keypoint texts
-            for (var i = 0; i < this._shape.length; i++){
+            for (var i = 0; i < this._shape.length; i++) {
                 this._shape[i].detach();
             }
-            for (var i = 0; i < this._connectors.length; i++){
+            for (var i = 0; i < this._connectors.length; i++) {
                 this._connectors[i].detach();
             }
-            for(var i =0; i < this._keypoint_texts.length; i++){
+            for (var i = 0; i < this._keypoint_texts.length; i++) {
                 $(this._keypoint_texts[i]).detach();
             }
         }
 
         else {
 
-            if (state.model._shapeType == 'skel'){
+            if (state.model._shapeType == 'skel') {
 
                 // Insert connectors
-                for(var conn = 0; conn < this._connectors.length; conn++) {
+                for (var conn = 0; conn < this._connectors.length; conn++) {
 
                     // For each connection
                     var keyp1, keyp2 = null;
@@ -241,32 +264,45 @@ class TrackView {
                         };
                     }
                     this._connectors[conn].updatePos({
-                        'x1' : $(keyp1).attr('cx'),
-                        'y1' : $(keyp1).attr('cy'),
-                        'x2' : $(keyp2).attr('cx'),
-                        'y2' : $(keyp2).attr('cy'),
-                        'id1' : $(keyp1).attr('name'),
-                        'id2' : $(keyp2).attr('name')
+                        'x1': $(keyp1).attr('cx'),
+                        'y1': $(keyp1).attr('cy'),
+                        'x2': $(keyp2).attr('cx'),
+                        'y2': $(keyp2).attr('cy'),
+                        'id1': $(keyp1).attr('name'),
+                        'id2': $(keyp2).attr('name')
                     })
                     this._framecontent.append(this._connectors[conn]);
                 }
 
-                // Insert circles
                 for (var i = 0; i < state.position.skel.length; i++) {
                     this._shape[i].updatePos(state.position.skel[i]);
                     this._framecontent.append(this._shape[i]);
                 }
 
-                // Insert lines
-                for(var i =0; i < this._keypoint_texts.length; i++){
+                let centr = this.centroid(state.position);
+
+                // Insert keypoint texts
+                for (var i = 0; i < this._keypoint_texts.length; i++) {
                     this._framecontent.append($(this._keypoint_texts[i]));
                 }
 
-            } else{
+                // Insert circles
+                for (var i = 0; i < state.position.skel.length; i++) {
+
+
+                    if ($(this._shape[i]).attr('name') == 'center'){
+                        state.position.skel[i] = centr;
+                    }
+                    this._shape[i].updatePos(state.position.skel[i]);
+                    this._framecontent.append(this._shape[i]);
+
+                }
+            } else {
                 this._shape.updatePos(state.position);
                 this._framecontent.append(this._shape);
             }
         }
+
 
         //TODO: try to focus on basic functionality before UI
         //this.updateColors(state.model.colors, state.model.merge);
@@ -551,7 +587,6 @@ class TrackView {
             };
         }
         */
-
         //TODO: not sure how what transformations we will need to do
         // for keypoints - let's figure that out later
 
@@ -590,7 +625,6 @@ class TrackView {
         });
 
         this._shape.css('stroke-width', 2 * revscale);
-
         */
     }
 
@@ -613,7 +647,6 @@ class TrackView {
 
             // This displays the text displayed when highlighted
             attrElem.innerHTML = `${attribute.name.normalize()}: ${value}`;
-            //
 
             if (+attrKey === activeAttribute) {
                 attrElem.style['fill'] = 'red';
@@ -651,8 +684,7 @@ class TrackView {
         /*if (!(interpolation.position.hasOwnProperty('skel'))){
             button.on('click', function(event) {
                                 trackModel.remove(event.shiftKey);
-                                });
-        }*/
+                                });}*/
         let keypoints = ["nose",
                     "left eye",
                     "right eye",
@@ -672,7 +704,6 @@ class TrackView {
                     "right ankle",
                     "center"];
 
-
         let occludedState = trackModel.occluded;
         let lockedState = trackModel.lock;
         let outsidedState = trackModel.outside;
@@ -684,8 +715,6 @@ class TrackView {
 
         let lockShortkeys = `(${shortkeys["switch_lock_property"].view_value}), (${shortkeys["switch_all_lock_property"].view_value})`;
         let occludedShortkey = `(${shortkeys["switch_occluded_property"].view_value})`;
-
-
 /*
         let lockButton = $(`<button title="Lock Property ${lockShortkeys}"></button>`)
             .addClass('graphicButton lockButton').appendTo(propManagement);
@@ -813,7 +842,6 @@ class TrackView {
             lockedState = !lockedState;
             trackModel.lock = lockedState;
         });
-
         occludedButton.on('click', function() {
             occludedState = !occludedState;
             trackModel.occluded = occludedState;
@@ -837,7 +865,6 @@ class TrackView {
                     bodyparts.push(keyp_names[keyp_name].split(" ")[1]);
                 }
             }
-
             //Next, iterate over body parts and switch coordinates
             //if are "left" or "right"
 
@@ -883,7 +910,6 @@ class TrackView {
                         // or center keypoints.
                     }
                 }
-
                 var tmp_coord = [$(shape[switches.left]).attr('cx'),
                                  $(shape[switches.left]).attr('cy')];
 
@@ -906,7 +932,6 @@ class TrackView {
                     $(_keypoint_texts[kt]).text('L');
                 }
             }
-
             trackController.onchangekeypointgeometry(shape);
         });
 
@@ -914,7 +939,6 @@ class TrackView {
         keyFrameButton.on('click', function() {
             trackModel.keyFrame = !keyFrameState;
         }); */
-
         let keypointsListButton = $(`<button title="Show/hide keypoints"></button>`)
             .addClass('graphicButton dropdownList dropButton').appendTo(propManagement);
 
@@ -944,7 +968,6 @@ class TrackView {
 
             labelsBlock = div;
         }
-
 
         if (Object.keys(attributes).length) {
             //attrBlocks.push($('<label> <br>  </label>').addClass('semiBold'));
@@ -996,8 +1019,6 @@ class TrackView {
                 }
             });
 
-
-
             attrBlocks.push(attrView);
         }
 
@@ -1019,7 +1040,6 @@ class TrackView {
             buttonBlock.append(initFrame);
             buttonBlock.append(nextKeyFrame); */
             ui.append(buttonBlock);
-
 
         }
 
@@ -1067,15 +1087,15 @@ class TrackView {
             occludedButtons[i_keypoint].on('mouseover', function() {
                  shape[i_keypoint].addClass('highlightedShape');
                  $(shape[i_keypoint]).attr({
-                     r : 3*$(shape[i_keypoint]).attr('r')
-                     })
+                     r : 3*$(shape[i_keypoint]).attr('r'),
+                     });
             })
 
             occludedButtons[i_keypoint].on('mouseout', function() {
                  shape[i_keypoint].addClass('highlightedShape');
                  $(shape[i_keypoint]).attr({
-                     r : $(shape[i_keypoint]).attr('r')/3
-                     })
+                     r : $(shape[i_keypoint]).attr('r')/3,
+                     });
             })
 
             occludedButtons[i_keypoint].on('click', function(){
@@ -1088,7 +1108,6 @@ class TrackView {
                 occludedButtons[i_keypoint].appendTo(skelKeypoints);
             }
         }
-
         ui.append(skelKeypoints);
 
         return ui;
@@ -1104,7 +1123,7 @@ class TrackView {
         else throw new Error('Unknown shape type');
     }
 
-    static makeConnections(shape,connections,keypoint_names,id){
+    static makeConnections(shape,connections,keypoint_names,id,colors){
 
         var svgLines = [];
         for(var conn = 0; conn < connections.length; conn++){
@@ -1125,7 +1144,7 @@ class TrackView {
             if (keyp1 && keyp2){
 
             var svgLine =  $(document.createElementNS('http://www.w3.org/2000/svg', 'line')).attr({
-                        'stroke': 'red',
+                        'stroke': colors.border,
                  'x1': keyp1.cx.animVal.value,
                  'y1': keyp1.cy.animVal.value,
                  'x2': keyp2.cx.animVal.value,
@@ -1149,7 +1168,6 @@ class TrackView {
             svgLines.push(svgLine);
             }
         }
-
         return svgLines;
     }
 
@@ -1171,7 +1189,6 @@ class TrackView {
                 height: pos.ybr - pos.ytl,
             });
         };
-
         return svgRect;
     }
 
@@ -1197,11 +1214,10 @@ class TrackView {
                 })
             } else {
                 svgCircle.attr({
-                    stroke : colors.border,
+                    stroke : 'blue',//colors.border,
                     r : 5
                 })
             }
-            // TODO: modify display if keypoint visibility is not 2
 
             svgCircle.updatePos = function(skel) {
                 $(this).attr({
@@ -1233,12 +1249,10 @@ class TrackView {
             svgCircles.push(svgCircle)
         }
 
-        //TODO: We're assuming updatePos receives skel as argument.
-
         return svgCircles;
     }
 
-    static makeText(interpolation, labelName, id) {
+    static makeText(interpolation, labelName, id,colors) {
         let pos = interpolation.position;
         let attributes = interpolation.attributes;
 
@@ -1275,10 +1289,11 @@ class TrackView {
 
         // Defines text
         labelNameText.innerHTML = `Worker ${id}`;
-        //
+
         labelNameText.setAttribute('dy', '1em');
         labelNameText.setAttribute('x', shapeX + shapeW);
         labelNameText.setAttribute('class', 'bold');
+        labelNameText.setAttribute('fill', colors.border);
         svgText.appendChild(labelNameText);
         for (let attrKey in attributes) {
             let attribute = attributes[attrKey];
@@ -1288,16 +1303,16 @@ class TrackView {
 
             // Defines text
             attrRow.innerHTML = `${attribute.name.normalize()}: ${value}`;
-            //
 
             attrRow.setAttribute('dy', '1em');
             attrRow.setAttribute('x', shapeX + shapeW);
+            attrRow.setAttribute('fill', colors.border);
             svgText.appendChild(attrRow);
         }
         return $(svgText);
     }
 
-    static makeKeypointTexts(interpolation) {
+    static makeKeypointTexts(interpolation,colors) {
 
         var svgTextList = [];
 
