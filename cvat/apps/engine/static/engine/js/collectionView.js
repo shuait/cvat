@@ -19,7 +19,7 @@ class CollectionView {
         this._labelsInfo = labelsInfo;
         this._playerModel = playerModel;
 
-        this._hideLabelsCheck.prop('checked', true);
+        this._hideLabelsCheck.prop('checked', false);
         //this._showAllInterBox.prop('checked', collectionModel.allInterTracks);
         playerModel.subscribe(this);
         collectionModel.subscribe(this);
@@ -39,7 +39,6 @@ class CollectionView {
         let value = e.target.checked;
         this._collectionController.setHiddenLabelForAll(value);
     }
-
 
     onPlayerUpdate(player) {
         let geometry = player.geometry;
@@ -73,7 +72,6 @@ class CollectionView {
 
         let newcollection = collection.currentTracks;
         newcollection.sort(trackComparator);
-
 
         for (let i = 0; i < newcollection.length; i ++ ) {
             let interpolation = newcollection[i].interpolation;

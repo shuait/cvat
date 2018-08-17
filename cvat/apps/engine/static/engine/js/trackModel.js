@@ -446,7 +446,7 @@ class TrackModel extends Listener {
                     tmp['outside'] = this._shape._positionJournal[frame].outsided;
                     tmp['activity'] = positions[frame]['activity'];
 
-                    for (var i = 0; i < pos.length ; i++) {
+                    for (var i = 0; i < pos.length; i++) {
 
                         //x, y, visibility
                         tmp[pos[i][3]] = [pos[i][0],
@@ -467,9 +467,6 @@ class TrackModel extends Listener {
                     };
 
                     var tracked_box = Object.assign({}, tmp, frame_attributes);
-
-
-
 
                     if (this._shapeType == 'skel') {
                         track["skels"].push(tracked_box);
@@ -840,15 +837,6 @@ class Box {
         let leftRightDifference = rightPos - leftPos;
         let relativeOffset = leftCurDifference / leftRightDifference;
 
-
-        //TODO: Implement interpolation (if judged useful)
-        // In this scenario, we are switching to a frame in between keyframes
-        // (in my understanding, these are frames where a track has been edited).
-        // The result for this frame should be the interpolated position between
-        // key frame positions.
-        // For now, we'll just retain leftPos.
-
-
         let interpolatedPos = {
             xtl: pJ[leftPos].xtl+ (pJ[rightPos].xtl - pJ[leftPos].xtl) * relativeOffset,
             ytl: pJ[leftPos].ytl + (pJ[rightPos].ytl - pJ[leftPos].ytl) * relativeOffset,
@@ -990,8 +978,39 @@ class Skeleton {
         let leftRightDifference = rightPos - leftPos;
         let relativeOffset = leftCurDifference / leftRightDifference;
 
+
+        //TODO: Implement interpolation (if judged useful)
+        // In this scenario, we are switching to a frame in between keyframes
+        // (in my understanding, these are frames where a track has been edited).
+        // The result for this frame should be the interpolated position between
+        // key frame positions.
+        // For now, we'll just retain leftPos.
+
+        /*
+
+        let leftCurDifference = frameNumber - leftPos;
+        let leftRightDifference = rightPos - leftPos;
+        let relativeOffset = leftCurDifference / leftRightDifference;
+
         let interpolatedPos = {
-            skel: pJ[leftPos].skel,
+            xtl: pJ[leftPos].xtl+ (pJ[rightPos].xtl - pJ[leftPos].xtl) * relativeOffset,
+            ytl: pJ[leftPos].ytl + (pJ[rightPos].ytl - pJ[leftPos].ytl) * relativeOffset,
+            xbr: pJ[leftPos].xbr + (pJ[rightPos].xbr - pJ[leftPos].xbr) * relativeOffset,
+            ybr: pJ[leftPos].ybr + (pJ[rightPos].ybr - pJ[leftPos].ybr) * relativeOffset,
+        */
+
+
+        //TODO: assumes "visibility" value remains constant for now...
+        var interpolatedPosSkel = [];
+        for (var i = 0; i < pJ[leftPos].skel.length; i++){
+            interpolatedPosSkel[i] = [pJ[leftPos].skel[i][0]+ (pJ[rightPos].skel[i][0] - pJ[leftPos].skel[i][0]) * relativeOffset,
+                                      pJ[leftPos].skel[i][1]+ (pJ[rightPos].skel[i][1] - pJ[leftPos].skel[i][1]) * relativeOffset,
+                                      pJ[leftPos].skel[i][2],
+                                      pJ[leftPos].skel[i][3]];
+        }
+
+        let interpolatedPos = {
+            skel: interpolatedPosSkel,//pJ[leftPos].skel,
             outsided: 0,
             occluded: pJ[leftPos].occluded
         };
