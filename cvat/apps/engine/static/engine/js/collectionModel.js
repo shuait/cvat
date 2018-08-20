@@ -299,7 +299,7 @@ class CollectionModel extends Listener {
         this.onchangeframe(this._curFrame);
     }
 
-    createFromSkel(skel,label,type){
+    createFromSkel(skel,label,type,flip){
 
         //Just to enforce this for debugging purposes
         if (!(type == 'interpolation')){
@@ -312,7 +312,8 @@ class CollectionModel extends Listener {
         this.add({
             attributes: [],
             skels: skels,
-            label: label
+            label: label,
+            flip: flip
         });
 
         this.onchangeframe(this._curFrame);
@@ -458,6 +459,7 @@ class CollectionModel extends Listener {
 
         if (keypointID != this._activeKeypoint){
             this.resetactivekeypoint();
+
             this._activeKeypoint = keypointID;
             this._activeTrack = trackID;
             this._allTracks[this._activeTrack].active = true;

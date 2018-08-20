@@ -10,8 +10,6 @@ class TrackView {
 
         this._shape = TrackView.makeShape(interpolation.position, trackModel.shapeType, colors,
                                             trackModel.id);
-
-
         this._keypoint_names = ["nose",
                                 "left eye",
                                 "right eye",
@@ -82,11 +80,9 @@ class TrackView {
             for (var i = 0; i < this._connectors.length; i++){
                 this._connectors[i].appendTo(this._framecontent);
             }
-
         } else {
             this._shape.appendTo(this._framecontent);
         }
-
         for(var i =0; i < this._keypoint_texts.length; i++){
             $(this._keypoint_texts[i]).appendTo(this._framecontent);
         }
@@ -524,7 +520,7 @@ class TrackView {
             $(this._keypoint_texts[i]).attr({
                 x : cxpos / revscale,
                 y : cypos / revscale,
-                transform: `scale(${revscale})`})
+                transform: `scale(${revscale})`});
 
             if(['l','r'].includes($(this._shape[i]).attr('name')[0])){
                 $(this._keypoint_texts[i]).text($(this._shape[i]).attr('name')[0].toUpperCase());
@@ -860,6 +856,7 @@ class TrackView {
 
             var bodyparts = [];
 
+
             for(let keyp_name in keyp_names){
                 if(keyp_names[keyp_name].includes('left') || keyp_names[keyp_name].includes('right') && (!bodyparts.includes(keyp_names[keyp_name].split(" ")[1]))) {
                     bodyparts.push(keyp_names[keyp_name].split(" ")[1]);
@@ -1134,10 +1131,10 @@ class TrackView {
             for(var i =0; i < shape.length; i++){
 
                 if ($(shape[i]).attr("name") == connections[conn][0]){
-                    keyp1 = shape[i][0];
+                    keyp1 = $(shape[i]);
                 }
                 else if ($(shape[i]).attr("name") == connections[conn][1]){
-                    keyp2 = shape[i][0];
+                    keyp2 = $(shape[i]);
                 };
             }
 
@@ -1145,13 +1142,13 @@ class TrackView {
 
             var svgLine =  $(document.createElementNS('http://www.w3.org/2000/svg', 'line')).attr({
                         'stroke': colors.border,
-                 'x1': keyp1.cx.animVal.value,
-                 'y1': keyp1.cy.animVal.value,
-                 'x2': keyp2.cx.animVal.value,
-                 'y2': keyp2.cy.animVal.value,
+                 'x1': $(keyp1).attr('cx'),
+                 'y1': $(keyp1).attr('cy'),
+                 'x2': $(keyp2).attr('cx'),
+                 'y2': $(keyp2).attr('cy'),
                  'track_id' : id,
-                 'id1' : keyp1.attributes['name'].value,
-                 'id2' : keyp2.attributes['name'].value
+                 'id1' : $(keyp1).attr('name'),
+                 'id2' : $(keyp2).attr('name'),
                     }).addClass('shape changeable');
 
             svgLine.updatePos = function(pos){
@@ -1215,6 +1212,7 @@ class TrackView {
             } else {
                 svgCircle.attr({
                     stroke : 'blue',//colors.border,
+                    fill : 'blue',
                     r : 5
                 })
             }
@@ -1343,7 +1341,6 @@ class TrackView {
                 }
 
                 labelNameText.setAttribute('dy', '1em');
-                labelNameText.setAttribute('x', interpolation.position.skel[i][0]);
                 labelNameText.setAttribute('x', interpolation.position.skel[i][0]);
                 labelNameText.setAttribute('name',interpolation.position.skel[i][2]);
                 labelNameText.setAttribute('class', 'bold');

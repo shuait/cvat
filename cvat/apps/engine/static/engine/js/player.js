@@ -242,6 +242,8 @@ class PlayerModel extends Listener {
     }
 
     shift(delta, absolute) {
+        // TODO: lazy addition : bugs?
+        $("[activeKeypointText]").remove();
         this._continueAfterLoad = false;  // default reset continue
         this._frame.current = Math.clamp(
             absolute ? delta : this._frame.current + delta,
@@ -640,6 +642,9 @@ class PlayerView {
         let image = model.image;
         let frames = model.frames;
         let geometry = model.geometry;
+
+        // TODO: lazy addition - bugs?
+
 
         if (!image) {
             this._loadingUI.removeClass('hidden');
