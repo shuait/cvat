@@ -1,128 +1,39 @@
-# User's guide
+# CEE 320 Worker keypoint annotation tool - User's Guide
 
 [toc]
-
-Computer Vision Annotation Tool (CVAT) is a web-based tool which helps to annotate video and images for Computer Vision algorithms. It was inspired by [Vatic](http://carlvondrick.com/vatic/) free, online, interactive video annotation tool. CVAT has many powerful features: __interpolation of bounding boxes between key frames, automatic annotation using TensorFlow OD API, shortcuts for most of critical actions, dashboard with a list of annotation tasks, LDAP and basic authorization, etc...__ It was created for and used by a professional data annotation team. UX and UI were optimized especially for computer vision tasks developed by our team.
 
 ## Getting started
 
 ### Authorization
-- First of all you have to log in to CVAT tool.
+- First of all you have to register for the annotation tool at visualconstruction.cee.illinois.edu 
 
-    ![](static/documentation/images/image001.jpg)
+   ![](static/documentation/images/image003.jpg)
 
-    ![](static/documentation/images/image002.jpg)
+- You will then be able to log in:
 
-- If you don't have an account you have to create it using the link below the login page.
+   ![](static/documentation/images/image001.jpg)
 
-    ![](static/documentation/images/image003.jpg)
+   ![](static/documentation/images/image002.jpg)
+    
 
-### Administration panel
-Type ``/admin`` in URL to go to the administration panel.
-There you can:
- - Create / edit / delete users
- - Control user's permission and access to the tool.
-
-
-### Creating an annotation task
-
-1. Create an annotation task by pressing ``Create New Task`` button on the main page.
-
-    ![](static/documentation/images/image004.jpg)
-
-2. Specify mandatory parameters of the task. You have to fill ``Name``, ``Labels`` and ``Select Files`` at least.
-
-    ![](static/documentation/images/image005.jpg)
-
-    __Labels__. Use the following schema to create labels: ``label_name <prefix>input_type=attribute_name:attribute_value1,attribute_value2``
-
-    Example: ``vehicle @select=type:__undefined__,car,truck,bus,train ~radio=quality:good,bad ~checkbox=parked:false``
-
-    ``label_name``: for example *vehicle, person, face etc.*
-
-    ``<prefix>``:
-      - Use ``@`` for unique attributes which cannot be changed from frame to frame *(e.g. age, gender, color, etc)*
-      - Use ``~`` for temporary attributes which can be changed on any frame *(e.g. quality, pose, truncated, etc)*
-
-    ``input_type``: the following input types are available ``select``, ``checkbox``, ``radio``, ``number``, ``text``.
-
-    ``attribute_name``: for example *age, quality, parked*
-
-    ``attribute_value``: for example *middle-age, good, true*
-
-    Default value for an attribute is the first value after "``:``".
-
-    For ``select`` and ``radio`` input types the special value is available: ``__undefined__``. Specify this value first if an attribute should be annotated explicity.
-
-
-    __Bug Tracker__. Specify full URL your bug tracker if you have it.
-
-    __Source__. To create huge tasks please use ``shared`` server directory (choose ``Share`` option in the dialog).
-
-    __Overlap Size__. Use this option to make overlapped segments. The option makes tracks continuous from one segment into another. Use it for interpolation mode.
-
-    __Segment size__. Use this option to divide huge dataset on several segments.
-
-    __Image Quality__. Use this option to specify quality of uploaded images. The option makes it faster to load high-quality datasets. Use the value from ``1`` (completely compressed images) to ``95`` (almost not compressed images).
-
-    Push ``Submit`` button and it will be added into the list of annotation tasks. Finally you should see something similar to the figure below:
-
-    ![](static/documentation/images/image006.jpg)
-
-3. Follow a link inside ``Jobs`` section to start annotation process. In some cases you can have several links. It depends on size of your task and ``Overlap Size`` and ``Segment Size`` parameters. To improve UX only several first frames will be loaded and you will be able to annotate first images. Other frames will be loaded in background.
-
-    ![](static/documentation/images/image007.jpg)
+- Shortly after you register, the TA's will assign an annotation task to you. Once this is done, you will have access to the task when you log in and can start annotating.  
+  
 
 ### Basic navigation
 
-1. Use arrows below to move on next/previous frame. Mostly every button is covered by a shortcut. To get a hint about the shortcut just put your mouse pointer over an UI element.
+1. Use arrows below to move on next/previous frame. To see the keyboard shortcut, hover your mouse pointer over an UI element.
 
     ![](static/documentation/images/image008.jpg)
 
-2. An image can be zoom in/out using mouse's wheel. The image will be zoomed relatively your current cursor position. Thus if you point on an object it will be under your mouse during zooming process.
+2. An image can be zoomed in/out using mouse's wheel. The image will be zoomed relative to your current cursor position. Thus if you point on an object it will be under your mouse during zooming process.
 
 3. An image can be moved/shifted by holding left mouse button inside some area without annotated objects. If ``Shift`` key is pressed then all annotated objects are ignored otherwise a highlighted bounding box will be moved instead of the image itself. Usually the functionality is used together with zoom to precisely locate an object of interest.
 
-### Annotation mode (basics)
-Usage examples:
- - Create new annotations for a set of images.
- - Add/modify/delete objects for existing annotations.
+### How to annotate
 
-1. Before start need to be sure that ``Annotation`` is selected.
 
-    ![](static/documentation/images/image009.jpg)
-
-2. Create a new annotation:
-  - Choose an object's ``label``. When you created an annotation task you had to specify one or several labels with attributes.
-
-    ![](static/documentation/images/image010.jpg)
-
-  - Create a bounding box by clicking on ``Create Track`` button or ``N`` shortcut. Choose left top and right bottom points. Your first bounding box is ready! It is possible to adjust boundaries and location of the bounding box using mouse.
-
-    ![](static/documentation/images/image011.jpg)
-
-3. In the list of objects you can see the labeled car. In the side panel you can perform basic operations under the object.
-
-    ![](static/documentation/images/image012.jpg)
-
-4. An example of fully annotated frame in ``Annotation`` mode can look like on the figure below.
-
-    ![](static/documentation/images/image013.jpg)
-
-### Interpolation mode (basics)
-Usage examples:
- - Create new annotations for a sequence of frames.
- - Add/modify/delete objects for existing annotations.
- - Edit tracks, merge many bounding boxes into one track.
-
-1. Before start need to be sure that ``Interpolation`` is selected.
-
-    ![](static/documentation/images/image014.jpg)
-
-2. Create a track for an object (look at the selected car as an example):
-    - Annotate a bounding box on first frame for the object.
-
-    - In ``Interpolation`` mode the bounding box will be interpolated on next frames automatically.
+1. Create a track:
+    - Create a track by pushing the "Create Track" button on the bottom right of the screen.
 
         ![](static/documentation/images/image015.jpg)
 
