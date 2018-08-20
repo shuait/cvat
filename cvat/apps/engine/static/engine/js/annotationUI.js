@@ -459,9 +459,11 @@ function setupMenu(job, collectionModel, collectionController, annotationParser)
 }
 
 function setupAnnotationShortkeys() {
+
+    /*
     Mousetrap.prototype.stopCallback = function() {
         return false;
-    };
+    };*/
 
     let hideBoxesHandler = Logger.shortkeyLogDecorator(function() {
         //$('#hideBoxesBox').click();
