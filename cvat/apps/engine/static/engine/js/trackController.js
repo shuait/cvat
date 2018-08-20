@@ -33,10 +33,10 @@ class TrackController {
         var skel = [];
         for(var i=0; i< shape.length; i++){
 
-           skel[i] =  [shape[i][0].cx.animVal.value,
-                       shape[i][0].cy.animVal.value,
-                       shape[i][0].attributes.name.value,
-                       shape[i][0].attributes.visibility.value];
+           skel[i] =  [$(shape[i][0]).attr('cx'),
+                       $(shape[i][0]).attr('cy'),
+                       $(shape[i][0]).attr('name'),
+                       $(shape[i][0]).attr('visibility')];
         }
 
         var outsided;

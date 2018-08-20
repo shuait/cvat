@@ -141,7 +141,6 @@ function buildAnnotationUI(job, trackData, loadJobEvent) {
 
     setupAPI(collectionModel , job);
 
-
     $('#createTrackButton').attr('title',
         `${shortkeys["switch_draw_mode"].view_value} - ${shortkeys["switch_draw_mode"].description}`);
     $('#mergeTracksButton').attr('title',
@@ -157,7 +156,6 @@ function buildAnnotationUI(job, trackData, loadJobEvent) {
     $('#hideLabelsBox').attr('title', `${shortkeys["hide_labels"].view_value}`);
     //$('#hideFilteredBox').attr('title', `${shortkeys["hide_filtered_tracks"].view_value}`);
 }
-
 
 function setupFrameFilters() {
     let brightnessRange = $('#playerBrightnessRange');
@@ -185,7 +183,7 @@ function setupFrameFilters() {
         else saturationRange.prop('value', saturation - 10).trigger('input');
     }, 'keydown');
 
-    reset.on('click', function() {
+    reset.on('click', function () {
         brightness = 100;
         contrast = 100;
         saturation = 100;
@@ -195,19 +193,19 @@ function setupFrameFilters() {
         updateFilterParameters();
     });
 
-    brightnessRange.on('input', function(e) {
+    brightnessRange.on('input', function (e) {
         let value = Math.clamp(+e.target.value, +e.target.min, +e.target.max);
         brightness = e.target.value = value;
         updateFilterParameters();
     });
 
-    contrastRange.on('input', function(e) {
+    contrastRange.on('input', function (e) {
         let value = Math.clamp(+e.target.value, +e.target.min, +e.target.max);
         contrast = e.target.value = value;
         updateFilterParameters();
     });
 
-    saturationRange.on('input', function(e) {
+    saturationRange.on('input', function (e) {
         let value = Math.clamp(+e.target.value, +e.target.min, +e.target.max);
         saturation = e.target.value = value;
         updateFilterParameters();
@@ -218,7 +216,6 @@ function setupFrameFilters() {
     }
 }
 
-
 function setupHelpShortkeys(shortkeys) {
     let helpTable = $('#shortkeyHelpTable');
     helpTable.empty();
@@ -228,7 +225,6 @@ function setupHelpShortkeys(shortkeys) {
     }
 }
 
-
 function setupLabelSelector(labelsInfo) {
     let labels = labelsInfo.labels();
     let labelSelector = $('#labelSelect');
@@ -237,7 +233,6 @@ function setupLabelSelector(labelsInfo) {
         option.appendTo(labelSelector);
     }
 }
-
 
 function setupMenu(job, collectionModel, collectionController, annotationParser) {
     let annotationMenu = $('#taskAnnotationMenu');

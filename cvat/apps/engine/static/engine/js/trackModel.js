@@ -479,7 +479,6 @@ class TrackModel extends Listener {
                 };
             }
 
-
             return track;
 
         }
@@ -579,14 +578,12 @@ class TrackModel extends Listener {
 
     } */
 
-
     visibleOnFrames(checkSet) {
         let trackSet = this.frameSet;
         let intersection = new Set( [...checkSet].filter(x => trackSet.has(x)) );
         if (intersection.size) return true;
         else return false;
     }
-
 
     fillMutableAttributes(attribData) {
         let newMutableAttributes = new Object();
@@ -619,7 +616,6 @@ class TrackModel extends Listener {
 
         return newMutableAttributes;
     }
-
 
     fillImmutableAttributes(attribData) {
         let newImmutableAttributes = new Object();
@@ -866,12 +862,12 @@ class Skeleton {
         Object.defineProperty(this._positionJournal, 'clone', {
             enumerable: false,
             value: function(key) {
-                if (key in this) {
-                    return {
-                        skel : this[key].skel,
-                        outsided: this[key].outsided,
-                        occluded: this[key].occluded
-                    };
+                    if (key in this) {
+                        return {
+                            skel : this[key].skel,
+                            outsided: this[key].outsided,
+                            occluded: this[key].occluded
+                        };
                 }
                 else throw new Error("Unknown key frame for positionJournal.clone()");
             }
@@ -887,7 +883,6 @@ class Skeleton {
             };
         }
     }
-
 
     setKeyFrame(value, frame, firstFrame) {
         let pJ = this._positionJournal;
@@ -908,7 +903,6 @@ class Skeleton {
             return true;
         }
     }
-
 
     recordPosition(pos, frame) {
         this._positionJournal[frame]= {
@@ -987,11 +981,9 @@ class Skeleton {
         // For now, we'll just retain leftPos.
 
         /*
-
         let leftCurDifference = frameNumber - leftPos;
         let leftRightDifference = rightPos - leftPos;
         let relativeOffset = leftCurDifference / leftRightDifference;
-
         let interpolatedPos = {
             xtl: pJ[leftPos].xtl+ (pJ[rightPos].xtl - pJ[leftPos].xtl) * relativeOffset,
             ytl: pJ[leftPos].ytl + (pJ[rightPos].ytl - pJ[leftPos].ytl) * relativeOffset,

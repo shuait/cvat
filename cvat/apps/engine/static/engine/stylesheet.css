@@ -167,7 +167,7 @@
 .shape {
     stroke-location: inside;
     fill-opacity: 0;
-    /*stroke-width: 2px;*/
+    stroke-width: 1.2px;
     position: relative;
     shape-rendering: optimizespeed;
     color-rendering: optimizeSpeed;
@@ -271,9 +271,13 @@
     margin-top: 1%;
 }
 
+#labelSelect {
+    display : none;
+}
+
 #trackManagement, #aamMenu {
     padding-top: 1em;
-    height: 22%;
+    height: 8%;
     width: 100%;
     margin: 10px 0px;
 }
@@ -289,7 +293,7 @@
 }
 
 #uiContent {
-    height: 75%;
+    height: 85%;
     width: 100%;
     overflow-y: scroll;
 }
