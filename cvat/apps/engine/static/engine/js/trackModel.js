@@ -995,8 +995,11 @@ class Skeleton {
         //TODO: assumes "visibility" value remains constant for now...
         var interpolatedPosSkel = [];
         for (var i = 0; i < pJ[leftPos].skel.length; i++){
-            interpolatedPosSkel[i] = [pJ[leftPos].skel[i][0]+ (pJ[rightPos].skel[i][0] - pJ[leftPos].skel[i][0]) * relativeOffset,
-                                      pJ[leftPos].skel[i][1]+ (pJ[rightPos].skel[i][1] - pJ[leftPos].skel[i][1]) * relativeOffset,
+
+            let newx = (+pJ[leftPos].skel[i][0] + (+pJ[rightPos].skel[i][0] - +pJ[leftPos].skel[i][0]) * relativeOffset).toString();
+            let newy = (+pJ[leftPos].skel[i][1] + (+pJ[rightPos].skel[i][1] - +pJ[leftPos].skel[i][1]) * relativeOffset).toString();
+            interpolatedPosSkel[i] = [newx,
+                                      newy,
                                       pJ[leftPos].skel[i][2],
                                       pJ[leftPos].skel[i][3]];
         }

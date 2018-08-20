@@ -71,11 +71,31 @@ class CollectionController {
             interact('.highlightedShape').draggable({
                 onstart: function() {
                     this._moveMode = true;
+
+                    $('#playButton').addClass('disabledPlayerButton');
+                    $('#nextButton').addClass('disabledPlayerButton');
+                    $('#prevButton').addClass('disabledPlayerButton');
+                    $('#multipleNextButton').addClass('disabledPlayerButton');
+                    $('#firstButton').addClass('disabledPlayerButton');
+                    $('#lastButton').addClass('disabledPlayerButton');
+                    $('#multiplePrevButton').addClass('disabledPlayerButton');
+
+                    let shortkeys = userConfig.shortkeys;
+
+                    Mousetrap.pause();
+
                 }.bind(this),
                 onmove: function(event) {
+
+
+
                     let scale = this._playerScale;
                     let target = $(event.target);
                     if (this._drawMode || !target.hasClass('highlightedShape') || event.shiftKey) {
+                        return;
+                    }
+
+                    if (!(this._collectionModel._listeners[0]._playerModel._pauseFlag)){
                         return;
                     }
 
@@ -117,6 +137,7 @@ class CollectionController {
                                     $(this).attr('y1', +$(this).attr('y1') +event.dy/scale);
                                     $(this).attr('x2', +$(this).attr('x2') +event.dx/scale);
                                     $(this).attr('y2', +$(this).attr('y2') +event.dy/scale);
+                                    $(this).trigger('drag',scale);
                                 }
                             })
                         } else{
@@ -134,39 +155,7 @@ class CollectionController {
 
                             target.attr('cx', +target.attr('cx') + event.dx/scale);
                             target.attr('cy', +target.attr('cy') + event.dy/scale);
-
                         };
-                        /*
-                        if (target[0].attributes['name'].value == 'center' && center_in_image ){
-                            $("[track_id =" + target[0].attributes['track_id'].value + "]").not(target).each( function(){
-
-                                if($(this)[0].localName == 'circle'){
-                                    $(this).attr('cx', +$(this).attr('cx') +event.dx/scale);
-                                    $(this).attr('cy', +$(this).attr('cy') +event.dy/scale);
-                                    $(this).trigger('drag',scale);
-                                }
-                                else if ($(this)[0].localName == 'line'){
-                                    $(this).attr('x1', +$(this).attr('x1') +event.dx/scale);
-                                    $(this).attr('y1', +$(this).attr('y1') +event.dy/scale);
-                                    $(this).attr('x2', +$(this).attr('x2') +event.dx/scale);
-                                    $(this).attr('y2', +$(this).attr('y2') +event.dy/scale);
-                                }
-                            });
-                        }
-                    // Otherwise just move the keypoint and connected lines
-                        else{
-                            var q = $("line[track_id ='" + target[0].attributes['track_id'].value + "']");
-                            var q1 = q.filter("[id1 ='" + target.attr('name') + "']");
-                            var q2 = q.filter("[id2 ='" + target.attr('name') + "']");
-                            q1.attr('x1', +q1.attr('x1') + event.dx/scale);
-                            q1.attr('y1', +q1.attr('y1') + event.dy/scale);
-                            q2.attr('x2', +q2.attr('x2') + event.dx/scale);
-                            q2.attr('y2', +q2.attr('y2') + event.dy/scale);
-                        };
-
-                        */
-
-
                     }
 
                     else{
@@ -181,6 +170,18 @@ class CollectionController {
                 }.bind(this),
                 onend: function () {
                     this._moveMode = false;
+
+
+                    $('#playButton').addClass('disabledPlayerButton');
+                    $('#nextButton').removeClass('disabledPlayerButton');
+                    $('#prevButton').removeClass('disabledPlayerButton');
+                    $('#multipleNextButton').removeClass('disabledPlayerButton');
+                    $('#firstButton').removeClass('disabledPlayerButton');
+                    $('#lastButton').removeClass('disabledPlayerButton');
+                    $('#multiplePrevButton').removeClass('disabledPlayerButton');
+
+                    Mousetrap.unpause();
+
                 }.bind(this)
             });/*.resizable({
                 margin: 8,

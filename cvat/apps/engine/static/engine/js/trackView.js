@@ -225,6 +225,7 @@ class TrackView {
 
         if (state.removed) {
             this.removeView();
+            $("[activeKeypointText]").remove();
             return;
         }
 
@@ -331,6 +332,8 @@ class TrackView {
             // Introduce keypoint labels before keypoint to avoid issues
             // with hovering over keypoint.
 
+            $("[activeKeypointText]").remove();
+
             let svgText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
 
             svgText.setAttribute('x', $(this._shape[state.model._activeKeypoint]).attr('cx'));
@@ -363,6 +366,7 @@ class TrackView {
                 keypoint.removeClass('highlightedShape');
             });
             $("[activeKeypointText]").remove();
+
         }
 
         /*
@@ -718,14 +722,14 @@ class TrackView {
             .addClass('graphicButton occludedButton').appendTo(propManagement); */
         let outsidedButton = $(`<button title="Outsided Property"></button>`).addClass('graphicButton outsidedButton');
         let keyFrameButton = $(`<button title="KeyFrame Property"></button>`).addClass('graphicButton keyFrameButton');
-        let flipButton = $(`<button title="Flip L/R"></button>`).addClass('graphicButton flipButton');
+        //let flipButton = $(`<button title="Flip L/R"></button>`).addClass('graphicButton flipButton');
 
 
 
         if (trackModel.trackType == 'interpolation') {
             outsidedButton.appendTo(propManagement);
             keyFrameButton.appendTo(propManagement);
-            flipButton.appendTo(propManagement);
+            //flipButton.appendTo(propManagement);
         }
 
         //Code for activity selector
@@ -848,6 +852,7 @@ class TrackView {
             trackModel.outside = !outsidedState;
         });
 
+        /*
         flipButton.on('click', function() {
 
             // First, access all different body parts.
@@ -930,7 +935,7 @@ class TrackView {
                 }
             }
             trackController.onchangekeypointgeometry(shape);
-        });
+        }); */
 
         /*
         keyFrameButton.on('click', function() {
