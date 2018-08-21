@@ -271,21 +271,14 @@ class TrackView {
                     this._framecontent.append(this._connectors[conn]);
                 }
 
-                for (var i = 0; i < state.position.skel.length; i++) {
-                    this._shape[i].updatePos(state.position.skel[i]);
-                    this._framecontent.append(this._shape[i]);
-                }
-
-                let centr = this.centroid(state.position);
-
                 // Insert keypoint texts
                 for (var i = 0; i < this._keypoint_texts.length; i++) {
                     this._framecontent.append($(this._keypoint_texts[i]));
                 }
 
                 // Insert circles
+                let centr = this.centroid(state.position);
                 for (var i = 0; i < state.position.skel.length; i++) {
-
 
                     if ($(this._shape[i]).attr('name') == 'center'){
                         state.position.skel[i] = centr;
@@ -366,7 +359,6 @@ class TrackView {
                 keypoint.removeClass('highlightedShape');
             });
             $("[activeKeypointText]").remove();
-
         }
 
         /*
@@ -447,7 +439,6 @@ class TrackView {
         else{
             this._shape.remove();
         }
-
         this._ui.remove();
         this._text.remove();
 
@@ -946,6 +937,13 @@ class TrackView {
 
         keypointsListButton.on('click', function() {
             skelKeypoints[0].classList.toggle('open');
+            if ($(this).hasClass('rotated')){
+                $(this).removeClass('rotated');
+                $(this).css('transform','rotate(0deg)');
+            } else {
+                $(this).addClass('rotated');
+                $(this).css('transform','rotate(90deg)');
+            }
 
         });
 

@@ -172,7 +172,7 @@ class CollectionController {
                     this._moveMode = false;
 
 
-                    $('#playButton').addClass('disabledPlayerButton');
+                    $('#playButton').removeClass('disabledPlayerButton');
                     $('#nextButton').removeClass('disabledPlayerButton');
                     $('#prevButton').removeClass('disabledPlayerButton');
                     $('#multipleNextButton').removeClass('disabledPlayerButton');
