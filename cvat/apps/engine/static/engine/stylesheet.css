@@ -73,6 +73,11 @@
     margin-right: 10px;
 }
 
+.rotate {
+    transform : rotate(90deg);
+
+}
+
 .lockButton {
     background: url("icons/unlock.png") no-repeat;
     background-size: 20px;

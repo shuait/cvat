@@ -321,6 +321,15 @@ class DrawerView {
 
                     let colors = this.getColors();
 
+                    var conn;
+                    this._drawConnectors = [];
+                    for(conn = 0;conn <this._connections.length;conn++)
+                        {
+                        this._drawConnectors[conn]=$(document.createElementNS('http://www.w3.org/2000/svg', 'line')).attr({
+                            'stroke': colors.border}).addClass('shape').appendTo(this._frameContent);
+                        }
+                    }
+
                     for (keyp = 0; keyp < this._layout_length;keyp++){
 
                         // (Assumed) not center
@@ -359,13 +368,7 @@ class DrawerView {
                         $(this._drawKeypointTexts[keyp]).appendTo(this._frameContent);
 
                     }
-                    var conn;
-                    this._drawConnectors = [];
-                    for(conn = 0;conn <this._connections.length;conn++){
-                        this._drawConnectors[conn]=$(document.createElementNS('http://www.w3.org/2000/svg', 'line')).attr({
-                            'stroke': colors.border}).addClass('shape').appendTo(this._frameContent);
-                    }
-                }
+
 
                 drawer.label = +this._drawLabelSelect.prop('value');
                 //drawer.trackType = this._drawTrackTypeSelect.prop('value');
