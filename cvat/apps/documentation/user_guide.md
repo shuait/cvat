@@ -41,8 +41,11 @@
 
 3. To modify skeleton keypoints:
    - To modify *individual* keypoints, click and drag the corresponding keypoint. 
-     The position of the green "Center" keypoint automatically shifts to the centroid of the smallest bounding box encompassing all keypoints. So if moving an individual keypoint changes this bounding box, the green "Center" keypoint will shift slightly.
+     The position of the green "Center" keypoint automatically shifts to the centroid of the smallest bounding box encompassing all keypoints. Therefore, if moving an individual keypoint changes this bounding box, the green "Center" keypoint will shift slightly.
    - To modify *all* keypoints, click and drag the green "Center" keypoint.
+   
+   - *Interpolating keypoints*:
+      - Ge
      
 3. If the object starts to change its position you need to modify bounding boxes where it happens. Changing of bounding boxes on each frame isn't necessary. It is enough to update several key frames and frames between them will be interpolated automatically. See an example below:
     - The car starts moving on frame #70. Let's mark the frame as a key frame.
