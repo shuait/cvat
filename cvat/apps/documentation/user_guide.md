@@ -62,33 +62,6 @@
 
 ### Vocabulary
 
-**Bounding box** is an area which defines boundaries of an object. To specify it you need to define top left and bottom right points.
-
-**Tight bounding box** is a bounding box where margin between the object inside and boundaries of the box is absent. By default the type of bounding box is used in most tasks but precision completely depends on an annotation task.
-
-| Bounding box |Tight bounding box|
-| ------------ |:----------------:|
-| ![](static/documentation/images/image030.jpg) | ![](static/documentation/images/image031.jpg)|
-
----
-**Label** is a type of an annotated object (e.g. person, car, face, etc)
-
-![](static/documentation/images/image032.jpg)
-
----
-
-**Attribute** is a property of an annotated object (e.g. color, model, quality, etc). There are two types of attributes:
-
-- __Unique__: immutable and isn't changed from frame to frame (e.g age, gender, color, etc)
-- __Temporary__: mutable and can be changed on any frame (e.g. quality, pose, truncated, etc)
-
-    ![](static/documentation/images/image033.jpg)
-
----
-**Track** is a set of bounding boxes on different frames which corresponds to one object. Tracks are created in ``Interpolation`` mode.
-
-![](static/documentation/images/gif004.gif)
-
 ---
 **Annotation** is a set of bounding boxes and tracks. There are several types of annotations:
 - *Manual* which is created by a person
@@ -103,11 +76,6 @@
 ### Navigation by frames/images
 
 ![](static/documentation/images/image035.jpg)
-
----
-Go to the first and latest frames.
-
-![](static/documentation/images/image036.jpg)
 
 ---
 Go to the next/previous frame with a predefined step. Shortcuts: ``v`` — step backward, ``c`` — step forward. By default the step is ``10``.
