@@ -58,9 +58,7 @@
 
     ![](static/documentation/images/image019.jpg)
     
-    
-
-
+   
 
 ### Vocabulary
 
