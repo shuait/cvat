@@ -27,8 +27,6 @@
 
 
 1. Create a worker by pushing the "Create Worker" button on the bottom right of the screen.
-
-        ![](static/documentation/images/image015.jpg)
         
 2. Until your next click, moving your cursor over the image will move the construction worker skeleton. Upon your next click, you will create a worker. **Important note:** by convention, we define the *left side* of a worker as corresponding to the left side of a worker as viewed from behind. To **flip left/right worker keypoints**, press ``Ctrl`` before you place the worker.
 
