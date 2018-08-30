@@ -46,7 +46,7 @@
    - **Interpolating keypoints**:
       - If you modify a keypoint on frame n, frame n will become a *key frame* for that keypoint's skeleton. Frame 0 is always a keyframe for all skeletons.
       - When a key frame is created, all keypoint positions will be linearly interpolated between the previous keypoint's frame and the new key frame.
-      - This means that **if a keypoint's motion from frame n to frame n is linear, to annotate this keypoint, you therefore only have to annotate frames n and frames m - not the frames inbetween**. With this technique you should be able to save a lot of annotation time.
+      - This means that **if a keypoint's motion from frame n to frame m is linear, to annotate this keypoint, you therefore only have to annotate frames n and frames m - not the frames inbetween**. With this technique you should be able to save a lot of annotation time.
      
 4. To modify skeleton keypoint visibilities:
    - Individual keypoint visibility can be modified by
