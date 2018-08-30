@@ -5,11 +5,8 @@
 ## Getting started
 
 ### Authorization
-- First of all you have to register for the annotation tool at visualconstruction.cee.illinois.edu 
 
-   ![](static/documentation/images/image003.jpg)
-
-- You will then be able to log in:
+- After we create your group's annotation tool account you will then be able to log in at visualconstruction.cee.illinois.edu:
 
    ![](static/documentation/images/image001.jpg)
 
