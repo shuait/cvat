@@ -67,11 +67,6 @@
 - *Manual* which is created by a person
 - *Semi-automatic* which is created automatically but modified by a person
 - *Automatic* which is created automatically without a person in the loop
-
-## Interface of the annotation tool
-
-![](static/documentation/images/image034.jpg)
-
 ---
 ### Navigation by frames/images
 
@@ -110,20 +105,6 @@ Go to specified frame.
 ### Bottom side panel
 
 ![](static/documentation/images/image043.jpg)
-
-### Side panel (list of objects)
-
-In the side panel you can see the list of available objects on the current frame. An example how the list can look like below:
-
-|Annotation mode|Interpolation mode|
-|--|--|
-|![](static/documentation/images/image044.jpg)|![](static/documentation/images/image045.jpg)|
-
----
-
-A bounding box can be locked to prevent its modification or moving by an accident. Shortcut to lock an object: ``l``.
-
-![](static/documentation/images/image046.jpg)
 
 ---
 A bounding box can be removed. Shortcut: ``Delete``. A locked bounding box can be deleted using ``Shift+Delete`` shortcut.
