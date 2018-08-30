@@ -32,8 +32,7 @@
 ### How to annotate
 
 
-1. Create a track:
-    - Create a track by pushing the "Create Track" button on the bottom right of the screen.
+1. Create a worker by pushing the "Create Track" button on the bottom right of the screen.
 
         ![](static/documentation/images/image015.jpg)
         
