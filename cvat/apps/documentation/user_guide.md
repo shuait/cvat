@@ -21,13 +21,13 @@
 
 ### Basic navigation
 
-1. Use arrows below to move on next/previous frame. To see the keyboard shortcut, hover your mouse pointer over an UI element.
+1. Use arrows below to move on next/previous frame. To see the keyboard shortcut, hover your mouse pointer over an UI element (D and F keys for left and right respectively).
 
     ![](static/documentation/images/image008.jpg)
 
 2. An image can be zoomed in/out using mouse's wheel. The image will be zoomed relative to your current cursor position. Thus if you point on an object it will be under your mouse during zooming process.
 
-3. An image can be moved/shifted by holding left mouse button inside some area without annotated objects. If ``Shift`` key is pressed then all annotated objects are ignored otherwise a highlighted bounding box will be moved instead of the image itself. Usually the functionality is used together with zoom to precisely locate an object of interest.
+3. An image can be moved/shifted by dragging the image.
 
 ### How to annotate
 
@@ -36,7 +36,14 @@
     - Create a track by pushing the "Create Track" button on the bottom right of the screen.
 
         ![](static/documentation/images/image015.jpg)
+        
+2. Until your next click, moving your cursor over the image will move the construction worker skeleton. Upon your next click, you will create a worker.
 
+3. To modify skeleton keypoints:
+   - To modify *individual* keypoints, click and drag the corresponding keypoint. 
+     The position of the green "Center" keypoint automatically shifts to the centroid of the smallest bounding box encompassing all keypoints. So if moving an individual keypoint changes this bounding box, the green "Center" keypoint will shift slightly.
+   - To modify *all* keypoints, click and drag the green "Center" keypoint.
+     
 3. If the object starts to change its position you need to modify bounding boxes where it happens. Changing of bounding boxes on each frame isn't necessary. It is enough to update several key frames and frames between them will be interpolated automatically. See an example below:
     - The car starts moving on frame #70. Let's mark the frame as a key frame.
 
