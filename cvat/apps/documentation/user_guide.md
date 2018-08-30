@@ -44,8 +44,10 @@
      The position of the green "Center" keypoint automatically shifts to the centroid of the smallest bounding box encompassing all keypoints. Therefore, if moving an individual keypoint changes this bounding box, the green "Center" keypoint will shift slightly.
    - To modify *all* keypoints, click and drag the green "Center" keypoint.
    
-   - *Interpolating keypoints*:
-      - Ge
+   - **Interpolating keypoints**:
+      - If you modify a keypoint on frame n, frame n will become a *key frame* for that keypoint's skeleton. Frame 0 is always a keyframe for all skeletons.
+      - When a key frame is created, all keypoint positions will be linearly interpolated between the previous keypoint's frame and the new key frame.
+      - This means that *if a keypoint's motion from frame n to frame n is linear, to annotate this keypoint, you therefore only have to annotate frames n and frames m - not the frames inbetween*. With this technique you should be able to save a lot of annotation time.
      
 3. If the object starts to change its position you need to modify bounding boxes where it happens. Changing of bounding boxes on each frame isn't necessary. It is enough to update several key frames and frames between them will be interpolated automatically. See an example below:
     - The car starts moving on frame #70. Let's mark the frame as a key frame.
