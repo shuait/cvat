@@ -39,30 +39,24 @@
         
 2. Until your next click, moving your cursor over the image will move the construction worker skeleton. Upon your next click, you will create a worker.
 
-3. To modify skeleton keypoints:
-   - To modify *individual* keypoints, click and drag the corresponding keypoint. 
+3. To modify skeleton keypoint positions:
+   - To modify an *individual* keypoint's position, just click and drag the corresponding keypoint. 
      The position of the green "Center" keypoint automatically shifts to the centroid of the smallest bounding box encompassing all keypoints. Therefore, if moving an individual keypoint changes this bounding box, the green "Center" keypoint will shift slightly.
-   - To modify *all* keypoints, click and drag the green "Center" keypoint.
+   - To modify *all* keypoints' positions, click and drag the green "Center" keypoint.
    
    - **Interpolating keypoints**:
       - If you modify a keypoint on frame n, frame n will become a *key frame* for that keypoint's skeleton. Frame 0 is always a keyframe for all skeletons.
       - When a key frame is created, all keypoint positions will be linearly interpolated between the previous keypoint's frame and the new key frame.
-      - This means that *if a keypoint's motion from frame n to frame n is linear, to annotate this keypoint, you therefore only have to annotate frames n and frames m - not the frames inbetween*. With this technique you should be able to save a lot of annotation time.
+      - This means that **if a keypoint's motion from frame n to frame n is linear, to annotate this keypoint, you therefore only have to annotate frames n and frames m - not the frames inbetween**. With this technique you should be able to save a lot of annotation time.
      
-3. If the object starts to change its position you need to modify bounding boxes where it happens. Changing of bounding boxes on each frame isn't necessary. It is enough to update several key frames and frames between them will be interpolated automatically. See an example below:
-    - The car starts moving on frame #70. Let's mark the frame as a key frame.
+4. To modify skeleton keypoint visibilities:
+   - Individual keypoint visibility can be modified by
+      - Clicking on the chevron in the corresponding worker's box in the panel on the right side of the page. A list of keypoints drops down with corresponding visibility icons.
+      -  Click on the keypoint's visibility icon to occlude it (the corresponding keypoint circle will now appear with a dashed boundary). Click on the icon again to render it visible.
+      - **Interpolating keypoints**:
+         - When a keypoint's visibility is changed, this frame becomes a keyframe for the skeleton. The visibility of all keypoints are constant for all frames up until the next keyframe (when the keypoint's visibility changes to its visibility on that frame).
 
-        ![](static/documentation/images/image016.jpg)
-
-    - Let's jump 30 frames forward and adjust boundaries of the object.
-
-        ![](static/documentation/images/image017.jpg)
-
-    - After that bounding boxes of the object between 70 and 100 frames will be changed automatically. For example, frame #85 looks like on the figure below:
-
-        ![](static/documentation/images/image018.jpg)
-
-4. When the annotated object disappears or becomes too small, you need to finish the track. To do that you need to choose ``Outsided Property``.
+4. When the annotated workers disappears from the screen, you need to finish the track. To do that you need to choose ``Outsided Property``.
 
     ![](static/documentation/images/image019.jpg)
 
