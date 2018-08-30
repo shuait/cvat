@@ -43,7 +43,6 @@
    - To modify an *individual* keypoint's position, just click and drag the corresponding keypoint. 
      The position of the green "Center" keypoint automatically shifts to the centroid of the smallest bounding box encompassing all keypoints. Therefore, if moving an individual keypoint changes this bounding box, the green "Center" keypoint will shift slightly.
    - To modify *all* keypoints' positions, click and drag the green "Center" keypoint.
-   
    - **Interpolating keypoints**:
       - If you modify a keypoint on frame n, frame n will become a *key frame* for that keypoint's skeleton. Frame 0 is always a keyframe for all skeletons.
       - When a key frame is created, all keypoint positions will be linearly interpolated between the previous keypoint's frame and the new key frame.
@@ -52,73 +51,22 @@
 4. To modify skeleton keypoint visibilities:
    - Individual keypoint visibility can be modified by
       - Clicking on the chevron in the corresponding worker's box in the panel on the right side of the page. A list of keypoints drops down with corresponding visibility icons.
-      -  Click on the keypoint's visibility icon to occlude it (the corresponding keypoint circle will now appear with a dashed boundary). Click on the icon again to render it visible.
-      - **Interpolating keypoints**:
+      - Click on the keypoint's visibility icon to occlude it (the corresponding keypoint circle will now appear with a dashed boundary). Click on the icon again to render it visible.
+      - **Interpolation behavior**:
          - When a keypoint's visibility is changed, this frame becomes a keyframe for the skeleton. The visibility of all keypoints are constant for all frames up until the next keyframe (when the keypoint's visibility changes to its visibility on that frame).
+         
+5. To modify worker per-frame activity labels.
+   - Click on the label menu in the corresponding worker's box in the panel on the right side of the page.
+   - Select the corresponding activity label from the menu that appears.
+   - **Interpolation behavior**:
+      - As for individual keypoint visibilities, a frame where a label change is made becomes a keyframe for that skeleton, and the label remains constant up to the next keyframe.
 
-4. When the annotated workers disappears from the screen, you need to finish the track. To do that you need to choose ``Outsided Property``.
+6. When an annotated worker disappears from the screen, you need to finish the track. To do that you need to click on the "Outsided Property" icon. The skeleton will then disappear on that frame, and its corresponding box on the panel on the right side of the page will disappear on all subsequent frames. **Note**: the box will reappear when rewinding to frames before the track finishes.
 
     ![](static/documentation/images/image019.jpg)
+    
+    
 
-5. If the object isn't visible on a couple of frames and after that it appears again it is possible to use ``Merge Tracks`` functionality to merge several separated tracks into one.
-
-    ![](static/documentation/images/image020.jpg)
-
-    - Let's create a track for the bus.
-
-        ![](static/documentation/images/gif001.gif)
-
-    - After that create a track when it appears again on the sequence of frames.
-
-        ![](static/documentation/images/gif002.gif)
-
-    - Press ``Merge Tracks`` button and click on any bounding box of first track and on any bounding box of second track.
-
-        ![](static/documentation/images/image021.jpg)
-
-    - Press ``Apply Merge`` button to apply changes.
-
-        ![](static/documentation/images/image022.jpg)
-
-    - The final annotated sequence of frames in ``Interpolation`` mode can look like the clip below:
-
-        ![](static/documentation/images/gif003.gif)
-
-### Attribute Annotation mode (basics)
-Usage examples:
-- Edit attributes using keyboard with fast navigation between objects and frames.
-
-1. To enter into ``Attribute Annotation`` mode press ``Shift+Enter`` shortcut. After that it is possible to change attributes using keyboard.
-
-    ![](static/documentation/images/image023.jpg)
-
-2. The active attribute will be red. In this case it is ``Age``.
-
-    ![](static/documentation/images/image024.jpg)
-
-3. Look at the bottom side panel to see all possible shortcuts to change the attribute. Press ``4`` key on your keyboard to assign ``adult`` value for the attribute.
-
-    ![](static/documentation/images/image025.jpg)
-
-4. Press ``Up Arrow``/``Down Arrow`` keys on your keyboard to go to next attribute .
-
-    ![](static/documentation/images/image026.jpg)
-
-5. In this case after pressing ``Down Arrow`` you will be able to edit ``Gender`` attribute.
-
-    ![](static/documentation/images/image027.jpg)
-
-6. Use ``Right Arrow``/``Left Arrow`` keys to move on previous/next image.
-
-### Downloading annotations
-
-1. To download latest annotations save all changes first. Press ``Open Menu`` and then ``Save Work`` button. There is ``Ctrl+s`` shortcut to save annotations quickly.
-
-2. After that press ``Open Menu`` and then ``Dump Annotation`` button.
-
-    ![](static/documentation/images/image028.jpg)
-
-3. The annotation will be written into **.xml** file. To find the annotation file go to the directory where your browser saves downloaded files by default. For more information visit [XML annotation format](/documentation/xml_format.html) description.
 
 
 ### Vocabulary
@@ -252,22 +200,6 @@ The menu contains different parameters which can be adjust by the user needs. Fo
  - ``Contrast`` controls the difference between dark and light parts of the image
  - ``Saturation`` takes away all color or enhance the color.
 
-## Annotation mode (advanced)
-
-Basic operations in the mode was described above.
-
-__occluded__ attribute is used if an object is occluded by another object or it isn't fully visible on the frame. Use ``q`` shortcut to set the property quickly.
-
-![](static/documentation/images/image053.jpg)
-
-Example: both cars on the figure below should be labeled as __occluded__.
-
-![](static/documentation/images/image054.jpg)
-
-If a frame contains too many objects and it is difficult to annotate them due to many bounding boxes are placed mostly in the same place when it makes sense to lock them. Bounding boxes for locked objects are transparent and it is easy to annotate new objects. Also it will not be possible to change previously annotated objects by an accident. Shortcut: ``l``.
-
-![](static/documentation/images/image055.jpg)
-
 ## Interpolation mode (advanced)
 
 Basic operations in the mode was described above.
@@ -280,123 +212,3 @@ Bounding boxes created in the mode have extra navigation buttons.
 - The button helps to jump to initial frame for the object (first bounding box for the track).
 
     ![](static/documentation/images/image057.jpg)
-
-
-## Attribute Annotation mode (advanced)
-
-Basic operations in the mode was described above.
-
-It is possible to handle many objects on the same frame in the mode.
-
-![](static/documentation/images/image058.jpg)
-
-It is more convenient to annotate objects of the same type. For the purpose it is possible to specify a corresponding filter. For example, the following filter will hide all objects except pedestrians: ``//pedestrian``.
-
-To navigate between objects (pedestrians in the case) use the following shortcuts:
-- ``Tab`` - go to the next object
-- ``Shift+Tab`` - go to the previous object.
-
-By default in the mode objects are zoomed. To disable the functionality uncheck the corresponding setting: ``Open Menu`` —> ``Settings`` —> ``Zoom boxes in Attribute Annotation Mode``.
-
-By default other objects are hidden. To change the behaviour uncheck the corresponding setting: ``Open Menu`` —> ``Setting`` —> ``Hide Other in Attribute Annotation Mode``.
-
-## Filter
-
-![](static/documentation/images/image059.jpg)
-
-There are several reasons to use the feature:
-
-1. When use a filter objects which don't correspond to the filter will be hidden. Use ``Settings`` —> ``Hide Filtered Tracks`` or ``K`` shortcut if you want to change the behaviour.
-2. Fast navigation between frames which have an object of interest. Use ``Left Arrow/Right Arrow`` keys for the purpose. If the filter is empty the mentioned arrows will go to previous/next frames.
-
-To use the functionality it is enough to specify a value inside ``Filter`` text box and defocus the text box (for example, click on the image). After that the filter will be applied.
-
----
-In a trivial case a correct filter should correspond to the template: ``//label[prop operator "value"]``
-
-``label`` is a type of an object (e.g _person, car, face_, etc). If the type isn't important you can use ``*``.
-
-``prop`` is a property which should be filtered. The following items are available:
-
- - ``id`` — identifier of an object. It helps to find a specific object easily in case of huge number of objects and images/frames.
- - ``type`` — an annotation type. Possible values:
-    - ``annotation``
-    - ``interpolation``
- - ``lock`` accepts ``true`` and ``false`` values. It can be used to hide all locked objects.
- - ``occluded`` accepts ``true`` and ``false`` values. It can be used to hide all occluded objects.
- - ``attr`` is a prefix to access attributes of an object. For example, it is possible to access _race_ attribute. For the purpose you should specify ``attr/race``. To access all attributes it is necessary to write ``attr/*``.
-
-``operator`` can be ``=`` (equal), ``!=`` (not equal), ``<`` (less), ``>`` (more), ``<=`` (less or equal), ``>=`` (more or equal).
-
-``"value"`` — value of an attribute or a property. It has to be specified in quotes.
-
----
-
-Example                        | Description
--------------------------------|-------------
-``//face``                     | all faces
-``//*[id=4]``                  | object with id #4
-``//*[type="annotation"]``     | *annotation* objects only
-``//car[occluded="true"]``     | cars with *occluded* property
-``//*[lock!="true"]``          | all unlocked objects
-``//car[attr/parked="true"]``  | parked cars
-``//*[attr/*="__undefined__"]``| any objects with ``__undefined__`` value of an attribute
-
----
-
-The functionality allows to create more complex conditions. Several filters can be combined by ``or``, ``and``, ``|`` operators. Operators ``or``, ``and`` can be applied inside square brackets. ``|`` operator (union) can be applied outside of square brackets.
-
-Example                                                 | Description
---------------------------------------------------------|-------------
-``//person[attr/age>="25" and attr/age<="35"]``         | people with age between 25 and 35.
-``//face[attr/glass="sunglass" or attr/glass="no"]``    | faces with sunglasses or without glasses at all.
-```//person[attr/race="asian"] | //car[attr/model="bmw" or attr/model="mazda"]``` | asian persons or bmw or mazda cars.
-
-
-## Shortcuts
-
-Many UI elements have shortcut hints. Put your pointer to an interesting element to see it.
-
-![](static/documentation/images/image061.jpg)
-
-![](static/documentation/images/image062.jpg)
-
-| Shortcut             | Common                        |
------------------------|------------------------------
-``L``                  | lock/unlock a selected object
-``L+T``                | lock/unlock all objects and tracks on the current frame
-``Q`` or ``Num-``      | set occluded property for a selected object
-``N``                  | create a new annotated object
-``Ctrl+<number>``      | change type of new objects by default
-``Shift+<number>``     | change type of a selected object
-``Enter``              | change color of bounding box for a selected object
-``H``                  | hide bounding boxes on every frame
-``J``                  | hide labels with attributes on every frame
-``Delete``             | delete a selected object
-``Shift+Delete``       | delete a selected object even if it is locked
-``F``                  | go to next frame
-``D``                  | go to previous frame
-``V``                  | go forward with a predefined step
-``C``                  | go backward with a predefined step
-``Ctrl+C``             | copy a selected object
-``Ctrl+V``             | insert a copied object
-``F1``                 | open help
-``F1`` in dashboard    | open page with documentation
-``F2``                 | open settings
-``Ctrl+S``             | save job
-|                      | __Interpolation__             |
-``M``                  | enter/apply merge mode
-``Ctrl+M``             | leave merge mode without saving changes
-``R``                  | go to the next key frame of a selected object
-``E``                  | go to the previous key frame of a selected object
-|                      | __Attribute annotation mode__ |
-``Shift+Enter``        | enter/leave Attribute Annotation mode
-``Up Arrow``           | go to the next attribute (up)
-``Down Arrown``        | go to the next attribute (down)
-``Tab``                | go to the next annotated object
-``Shift+Tab``          | go to the previous annotated object
-``<number>``           | assign a corresponding value to the current attribute
-|                      | __Filter__                    |
-``Left Arrow``         | go to the previous frame which corresponds to the specified filter value
-``Right Arrow``        | go to the next frame which corresponds to the specified filter value
-``K``                  | hide all objects which don't correspond to the specified filter value
