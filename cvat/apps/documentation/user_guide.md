@@ -10,10 +10,7 @@
 
    ![](static/documentation/images/image001.jpg)
 
-   ![](static/documentation/images/image002.jpg)
-    
-
-- Shortly after you register, the TA's will assign an annotation task to you. Once this is done, you will have access to the task when you log in and can start annotating.  
+- The TAs will assign an annotation task to you. Once this is done, you will have access to the task when you log in. Click on the hyperlink under the "Jobs" column on the right side of the screen to start annotating. 
   
 
 ### Basic navigation
