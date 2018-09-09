@@ -196,11 +196,9 @@ class DrawerView {
 
         this._colorIndex = this._controller._model._collection._allTracks.length;
 
-        this._layout_length = 18;
+        this._layout_length = 14;
 
         this._layout = {'nose' : [0,-15],
-                       'eye' : {'left' :[-1,-15],'right' : [1,-15]},
-                       'ear' : {'left' : [-2,-15],'right' : [2,-15]},
                        'shoulder' : {'left' : [-3,-10], 'right' : [3,-10]},
                        'elbow' : {'left' : [-4,-3], 'right' : [4,-3]},
                        'wrist' : {'left' : [-3.5,0], 'right' : [3.5,0]},
@@ -211,10 +209,6 @@ class DrawerView {
                        'flip' : false};
 
         this._keypoint_names = ["nose",
-                                "left eye",
-                                "right eye",
-                                "left ear",
-                                "right ear",
                                 "left shoulder",
                                 "right shoulder",
                                 "left elbow",
@@ -231,25 +225,19 @@ class DrawerView {
 
         let kp = this._keypoint_names;
 
-        this._connections = [[kp[16-1],kp[14-1]],
-                        [kp[14-1],kp[12-1]],
-                        [kp[17-1],kp[15-1]],
-                        [kp[15-1],kp[13-1]],
-                        [kp[12-1],kp[13-1]],
-                        [kp[6-1],kp[12-1]],
-                        [kp[7-1],kp[13-1]],
-                        [kp[6-1],kp[7-1]],
-                        [kp[6-1],kp[8-1]],
-                        [kp[7-1],kp[9-1]],
-                        [kp[8-1],kp[10-1]],
-                        [kp[9-1],kp[11-1]],
-                        [kp[2-1],kp[3-1]],
-                        [kp[1-1],kp[2-1]],
-                        [kp[1-1],kp[3-1]],
-                        [kp[2-1],kp[4-1]],
-                        [kp[3-1],kp[5-1]],
-                        [kp[4-1],kp[6-1]],
-                        [kp[5-1],kp[7-1]]];
+        this._connections = [[kp[1-1],kp[2-1]],
+                            [kp[1-1],kp[3-1]],
+                            [kp[2-1],kp[3-1]],
+                            [kp[2-1],kp[4-1]],
+                            [kp[3-1],kp[5-1]],
+                            [kp[6-1],kp[4-1]],
+                            [kp[7-1],kp[5-1]],
+                            [kp[8-1],kp[2-1]],
+                            [kp[9-1],kp[3-1]],
+                            [kp[10-1],kp[8-1]],
+                            [kp[11-1],kp[9-1]],
+                            [kp[12-1],kp[10-1]],
+                            [kp[13-1],kp[11-1]]];
 
 
          this._colorSets = {
@@ -337,11 +325,6 @@ class DrawerView {
                             this._drawShape[keyp] = $(document.createElementNS('http://www.w3.org/2000/svg', 'circle')).attr({
                                  'stroke': 'blue', 'fill' : 'blue','r':5
                              }).addClass('shape').appendTo(this._frameContent);//appendTo(this._frameContent);
-
-
-
-
-
                         }
                         else{
                         this._drawShape[keyp] = $(document.createElementNS('http://www.w3.org/2000/svg', 'circle')).attr({
@@ -353,7 +336,6 @@ class DrawerView {
                         $(this._drawKeypointTexts[keyp]).attr({
                             'class': 'regular',
                             'font-size': '1.6em',
-
                             'fill': 'white',
                             'text-shadow': '0px 0px 3px black',
                             'cursor': 'default'
@@ -366,9 +348,7 @@ class DrawerView {
                         this._drawKeypointTexts[keyp].appendChild(labelNameText);
 
                         $(this._drawKeypointTexts[keyp]).appendTo(this._frameContent);
-
                     }
-
 
                 drawer.label = +this._drawLabelSelect.prop('value');
                 //drawer.trackType = this._drawTrackTypeSelect.prop('value');
