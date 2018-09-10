@@ -19,16 +19,15 @@
 
     ![](static/documentation/images/image008.jpg)
 
-2. An image can be zoomed in/out using mouse's wheel. The image will be zoomed relative to your current cursor position. Thus if you point on an object it will be under your mouse during zooming process.
+2. An image can be zoomed in/out using the mouse wheel. The image will be zoomed relative to your current cursor position. Thus if you point on an object it will be under your mouse during zooming process.
 
-3. An image can be moved/shifted by dragging the image.
+3. An image can be moved/shifted by clicking/dragging the image.
 
 ### How to annotate
 
-
 1. Create a worker by pushing the "Create Worker" button on the bottom right of the screen.
         
-2. Until your next click, moving your cursor over the image will move the construction worker skeleton. Upon your next click, you will create a worker. **Important note:** by convention, we define the *left side* of a worker as corresponding to the left side of a worker as viewed from behind. To **flip left/right worker keypoints**, press ``Ctrl`` before you place the worker.
+2. Until your next click, moving your cursor over the image will move the construction worker skeleton. Upon your next click, you will create a worker. **Important note:** by convention, we define the *left side* of a worker as corresponding to the left side of a worker as viewed from behind. To **flip left/right worker keypoints**, press ``Ctrl`` **before** you place the worker.
 
 3. To modify skeleton keypoint positions:
    - To modify an *individual* keypoint's position, just click and drag the corresponding keypoint. 
