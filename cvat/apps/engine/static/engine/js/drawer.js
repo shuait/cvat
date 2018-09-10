@@ -158,7 +158,7 @@ class DrawerController {
 
             let shortkeys = userConfig.shortkeys;
 
-            //Mousetrap.bind(shortkeys["switch_draw_mode"].value, drawHandler, 'keydown');
+            Mousetrap.bind(shortkeys["switch_draw_mode"].value, drawHandler, 'keydown');
         }
     }
 
