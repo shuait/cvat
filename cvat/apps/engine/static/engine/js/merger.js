@@ -261,8 +261,8 @@ class MergerController {
 
             let shortkeys = userConfig.shortkeys;
 
-            Mousetrap.bind(shortkeys["switch_merge_mode"].value, mergeHandler, 'keydown');
-            Mousetrap.bind(shortkeys["cancel_merge_mode"].value, cancelHandler, 'keydown');
+            //Mousetrap.bind(shortkeys["switch_merge_mode"].value, mergeHandler, 'keydown');
+            //Mousetrap.bind(shortkeys["cancel_merge_mode"].value, cancelHandler, 'keydown');
         }
     }
 

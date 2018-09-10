@@ -686,8 +686,8 @@ class TrackView {
             'margin': '5px 10px'
         });
 
-        let lockShortkeys = `(${shortkeys["switch_lock_property"].view_value}), (${shortkeys["switch_all_lock_property"].view_value})`;
-        let occludedShortkey = `(${shortkeys["switch_occluded_property"].view_value})`;
+        //let lockShortkeys = `(${shortkeys["switch_lock_property"].view_value}), (${shortkeys["switch_all_lock_property"].view_value})`;
+        //let occludedShortkey = `(${shortkeys["switch_occluded_property"].view_value})`;
 /*
         let lockButton = $(`<button title="Lock Property ${lockShortkeys}"></button>`)
             .addClass('graphicButton lockButton').appendTo(propManagement);
@@ -1043,7 +1043,7 @@ class TrackView {
 
         let occludedStates = [];
         let occludedButtons = [];
-        let occludedShortkeys = [];
+        //let occludedShortkeys = [];
 
         // Need to enforce interpolation.position.skel has the same order as keypoints.
         // When info saved to database, skel keypoint order isn't necessarily preserved.
@@ -1059,7 +1059,7 @@ class TrackView {
         for (let i_keypoint = 0; i_keypoint < keypoints.length -1; i_keypoint++) {
 
             occludedStates[i_keypoint] = interpolation.position.skel[i_keypoint][3]; // (should be "2" if// new)
-            occludedShortkeys[i_keypoint] = `(${shortkeys["switch_occluded_property"].view_value})`;
+            //occludedShortkeys[i_keypoint] = `(${shortkeys["switch_occluded_property"].view_value})`;
 
             $(`<label> <br> ${keypoints[i_keypoint]} </label>`).addClass('semiBold').appendTo(skelKeypoints); //(this._skelKeypoints);
 

@@ -6,6 +6,8 @@ class Config {
     constructor() {
         this._username = "_default_";
         this._shortkeys = {
+
+            /*
             switch_lock_property: {
                 value: "l",
                 view_value: "L",
@@ -23,12 +25,15 @@ class Config {
                 view_value: "Q or Num-",
                 description: "switch occluded property for highlighted track"
             },
+            */
 
             switch_draw_mode: {
                 value: "n",
                 view_value: "N",
                 description: "open/close draw mode"
             },
+
+            /*
 
             switch_merge_mode: {
                 value: "m",
@@ -58,7 +63,7 @@ class Config {
                 value: "enter",
                 view_value: "Enter",
                 description: "change color for highligted shape"
-            },
+            }, */
 
             change_player_brightness: {
                 value: "shift+b,alt+b",
@@ -78,6 +83,8 @@ class Config {
                 description: "increase/decrease saturation of an image"
             },
 
+            /*
+
             hide_shapes: {
                 value: "h",
                 view_value: "H",
@@ -96,16 +103,18 @@ class Config {
                 description: "hide filtered tracks on the frame"
             },
 
-            delete_track: {
-                value: "del,shift+del",
-                view_value: "Del, Shift + Del",
-                description: "delete highlighted track (use shift for force deleting)"
-            },
-
             focus_to_frame: {
                 value: '`,~',
                 view_value: '~ / `',
                 description: "focus to 'go to frame' element"
+            },
+
+            */
+
+            delete_track: {
+                value: "del,shift+del",
+                view_value: "Del, Shift + Del",
+                description: "delete highlighted track (use shift for force deleting)"
             },
 
             next_frame: {
@@ -180,6 +189,8 @@ class Config {
                 description: "save work on the server"
             },
 
+            /*
+
             copy_shape: {
                 value: "ctrl+c",
                 view_value: "Ctrl + C",
@@ -233,6 +244,7 @@ class Config {
                 view_value: "1,2,3,4,5,6,7,8,9,0",
                 description: "setup corresponding attribute value in attribute annotation mode"
             },
+            */
         };
 
 

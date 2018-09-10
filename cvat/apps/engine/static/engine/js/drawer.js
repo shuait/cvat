@@ -272,7 +272,7 @@ class DrawerView {
     onDrawerUpdate(drawer) {
         if (drawer.drawMode) {
             if (!this._drawMode) {
-                this._drawButton.text('Cancel Draw (N)');
+                this._drawButton.text('Cancel Draw');
 
                 this._frameContent.on('mousemove.drawer', mousemoveHandler.bind(this));
                 this._frameContent.on('mouseleave.drawer', mouseleaveHandler.bind(this));

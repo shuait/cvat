@@ -113,9 +113,9 @@ class ShapeBufferController {
 
             let shortkeys = userConfig.shortkeys;
 
-            Mousetrap.bind(shortkeys["copy_shape"].value, copyHandler, 'keydown');
-            Mousetrap.bind(shortkeys["paste_shape"].value, pasteHandler, 'keydown');
-            Mousetrap.bind(shortkeys["cancel_pasting"].value, cancelHandler, 'keydown');
+            //Mousetrap.bind(shortkeys["copy_shape"].value, copyHandler, 'keydown');
+            //Mousetrap.bind(shortkeys["paste_shape"].value, pasteHandler, 'keydown');
+            //Mousetrap.bind(shortkeys["cancel_pasting"].value, cancelHandler, 'keydown');
         }
     }
 
