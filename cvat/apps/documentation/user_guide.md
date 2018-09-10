@@ -25,11 +25,11 @@
 
 ### How to annotate
 
-1. Create a worker by pushing the "Create Worker" button on the bottom right of the screen.
-        
-2. Until your next click, moving your cursor over the image will move the construction worker skeleton. Upon your next click, you will create a worker. **Important note:** by convention, we define the *left side* of a worker as corresponding to the left side of a worker as viewed from behind. To **flip left/right worker keypoints**, press ``Ctrl`` **before** you place the worker.
+1. Create a worker by pushing the "Create Worker" button on the bottom right of the screen. Until your next click, moving your cursor over the image will move the construction worker skeleton. Upon your next click, you will create a worker. **Important note:** by convention, we define the *left side* of a worker as corresponding to the left side of a worker as viewed from behind. To **flip left/right worker keypoints**, press ``Ctrl`` **before** you place the worker.
 
-3. To modify skeleton keypoint positions:
+    ![](static/documentation/images/createworker.png)
+       
+2. To modify skeleton keypoint positions:
    - To modify an *individual* keypoint's position, just click and drag the corresponding keypoint. 
      The position of the green "Center" keypoint automatically shifts to the centroid of the smallest bounding box encompassing all keypoints. Therefore, if moving an individual keypoint changes this bounding box, the green "Center" keypoint will shift slightly.
    - To modify *all* keypoints' positions, click and drag the green "Center" keypoint.
@@ -51,9 +51,7 @@
    - **Interpolation behavior**:
       - As for individual keypoint visibilities, a frame where a label change is made becomes a keyframe for that skeleton, and the label remains constant up to the next keyframe.
 
-6. When an annotated worker disappears from the screen, you need to finish the track. To do that you need to click on the "Outsided Property" icon. The skeleton will then disappear on that frame, and its corresponding box on the panel on the right side of the page will disappear on all subsequent frames. **Note**: the box will reappear when rewinding to frames before the track finishes.
-
-    ![](static/documentation/images/image019.jpg)
+6. When an annotated worker disappears from the screen, you need to finish the track. To do that you need to click on the "Outsided Property" icon. The skeleton will then disappear on that frame, and its corresponding box on the panel on the right side of the page will disappear on all subsequent frames. **Note**: the skeleton will reappear when rewinding to frames before the track finishes.
     
    
 
@@ -80,72 +78,15 @@ To change the predefined step go to settings (``Open Menu`` —> ``Settings``) a
 
 ![](static/documentation/images/image039.jpg)
 
----
-Go to the next/previous frame with step equals to 1. Shortcuts: ``d`` — previous, ``f`` — next.
-
-![](static/documentation/images/image040.jpg)
-
----
-Play the sequence of frames or the set of images. Shortcut: ``Space``.
-
-![](static/documentation/images/image041.jpg)
-
-To adjust player speed go to settings (``Open Menu`` —> ``Settings``) and modify a value of ``Player Speed`` property.
-
-![](static/documentation/images/image042.jpg)
-
-Go to specified frame.
-
-![](static/documentation/images/image060.jpg)
-
-
-### Bottom side panel
-
-![](static/documentation/images/image043.jpg)
-
----
-A bounding box can be removed. Shortcut: ``Delete``. A locked bounding box can be deleted using ``Shift+Delete`` shortcut.
-
-![](static/documentation/images/image047.jpg)
-
----
-A bounding box can be **Occluded**. Shortcut: ``q``. Such bounding boxes have dashed boundaries.
-
-![](static/documentation/images/image048.jpg)
-
-![](static/documentation/images/image049.jpg)
-
----
-The type of a bounding box can be changed by selecting __Label__ property. For instance, it can look like on the figure below:
-
-![](static/documentation/images/image050.jpg)
-
-To change a type of a bounding box using keyboard you need to press ``Shift+<number>``.
-
 ### Open Menu
-It is the main menu for the annotation tool. It can be used to download, upload and remove annotations. As well it shows statistics about the current annotation task.
-
-![](static/documentation/images/image051.jpg)
+It is the main menu for the annotation tool. You can use it to remove all existing annotations, to change player settings and to save your existing work.
 
 ### Settings
 
-The menu contains different parameters which can be adjust by the user needs. For example, ``Auto Saving Internal``, ``Player Step``, ``Player Speed``.
+The menu contains different parameters which can be adjust by the user needs. For example,``Player Step``, ``Player Speed``.
 
 ![](static/documentation/images/image052.jpg)
 
  - ``Brightness`` makes it appear that there is more or less light within the image.
  - ``Contrast`` controls the difference between dark and light parts of the image
  - ``Saturation`` takes away all color or enhance the color.
-
-## Interpolation mode (advanced)
-
-Basic operations in the mode was described above.
-
-Bounding boxes created in the mode have extra navigation buttons.
-- These buttons help to jump to previous/next key frame.
-
-    ![](static/documentation/images/image056.jpg)
-
-- The button helps to jump to initial frame for the object (first bounding box for the track).
-
-    ![](static/documentation/images/image057.jpg)
