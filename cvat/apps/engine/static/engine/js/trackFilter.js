@@ -116,7 +116,7 @@ class TrackFilterController {
             });
 
             let shortkeys = userConfig.shortkeys;
-            Mousetrap.bind(shortkeys["hide_filtered_tracks"].value, hideFilteredTracksHandler, 'keydown');
+            //Mousetrap.bind(shortkeys["hide_filtered_tracks"].value, hideFilteredTracksHandler, 'keydown');
         }
     }
 

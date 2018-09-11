@@ -59,12 +59,12 @@ class CollectionController {
 
             let shortkeys = userConfig.shortkeys;
 
-            Mousetrap.bind(shortkeys["delete_track"].value.split(','), deleteHandler, 'keydown');
-            Mousetrap.bind(shortkeys["switch_lock_property"].value, lockHandler, 'keyup');
-            Mousetrap.bind(shortkeys["switch_all_lock_property"].value, lockAllHandler, 'keydown');
-            Mousetrap.bind(shortkeys["switch_occluded_property"].value.split(','), occludedHandler, 'keydown');
-            Mousetrap.bind(shortkeys["change_shape_color"].value, changeColorHandler, 'keydown');
-            Mousetrap.bind(shortkeys["change_track_label"].value.split(','), changeLabelHandler, 'keydown');
+            //Mousetrap.bind(shortkeys["delete_track"].value.split(','), deleteHandler, 'keydown');
+            //Mousetrap.bind(shortkeys["switch_lock_property"].value, lockHandler, 'keyup');
+            //Mousetrap.bind(shortkeys["switch_all_lock_property"].value, lockAllHandler, 'keydown');
+            //Mousetrap.bind(shortkeys["switch_occluded_property"].value.split(','), occludedHandler, 'keydown');
+            //Mousetrap.bind(shortkeys["change_shape_color"].value, changeColorHandler, 'keydown');
+            //Mousetrap.bind(shortkeys["change_track_label"].value.split(','), changeLabelHandler, 'keydown');
         }
 
         function setupInteract() {

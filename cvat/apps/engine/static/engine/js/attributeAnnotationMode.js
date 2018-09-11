@@ -379,12 +379,13 @@ class AAMController {
 
             let shortkeys = userConfig.shortkeys;
 
-            Mousetrap.bind(shortkeys["switch_aam_mode"].value, switchAAMHandler, 'keydown');
+            /*Mousetrap.bind(shortkeys["switch_aam_mode"].value, switchAAMHandler, 'keydown');
             Mousetrap.bind(shortkeys["aam_next_attribute"].value, nextAttributeHandler, 'keydown');
             Mousetrap.bind(shortkeys["aam_prev_attribute"].value, prevAttributeHandler, 'keydown');
             Mousetrap.bind(shortkeys["aam_next_track"].value, nextTrackHandler, 'keydown');
             Mousetrap.bind(shortkeys["aam_prev_track"].value, prevTrackHandler, 'keydown');
             Mousetrap.bind(shortkeys["select_i_attribute"].value.split(','), selectAttributeHandler, 'keydown');
+            */
         }
     }
 

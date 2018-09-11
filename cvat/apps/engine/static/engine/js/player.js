@@ -606,7 +606,7 @@ class PlayerView {
                 this._controller.seek(+e.target.value);
             }
         });
-        Mousetrap.bind(userConfig.shortkeys['focus_to_frame'].value.split(','), () => this._frameNumber.focus(), 'keydown');
+        //Mousetrap.bind(userConfig.shortkeys['focus_to_frame'].value.split(','), () => this._frameNumber.focus(), 'keydown');
 
         this._progressUI['0'].max = playerModel.frames.stop - playerModel.frames.start;
         this._progressUI['0'].value = 0;

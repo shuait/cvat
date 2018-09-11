@@ -48,10 +48,6 @@ class TrackModel extends Listener {
         this._colors = colors;
 
         this._keypoint_names = ["nose",
-                                "left eye",
-                                "right eye",
-                                "left ear",
-                                "right ear",
                                 "left shoulder",
                                 "right shoulder",
                                 "left elbow",

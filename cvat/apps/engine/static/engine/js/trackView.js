@@ -11,10 +11,6 @@ class TrackView {
         this._shape = TrackView.makeShape(interpolation.position, trackModel.shapeType, colors,
                                             trackModel.id);
         this._keypoint_names = ["nose",
-                                "left eye",
-                                "right eye",
-                                "left ear",
-                                "right ear",
                                 "left shoulder",
                                 "right shoulder",
                                 "left elbow",
@@ -31,25 +27,19 @@ class TrackView {
 
         let kp = this._keypoint_names;
 
-        this._connections = [[kp[16-1],kp[14-1]],
-                            [kp[14-1],kp[12-1]],
-                            [kp[17-1],kp[15-1]],
-                            [kp[15-1],kp[13-1]],
-                            [kp[12-1],kp[13-1]],
-                            [kp[6-1],kp[12-1]],
-                            [kp[7-1],kp[13-1]],
-                            [kp[6-1],kp[7-1]],
-                            [kp[6-1],kp[8-1]],
-                            [kp[7-1],kp[9-1]],
-                            [kp[8-1],kp[10-1]],
-                            [kp[9-1],kp[11-1]],
-                            [kp[2-1],kp[3-1]],
-                            [kp[1-1],kp[2-1]],
+        this._connections = [[kp[1-1],kp[2-1]],
                             [kp[1-1],kp[3-1]],
+                            [kp[2-1],kp[3-1]],
                             [kp[2-1],kp[4-1]],
                             [kp[3-1],kp[5-1]],
-                            [kp[4-1],kp[6-1]],
-                            [kp[5-1],kp[7-1]]];
+                            [kp[6-1],kp[4-1]],
+                            [kp[7-1],kp[5-1]],
+                            [kp[8-1],kp[2-1]],
+                            [kp[9-1],kp[3-1]],
+                            [kp[10-1],kp[8-1]],
+                            [kp[11-1],kp[9-1]],
+                            [kp[12-1],kp[10-1]],
+                            [kp[13-1],kp[11-1]]];
         this._connections_length = this._connections.length;
 
 
@@ -138,10 +128,6 @@ class TrackView {
         }.bind(this);
 
         this._layout = [[0,-15], //nose
-                      [-1,-15], //left eye
-                      [1,-15], //right eye
-                      [-2,-15], //left ear
-                      [2,-15], //right ear
                       [-3,-10], //left shoulder
                       [3,-10], //right shoulder
                       [-4,-3], //left elbow
@@ -677,10 +663,6 @@ class TrackView {
                                 trackModel.remove(event.shiftKey);
                                 });}*/
         let keypoints = ["nose",
-                    "left eye",
-                    "right eye",
-                    "left ear",
-                    "right ear",
                     "left shoulder",
                     "right shoulder",
                     "left elbow",
@@ -704,8 +686,8 @@ class TrackView {
             'margin': '5px 10px'
         });
 
-        let lockShortkeys = `(${shortkeys["switch_lock_property"].view_value}), (${shortkeys["switch_all_lock_property"].view_value})`;
-        let occludedShortkey = `(${shortkeys["switch_occluded_property"].view_value})`;
+        //let lockShortkeys = `(${shortkeys["switch_lock_property"].view_value}), (${shortkeys["switch_all_lock_property"].view_value})`;
+        //let occludedShortkey = `(${shortkeys["switch_occluded_property"].view_value})`;
 /*
         let lockButton = $(`<button title="Lock Property ${lockShortkeys}"></button>`)
             .addClass('graphicButton lockButton').appendTo(propManagement);
@@ -1061,7 +1043,7 @@ class TrackView {
 
         let occludedStates = [];
         let occludedButtons = [];
-        let occludedShortkeys = [];
+        //let occludedShortkeys = [];
 
         // Need to enforce interpolation.position.skel has the same order as keypoints.
         // When info saved to database, skel keypoint order isn't necessarily preserved.
@@ -1077,7 +1059,7 @@ class TrackView {
         for (let i_keypoint = 0; i_keypoint < keypoints.length -1; i_keypoint++) {
 
             occludedStates[i_keypoint] = interpolation.position.skel[i_keypoint][3]; // (should be "2" if// new)
-            occludedShortkeys[i_keypoint] = `(${shortkeys["switch_occluded_property"].view_value})`;
+            //occludedShortkeys[i_keypoint] = `(${shortkeys["switch_occluded_property"].view_value})`;
 
             $(`<label> <br> ${keypoints[i_keypoint]} </label>`).addClass('semiBold').appendTo(skelKeypoints); //(this._skelKeypoints);
 

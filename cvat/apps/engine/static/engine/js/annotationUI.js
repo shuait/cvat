@@ -143,9 +143,10 @@ function buildAnnotationUI(job, trackData, loadJobEvent) {
 
     $('#createTrackButton').attr('title',
         `${shortkeys["switch_draw_mode"].view_value} - ${shortkeys["switch_draw_mode"].description}`);
+    /*
     $('#mergeTracksButton').attr('title',
         `${shortkeys["switch_merge_mode"].view_value} - ${shortkeys["switch_merge_mode"].description}` + "\n" +
-        `${shortkeys["cancel_merge_mode"].view_value} - ${shortkeys["cancel_merge_mode"].description}`);
+        `${shortkeys["cancel_merge_mode"].view_value} - ${shortkeys["cancel_merge_mode"].description}`); */
     $('#saveButton').attr('title', `${shortkeys["save_work"].view_value}`);
     $('#helpButton').attr('title', `${shortkeys["open_help"].view_value}`);
     $('#settingsButton').attr('title', `${shortkeys["open_settings"].view_value}`);
@@ -153,7 +154,7 @@ function buildAnnotationUI(job, trackData, loadJobEvent) {
     //$('#labelSelect').attr('title',
     //    `${shortkeys["change_default_label"].view_value} - ${shortkeys["change_default_label"].description}`);
     //$('#hideBoxesBox').attr('title', `${shortkeys["hide_shapes"].view_value}`);
-    $('#hideLabelsBox').attr('title', `${shortkeys["hide_labels"].view_value}`);
+    //$('#hideLabelsBox').attr('title', `${shortkeys["hide_labels"].view_value}`);
     //$('#hideFilteredBox').attr('title', `${shortkeys["hide_filtered_tracks"].view_value}`);
 }
 
@@ -513,12 +514,12 @@ function setupAnnotationShortkeys() {
 
     let shortkeys = userConfig.shortkeys;
 
-    Mousetrap.bind(shortkeys["hide_shapes"].value, hideBoxesHandler, 'keydown');
-    Mousetrap.bind(shortkeys["hide_labels"].value, hideLabelsHandler, 'keydown');
+    //Mousetrap.bind(shortkeys["hide_shapes"].value, hideBoxesHandler, 'keydown');
+    //Mousetrap.bind(shortkeys["hide_labels"].value, hideLabelsHandler, 'keydown');
     Mousetrap.bind(shortkeys["open_help"].value, openHelpHandler, 'keydown');
     Mousetrap.bind(shortkeys["open_settings"].value, openSettingsHandler, 'keydown');
-    Mousetrap.bind(shortkeys["save_work"].value, saveHandler, 'keydown');
-    Mousetrap.bind(shortkeys["change_default_label"].value.split(','), changeDefLabelHandler, 'keydown');
+    //Mousetrap.bind(shortkeys["save_work"].value, saveHandler, 'keydown');
+    //Mousetrap.bind(shortkeys["change_default_label"].value.split(','), changeDefLabelHandler, 'keydown');
 }
 
 
