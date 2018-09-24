@@ -934,7 +934,8 @@ class TrackView {
             $('<label> Label  </label>').addClass('semiBold').appendTo(div);
             let select = $('<select> </select>').addClass('uiSelect regular').appendTo(div);
             select.attr('title',
-                `Change Object Label [${shortkeys["change_track_label"].view_value}]`);
+                `Change Object Label]`);
+                //`Change Object Label [${shortkeys["change_track_label"].view_value}]`);
 
             for (let labelId in labels) {
                 $(`<option value=${labelId}> ${labels[labelId]} </option>`).appendTo(select);
