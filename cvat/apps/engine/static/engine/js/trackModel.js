@@ -989,6 +989,7 @@ class Skeleton {
 
 
         //TODO: assumes "visibility" value remains constant for now...
+        /*
         var interpolatedPosSkel = [];
         for (var i = 0; i < pJ[leftPos].skel.length; i++){
 
@@ -998,10 +999,10 @@ class Skeleton {
                                       newy,
                                       pJ[leftPos].skel[i][2],
                                       pJ[leftPos].skel[i][3]];
-        }
+        } */
 
         let interpolatedPos = {
-            skel: interpolatedPosSkel,//pJ[leftPos].skel,
+            skel: pJ[leftPos].skel,
             outsided: 0,
             occluded: pJ[leftPos].occluded
         };

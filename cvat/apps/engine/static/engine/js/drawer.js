@@ -452,8 +452,8 @@ class DrawerView {
                         // If this keypoint isn't left/right something
                         // redraw with standard layout
                         this._drawShape[keyp].attr({
-                            cx: pos.x + this._layout[this._drawShape[keyp].attr('name')][0] * 10,
-                            cy: pos.y + this._layout[this._drawShape[keyp].attr('name')][1] * 10,
+                            cx: pos.x + this._layout[this._drawShape[keyp].attr('name')][0] * 7,
+                            cy: pos.y + this._layout[this._drawShape[keyp].attr('name')][1] * 7,
                             visibility: "2"
                         }).css('display', '');
 
@@ -464,8 +464,8 @@ class DrawerView {
                         let bodypart =  this._drawShape[keyp].attr('name').split(" ")[1];
                         let layout_side = (this._ctrlDown ? (side == 'left' ? 'right' : 'left' ) : side);
                          this._drawShape[keyp].attr({
-                            cx: pos.x + this._layout[bodypart][layout_side][0] * 10,
-                            cy: pos.y + this._layout[bodypart][layout_side][1] * 10,
+                            cx: pos.x + this._layout[bodypart][layout_side][0] * 7,
+                            cy: pos.y + this._layout[bodypart][layout_side][1] * 7,
                             visibility: "2"
                         }).css('display', '');
 
