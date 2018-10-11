@@ -284,8 +284,8 @@ function setupMenu(job, collectionModel, collectionController, annotationParser)
     });
 
     helpButton.on('click', function() {
-        //hideMenu();
-        //helpWindow.css('display', 'block');
+        hideMenu();
+        helpWindow.css('display', 'block');
     });
 
     closeHelpButton.on('click', function() {

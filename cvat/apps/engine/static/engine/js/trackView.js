@@ -206,8 +206,8 @@ class TrackView {
         var keyCode = e.keyCode || e.which;
 
         if( this._trackController._trackModel._activeKeypoint != null){
-
-              if (keyCode == 79 && this._trackController._trackModel._activeKeypoint != (this._keypoint_names.length -1) ){
+             // 83 = s.
+              if (keyCode == 83 && this._trackController._trackModel._activeKeypoint != (this._keypoint_names.length -1) ){
                   var vis = $(this._shape[this._trackController._trackModel._activeKeypoint]).attr('visibility');
                   this._shape[this._trackController._trackModel._activeKeypoint].updateVisibility(((vis == "2") ?  "1" : "2"));
                   this._trackController.onchangekeypointgeometry(this._shape);
@@ -348,7 +348,7 @@ class TrackView {
                 this._shape[state.model._activeKeypoint].appendTo(this._framecontent);
             }
 
-            Mousetrap.bind('o', this.changeOccludedHandler.bind(this), 'keydown');
+            Mousetrap.bind('s', this.changeOccludedHandler.bind(this), 'keydown');
 
         } else{
             //We will have resetted ._activeKeypoint to null by now.
