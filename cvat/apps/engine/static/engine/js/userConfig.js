@@ -27,10 +27,53 @@ class Config {
             },
             */
 
+            occlude_activated_keypoint: {
+                value: 's',
+                view_value: 'S',
+                description: "occlude/de-occlude highlighted keypoint"
+            },
+
+            next_frame: {
+                value: "f",
+                view_value: "F",
+                description: "move to next player frame"
+            },
+
+            prev_frame: {
+                value: "d",
+                view_value: "D",
+                description: "move to previous player frame"
+            },
+
+
             switch_draw_mode: {
                 value: "n",
                 view_value: "N",
                 description: "open/close draw mode"
+            },
+
+            forward_frame: {
+                value: "v",
+                view_value: "V",
+                description: "move forward several frames"
+            },
+
+            backward_frame: {
+                value: "c",
+                view_value: "C",
+                description: "move backward several frames"
+            },
+
+            play_pause: {
+                value: "space",
+                view_value: "Space",
+                description: "switch play / pause of player"
+            },
+
+            save_work: {
+                value: "ctrl+s",
+                view_value: "Ctrl + S",
+                description: "save work on the server"
             },
 
             /*
@@ -117,30 +160,6 @@ class Config {
                 description: "delete highlighted track (use shift for force deleting)"
             },
 
-            next_frame: {
-                value: "f",
-                view_value: "F",
-                description: "move to next player frame"
-            },
-
-            prev_frame: {
-                value: "d",
-                view_value: "D",
-                description: "move to previous player frame"
-            },
-
-            forward_frame: {
-                value: "v",
-                view_value: "V",
-                description: "move forward several frames"
-            },
-
-            backward_frame: {
-                value: "c",
-                view_value: "C",
-                description: "move backward several frames"
-            },
-
             next_key_frame: {
                 value: "r",
                 view_value: "R",
@@ -165,11 +184,7 @@ class Config {
                 description: 'move to next frame which satisfies the filter'
             },
 
-            play_pause: {
-                value: "space",
-                view_value: "Space",
-                description: "switch play / pause of player"
-            },
+
 
             open_help: {
                 value: "f1",
@@ -183,11 +198,6 @@ class Config {
                 description: "open settings window "
             },
 
-            save_work: {
-                value: "ctrl+s",
-                view_value: "Ctrl + S",
-                description: "save work on the server"
-            },
 
             /*
 
