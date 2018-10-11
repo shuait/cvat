@@ -464,8 +464,6 @@ class CollectionModel extends Listener {
             this._activeTrack = trackID;
             this._allTracks[this._activeTrack].active = true;
             this._allTracks[this._activeTrack].activeKeypoint = keypointID;
-
-
         }
 
     }
@@ -486,7 +484,6 @@ class CollectionModel extends Listener {
             this._activeTrack = null;
         }
     }
-
 
     //TODO: removeactivetrack
     removeactivetrack(force) {
@@ -553,6 +550,11 @@ class CollectionModel extends Listener {
         if (activeKeypoint != null) {
 
             this.setactivekeypoint(activeKeypoint,activeTrack);
+
+
+
+
+
             //this.setactivetrack(activeTrack);
 
         }

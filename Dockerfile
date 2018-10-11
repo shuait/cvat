@@ -89,6 +89,10 @@ COPY cvat/ ${HOME}/cvat
 COPY tests ${HOME}/tests
 RUN  chown -R ${USER}:${USER} .
 
+#Increase Apache max upload size
+# RUN sed -i -e 's/LimitRequestBody 1073741824/LimitRequestBody 2147483644/g' /tmp/mod_wsgi-localhost:8080:1000/httpd.conf
+# -c 'vi /tmp/mod_wsgi-localhost:8080:1000/httpd.conf '
+
 # RUN all commands below as 'django' user
 USER ${USER}
 
@@ -96,4 +100,7 @@ RUN mkdir data share media keys logs /tmp/supervisord
 RUN python3 manage.py collectstatic
 
 EXPOSE 8080 8443
+
 ENTRYPOINT ["/usr/bin/supervisord"]
+
+
