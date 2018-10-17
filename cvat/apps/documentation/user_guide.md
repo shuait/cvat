@@ -46,7 +46,9 @@
 
    - To modify an *individual* keypoint's position, just click and drag the corresponding keypoint. 
      The position of the green "Center" keypoint automatically shifts to the centroid of the smallest bounding box encompassing all keypoints. Therefore, if moving an individual keypoint changes this bounding box, the green "Center" keypoint will shift slightly.
-   - To modify *all* keypoints' positions, click and drag the green "Center" keypoint.
+   - To modify *all* keypoints' positions, click and drag the green "Center" keypoint. A fully annotated keypoint on a single frame is shown as below
+   ![](static/documentation/visualConstructionImages/annotatedSkeleton.png)
+
    - **Interpolating keypoints**:
       - If you modify a keypoint on frame n, frame n will become a *key frame* for that keypoint's skeleton. Frame 0 is always a keyframe for all skeletons.
       - When a key frame is created, all keypoint positions will be linearly interpolated between the previous keypoint's frame and the new key frame.
