@@ -23,7 +23,10 @@
 - When you finish the first batch, you will receive the second batch of annotation tasks, and the rest of credit will as given after your annotations are approved. 
 
 ### Basic navigation to the interface
-  
+0. Annotation landing page is shown as below.
+
+    ![](static/documentation/visualConstructionImages/annotatintasklanding.png)
+
 1. Use arrows below to move on next/previous frame. To see the keyboard shortcut, hover your mouse pointer over an UI element (D and F keys for left and right respectively).
 
     ![](static/documentation/images/image008.jpg)
