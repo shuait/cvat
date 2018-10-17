@@ -42,7 +42,7 @@
     ![](static/documentation/visualConstructionImages/createworker.png)
        
 2. Initilize and  modify skeleton keypoint positions:
-   - A skeleton will be initilzied like in the following example:
+   - A skeleton will be initilzied like in the following example after step 1:
     ![](static/documentation/visualConstructionImages/initializeSkeleton.png)
 
    - To modify an *individual* keypoint's position, just click and drag the corresponding keypoint. 
@@ -54,9 +54,9 @@
       - This means that **if a keypoint's motion from frame n to frame m is linear, to annotate this keypoint, you therefore only have to annotate frames n and frames m - not the frames inbetween**. With this technique you should be able to save a lot of annotation time.
      
 4. To modify skeleton keypoint visibilities:
-   - Individual keypoint visibility can be modified by
-      - Clicking on the chevron in the corresponding worker's box in the panel on the right side of the page. A list of keypoints drops down with corresponding visibility icons.
-      - Click on the keypoint's visibility icon to occlude it (the corresponding keypoint circle will now appear with a dashed boundary). Click on the icon again to render it visible.
+   - Individual keypoint visibility can be either modified by
+      - Moving your cursor upon the keypoint you want to change visibility status, then press 'r' on the keyboard, an occulded keypoint will be shown by dash line circle. For more hot-key binding option, plese lick on "Open Menu" -> "Help" on the buttom left of the page.
+      - Clicking on the chevron in the corresponding worker's box in the panel on the right side of the page. A list of keypoints drops down with corresponding visibility icons. Click on the keypoint's visibility icon to occlude it (the corresponding keypoint circle will now appear with a dashed boundary). Click on the icon again to render it visible.
       - **Interpolation behavior**:
          - When a keypoint's visibility is changed, this frame becomes a keyframe for the skeleton. The visibility of all keypoints are constant for all frames up until the next keyframe (when the keypoint's visibility changes to its visibility on that frame).
          
