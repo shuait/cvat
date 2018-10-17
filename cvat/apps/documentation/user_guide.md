@@ -4,16 +4,23 @@
 
 ## Getting started
 
-### Authorization
+### Accesing annotation interface
 
-- After we create your group's annotation tool account you will then be able to log in at visualconstruction.cee.illinois.edu:
+- Send TA an email indicating you would like to take this assignment, we will create a account for you using your UID and a randomly generated passward, you may change the passward after your first login. After we create your account you will then be able to log in at [visual construction website](visualconstruction.cee.illinois.edu):
 
    ![](static/documentation/images/image001.jpg)
 
-- The TAs will assign an annotation task to you. Once this is done, you will have access to the task when you log in. Click on the hyperlink under the "Jobs" column on the right side of the screen to start annotating. 
-  
+- The TAs will assign annotation tasks to you. Once this is done, you will have access to the task when you log in. Click on the hyperlink under the "Jobs" column on the right side of the screen to start annotating. 
 
-### Basic navigation
+### Grading quiteria
+
+- Your final score of this bounuce assignment will be determined both by your annotation number and quality. Please take a look at sample annotations and annotation best practices carefully.
+
+- By registering to this assignment you automatically get 20% credit of this assignment.
+- You will be automatically assigned with a number of annotation tasks, when your annotation results are approved, you will received 40% credit.
+- When you finish the first batch, you will receive the second batch of annotation tasks, and the rest of credit will as given after your annotations are approved. 
+
+### Basic navigation to the interface
 
 1. Use arrows below to move on next/previous frame. To see the keyboard shortcut, hover your mouse pointer over an UI element (D and F keys for left and right respectively).
 
