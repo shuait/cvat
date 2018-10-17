@@ -8,7 +8,7 @@
 
    ![](static/documentation/images/image001.jpg)
 
-- The TAs will assign annotation tasks to you. Once this is done, you will have access to the task when you log in. Click on the hyperlink under the "Jobs" column on the right side of the screen to start annotating. 
+- The TAs will assign annotation tasks to you. Once this is done, you will have access to the annotator landing page when you log in. Click on the hyperlink under the "Jobs" column on the right side of the screen to start annotating. 
 
    ![](static/documentation/visualConstructionImages/annotatorlandingpage.png)
 
@@ -65,11 +65,13 @@
 5. When an annotated worker disappears from the screen, you need to finish the track. To do that you need to click on the "Outsided Property" icon ( the eye icon under each worker's label). The skeleton will then disappear on that frame, and its corresponding box on the panel on the right side of the page will disappear on all subsequent frames. **Note**: the skeleton will reappear when rewinding to frames before the track finishes.
     
 ### Best annotation practice
-   We recommend using our strategy for annotating body keypoints.
+   We recommend using our strategy for annotating body keypoints. A demo video showing one annotation example 
    - Step 1: annotate on the first frame, then forward to 10 frames later, adjust the keypoints if necessary. Keeping forwarding and adjusting till the end of video.
    - Step 2: replay the clip and see if anywhere goes wrong by keypoint interpolation.
    - Step 3: go to the 3'th frame, adjust the key points if necessary, then forward to 10 frames later (the 13'th frames of clip), repeat adjustment process in step 1 till the end of clip.
    - Step 4: repeat step2 and step3, each time you can start with a few frames further and skip by 10 frames to adjust keypoint interpolation results, when you are confident about the entire annotation, use "Open Menu" -> "Save Work" to save your annotation results.
+
+   - Note: **Do not** open the same job in different browser taps, we will lock the annotation job when it is being annotated, a job can be accessed only a few mins after the previous session for this job is closed (by closing the browser to go back to annotator landing page). 
 
 ### Vocabulary
 
