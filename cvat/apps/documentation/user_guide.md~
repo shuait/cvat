@@ -1,7 +1,5 @@
 # CEE 320 Worker keypoint annotation tool - User's Guide
 
-[toc]
-
 ## Getting started
 
 ### Accesing annotation interface
@@ -55,20 +53,25 @@
      
 4. To modify skeleton keypoint visibilities:
    - Individual keypoint visibility can be either modified by
-      - Moving your cursor upon the keypoint you want to change visibility status, then press 'r' on the keyboard, an occulded keypoint will be shown by dash line circle. For more hot-key binding option, plese lick on "Open Menu" -> "Help" on the buttom left of the page.
+      - Moving your cursor upon the keypoint you want to change visibility status, then press 's' on the keyboard, an occulded keypoint will be shown by dash line circle. For more hot-key binding option, plese lick on "Open Menu" -> "Help" on the buttom left of the page.
       - Clicking on the chevron in the corresponding worker's box in the panel on the right side of the page. A list of keypoints drops down with corresponding visibility icons. Click on the keypoint's visibility icon to occlude it (the corresponding keypoint circle will now appear with a dashed boundary). Click on the icon again to render it visible.
       - **Interpolation behavior**:
          - When a keypoint's visibility is changed, this frame becomes a keyframe for the skeleton. The visibility of all keypoints are constant for all frames up until the next keyframe (when the keypoint's visibility changes to its visibility on that frame).
          
-5. To modify worker per-frame activity labels.
-   - Click on the label menu in the corresponding worker's box in the panel on the right side of the page.
-   - Select the corresponding activity label from the menu that appears.
-   - **Interpolation behavior**:
-      - As for individual keypoint visibilities, a frame where a label change is made becomes a keyframe for that skeleton, and the label remains constant up to the next keyframe.
+#5. To modify worker per-frame activity labels.
+#   - Click on the label menu in the corresponding worker's box in the panel on the right side of the page.
+#   - Select the corresponding activity label from the menu that appears.
+#   - **Interpolation behavior**:
+#      - As for individual keypoint visibilities, a frame where a label change is made becomes a keyframe for that skeleton, and the label remains constant up to the next keyframe.
 
 6. When an annotated worker disappears from the screen, you need to finish the track. To do that you need to click on the "Outsided Property" icon. The skeleton will then disappear on that frame, and its corresponding box on the panel on the right side of the page will disappear on all subsequent frames. **Note**: the skeleton will reappear when rewinding to frames before the track finishes.
     
-   
+### Best annotation practice
+   We recommend using our strategy for annotating body keypoints.
+   - Step 1: annotate on the first frame, then forward to 10 frames later, adjust the keypoints if necessary. Keeping forwarding and adjusting till the end of frames
+   - Step 2: replay the clip and see if anywhere goes wrong by keypoint interpolation.
+   - Step 3: go to the 3'th frame, adjust the key points if necessary, then forward to 10 frames later (the 13'th frames of clip), repeat adjustment process in step 1 till the end of clip.
+   - Step 4: repeat step2 and step3, each time you can start with a few frames further and skip by 10 frames to adjust keypoint interpolation results, until you are confident about the 
 
 ### Vocabulary
 

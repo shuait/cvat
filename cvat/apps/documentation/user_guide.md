@@ -1,7 +1,5 @@
 # CEE 320 Worker keypoint annotation tool - User's Guide
 
-[toc]
-
 ## Getting started
 
 ### Accesing annotation interface
@@ -36,6 +34,7 @@
 3. An image can be moved/shifted by clicking/dragging the image.
 
 ### How to annotate
+0. All workers presented in the video clip should be annotated, however if you only see a hand or workers' body are mostly outside of video , you can omit them. If you are not sure, send us your user name and job link, we will let you know.
 
 1. Create a worker by pushing the "Create Worker" button on the bottom right of the screen. Until your next click, moving your cursor over the image will move the construction worker skeleton. Upon your next click, you will create a worker. **Important note:** by convention, we define the *left side* of a worker as corresponding to the left side of a worker as viewed from behind. To **flip left/right worker keypoints**, press ``Ctrl`` **before** you place the worker.
 
@@ -60,15 +59,20 @@
       - **Interpolation behavior**:
          - When a keypoint's visibility is changed, this frame becomes a keyframe for the skeleton. The visibility of all keypoints are constant for all frames up until the next keyframe (when the keypoint's visibility changes to its visibility on that frame).
          
-5. To modify worker per-frame activity labels.
-   - Click on the label menu in the corresponding worker's box in the panel on the right side of the page.
-   - Select the corresponding activity label from the menu that appears.
-   - **Interpolation behavior**:
-      - As for individual keypoint visibilities, a frame where a label change is made becomes a keyframe for that skeleton, and the label remains constant up to the next keyframe.
+#5. To modify worker per-frame activity labels.
+#   - Click on the label menu in the corresponding worker's box in the panel on the right side of the page.
+#   - Select the corresponding activity label from the menu that appears.
+#   - **Interpolation behavior**:
+#      - As for individual keypoint visibilities, a frame where a label change is made becomes a keyframe for that skeleton, and the label remains constant up to the next keyframe.
 
-6. When an annotated worker disappears from the screen, you need to finish the track. To do that you need to click on the "Outsided Property" icon. The skeleton will then disappear on that frame, and its corresponding box on the panel on the right side of the page will disappear on all subsequent frames. **Note**: the skeleton will reappear when rewinding to frames before the track finishes.
+6. When an annotated worker disappears from the screen, you need to finish the track. To do that you need to click on the "Outsided Property" icon ( the eye icon under each worker's label). The skeleton will then disappear on that frame, and its corresponding box on the panel on the right side of the page will disappear on all subsequent frames. **Note**: the skeleton will reappear when rewinding to frames before the track finishes.
     
-   
+### Best annotation practice
+   We recommend using our strategy for annotating body keypoints.
+   - Step 1: annotate on the first frame, then forward to 10 frames later, adjust the keypoints if necessary. Keeping forwarding and adjusting till the end of video.
+   - Step 2: replay the clip and see if anywhere goes wrong by keypoint interpolation.
+   - Step 3: go to the 3'th frame, adjust the key points if necessary, then forward to 10 frames later (the 13'th frames of clip), repeat adjustment process in step 1 till the end of clip.
+   - Step 4: repeat step2 and step3, each time you can start with a few frames further and skip by 10 frames to adjust keypoint interpolation results, when you are confident about the entire annotation, use "Open Menu" -> "Save Work" to save your annotation results.
 
 ### Vocabulary
 
