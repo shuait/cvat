@@ -12,6 +12,8 @@
 
 - The TAs will assign annotation tasks to you. Once this is done, you will have access to the task when you log in. Click on the hyperlink under the "Jobs" column on the right side of the screen to start annotating. 
 
+   ![](static/documentation/visualConstructionImages/annotatorlandingpage.jpg)
+
 ### Grading quiteria
 
 - Your final score of this bounuce assignment will be determined both by your annotation number and quality. Please take a look at sample annotations and annotation best practices carefully.
@@ -21,7 +23,7 @@
 - When you finish the first batch, you will receive the second batch of annotation tasks, and the rest of credit will as given after your annotations are approved. 
 
 ### Basic navigation to the interface
-
+  
 1. Use arrows below to move on next/previous frame. To see the keyboard shortcut, hover your mouse pointer over an UI element (D and F keys for left and right respectively).
 
     ![](static/documentation/images/image008.jpg)
