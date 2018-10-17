@@ -71,6 +71,8 @@
    - Step 3: go to the 3'th frame, adjust the key points if necessary, then forward to 10 frames later (the 13'th frames of clip), repeat adjustment process in step 1 till the end of clip.
    - Step 4: repeat step2 and step3, each time you can start with a few frames further and skip by 10 frames to adjust keypoint interpolation results, when you are confident about the entire annotation, use "Open Menu" -> "Save Work" to save your annotation results.
 
+   - Note: **Do not** open the same job in different browser taps, we will lock the annotation job when it is being annotation, a job can be accessed only a few mins after the previous session for this job ended. 
+
 ### Vocabulary
 
 ---
