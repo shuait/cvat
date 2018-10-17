@@ -23,7 +23,7 @@
 - When you finish the first batch, you will receive the second batch of annotation tasks, and the rest of credit will as given after your annotations are approved. 
 
 ### Basic navigation to the interface
-0. Annotation landing page is shown as below.
+0. An example of annotation landing page is shown as below.
 
     ![](static/documentation/visualConstructionImages/annotatintasklanding.png)
 
@@ -41,7 +41,10 @@
 
     ![](static/documentation/visualConstructionImages/createworker.png)
        
-2. To modify skeleton keypoint positions:
+2. Initilize and  modify skeleton keypoint positions:
+   - A skeleton will be initilzied like in the following example after step 1:
+    ![](static/documentation/visualConstructionImages/initializeSkeleton.png)
+
    - To modify an *individual* keypoint's position, just click and drag the corresponding keypoint. 
      The position of the green "Center" keypoint automatically shifts to the centroid of the smallest bounding box encompassing all keypoints. Therefore, if moving an individual keypoint changes this bounding box, the green "Center" keypoint will shift slightly.
    - To modify *all* keypoints' positions, click and drag the green "Center" keypoint.
