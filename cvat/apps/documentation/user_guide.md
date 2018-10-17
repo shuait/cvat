@@ -12,7 +12,7 @@
 
 - The TAs will assign annotation tasks to you. Once this is done, you will have access to the task when you log in. Click on the hyperlink under the "Jobs" column on the right side of the screen to start annotating. 
 
-   ![](static/documentation/visualConstructionImages/annotatorlandingpage.jpg)
+   ![](static/documentation/visualConstructionImages/annotatorlandingpage.png)
 
 ### Grading quiteria
 
