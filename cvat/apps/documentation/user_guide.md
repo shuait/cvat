@@ -12,7 +12,7 @@
 
    ![](static/documentation/visualConstructionImages/annotatorlandingpage.png)
 
-### Grading quiteria
+### Grading criteria
 
 - Your final score of this bounuce assignment will be determined both by your annotation number and quality. Please take a look at sample annotations and annotation best practices carefully.
 
