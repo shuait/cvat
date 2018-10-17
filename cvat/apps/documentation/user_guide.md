@@ -65,7 +65,7 @@
 5. When an annotated worker disappears from the screen, you need to finish the track. To do that you need to click on the "Outsided Property" icon ( the eye icon under each worker's label). The skeleton will then disappear on that frame, and its corresponding box on the panel on the right side of the page will disappear on all subsequent frames. **Note**: the skeleton will reappear when rewinding to frames before the track finishes.
     
 ### Best annotation practice
-   We recommend using our strategy for annotating body keypoints. A demo video showing one annotation example is given at [this link](https://www.useloom.com/share/0adaba9e3af74cfaaee68b453431bd32)
+   We recommend using our strategy for annotating body keypoints. We provide [A demo video](https://www.useloom.com/share/0adaba9e3af74cfaaee68b453431bd32) showing one annotation example.
    - Step 1: annotate on the first frame, then forward to 10 frames later, adjust the keypoints if necessary. Keeping forwarding and adjusting till the end of video.
    - Step 2: replay the clip and see if anywhere goes wrong by keypoint interpolation.
    - Step 3: go to the 3'th frame, adjust the key points if necessary, then forward to 10 frames later (the 13'th frames of clip), repeat adjustment process in step 1 till the end of clip.
