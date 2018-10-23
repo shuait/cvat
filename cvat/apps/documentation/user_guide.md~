@@ -92,9 +92,9 @@ Go to the next/previous frame with a predefined step. Shortcuts: ``v`` — step 
 
 To change the predefined step go to settings (``Open Menu`` —> ``Settings``) and modify ``Player Step`` property.
 
-![](static/documentation/images/image038.jpg)
+![](static/documentation/visualConstructionImages/menu.jpg)
 
-![](static/documentation/images/image039.jpg)
+![](static/documentation/visualConstructionImages/settings.png)
 
 ### Open Menu
 It is the main menu for the annotation tool. You can use it to remove all existing annotations, to change player settings and to save your existing work.
