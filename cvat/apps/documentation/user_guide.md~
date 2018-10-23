@@ -103,7 +103,7 @@ It is the main menu for the annotation tool. You can use it to remove all existi
 
 The menu contains different parameters which can be adjust by the user needs. For example,``Player Step``, ``Player Speed``.
 
-![](static/documentation/images/image052.jpg)
+![](static/documentation/visualConstructionImages/settings.png)
 
  - ``Brightness`` makes it appear that there is more or less light within the image.
  - ``Contrast`` controls the difference between dark and light parts of the image
