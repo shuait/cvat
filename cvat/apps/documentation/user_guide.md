@@ -67,13 +67,7 @@
 
    - Note: **Do not** open the same job in different browser taps, we will lock the annotation job when it is being annotated, a job can be accessed only a few mins after the previous session for this job is closed (by closing the browser to go back to annotator landing page). 
 
-### Vocabulary
 
----
-**Annotation** is a set of bounding boxes and tracks. There are several types of annotations:
-- *Manual* which is created by a person
-- *Semi-automatic* which is created automatically but modified by a person
-- *Automatic* which is created automatically without a person in the loop
 ---
 ### Navigation by frames/images
 

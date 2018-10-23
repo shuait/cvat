@@ -12,13 +12,7 @@
 
    ![](static/documentation/visualConstructionImages/annotatorlandingpage.png)
 
-### Grading criteria
 
-- Your final score of this assignment will be determined both by your annotation number and quality. Please take a look at sample annotations and annotation best practices carefully.
-
-- By registering to this assignment you automatically get 10% credit of this assignment.
-- You will be automatically assigned with a number of annotation tasks, when your annotation results are approved, you will received 40% credit.
-- When you finish the first batch, you will receive the second batch of annotation tasks, and the rest of credit will as given after your annotations are approved. 
 
 ### Basic navigation to the interface
 0. An example of annotation landing page is shown as below.
