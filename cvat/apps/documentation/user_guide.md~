@@ -92,7 +92,7 @@ Go to the next/previous frame with a predefined step. Shortcuts: ``v`` — step 
 
 To change the predefined step go to settings (``Open Menu`` —> ``Settings``) and modify ``Player Step`` property.
 
-![](static/documentation/visualConstructionImages/menu.jpg)
+![](static/documentation/visualConstructionImages/menu.png)
 
 ![](static/documentation/visualConstructionImages/settings.png)
 
