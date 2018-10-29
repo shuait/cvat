@@ -4,10 +4,10 @@ Click [here](https://www.useloom.com/share/0adaba9e3af74cfaaee68b453431bd32) for
 
 ## 0. Log in to annotation website
 
- - User accounts will be set up by Tuesday (10/30) 11 PM, you will recieve our confirmation email, then you can start your assignment.
- - Use your preferred username and password, and log in to [annotation website](visualconstruction.cee.illinois.edu). Website requries school network to access. If you are off-campus, try connecting through VPN, [UIUC VPN setup instruction](https://techservices.illinois.edu/services/virtual-private-networking-vpn/download-and-set-up-the-vpn-client) is here.  
+ - User accounts will be set up by Tuesday (10/30) 11 PM, you will receive our confirmation email, then you can start your assignment.
+ - Use your preferred username and password, and log in to [annotation website](visualconstruction.cee.illinois.edu). Website requires school network to access. If you are off-campus, try connecting through VPN, [UIUC VPN setup instruction](https://techservices.illinois.edu/services/virtual-private-networking-vpn/download-and-set-up-the-vpn-client) is here.  
 
- ## 1. A walk-though to annotation interface
+ ## 1. A walk-through to annotation interface
 
  ### 1.1 Annotation Panel
 
@@ -19,8 +19,8 @@ Click [here](https://www.useloom.com/share/0adaba9e3af74cfaaee68b453431bd32) for
     - use the correct skeleton **left-right** orientation. We use worker's left and right as the correct orientation. Before placing the skeleton, press "**Ctrl**" key and move your mouse to switch left and right. 
 
 
- 3. **Annotation Area**. Main region to diaplay frames and annotated keypoints. Hover over the displayed image, press left mouse key and drag to move the image; use mouse middle wheel to scale the image.
-    - flag occluded keypoints. Hover your mouse to a occluded keypoint and press ``s`` to set it as occluded, press again to cancel. If a keypoint is annotated as occluded, it will stay as occulded unless another keyframe says otherwise.
+ 3. **Annotation Area**. Main region to display frames and annotated keypoints. Hover over the displayed image, press left mouse key and drag to move the image; use mouse middle wheel to scale the image.
+    - flag occluded keypoints. Hover your mouse to a occluded keypoint and press ``s`` to set it as occluded, press again to cancel. If a keypoint is annotated as occluded, it will stay as occluded unless another keyframe says otherwise.
 
 
  4. **Worker Labels**. All created worker instances will show up here. For each worker, the **eye** icon is used to set visibility of keypoints for this worker at current frame; the **solid star** icon indicates at least one keypoints of this worker at current frame is annotated by human, such frame is called a **keyframe**. 
