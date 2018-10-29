@@ -2,6 +2,8 @@
 
 ## Getting started
 
+Update: Interface walk-through tutorial session material is [here](./Annotation_page_walk_through.md)
+
 ### Accesing annotation interface
 
 - Send TAs an email indicating you would like to take this assignment, send us the account name, your contact email and password you would like to use to log in (please be different from your school password or bank account password). After we create your account you will then be able to log in at [visual construction website](visualconstruction.cee.illinois.edu) as shown in the following figure:
