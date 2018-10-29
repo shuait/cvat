@@ -14,7 +14,7 @@ Click [here](https://www.useloom.com/share/0adaba9e3af74cfaaee68b453431bd32) for
  1. Annotation Panel Overview. Below is an example annotation panel, each panel section and their functionalities will be introduced.
       ![](static/documentation/annotationWalkThru/AnnoPanelOverview.png)
 
- 2. **Function Panel**. A Button to create new worker instance. After pressing *Create Worker/Track* button, hover your mouse to Annotation Area and place the default skeleton to proper area.  
+ 2. **Function Panel**. A Button to create new worker instance. After pressing *Create Worker/Track* button, move your mouse to Annotation Area and place the default skeleton to proper area.  
 
     - use the correct skeleton **left-right** orientation. We use worker's left and right as the correct orientation. Before placing the skeleton, press "**Ctrl**" key and move your mouse to switch left and right. 
 
