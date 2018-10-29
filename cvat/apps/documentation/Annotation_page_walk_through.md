@@ -20,7 +20,7 @@ Click [here](https://www.useloom.com/share/0adaba9e3af74cfaaee68b453431bd32) for
 
 
  3. **Annotation Area**. Main region to display frames and annotated keypoints. Hover over the displayed image, press left mouse key and drag to move the image; use mouse middle wheel to scale the image.
-    - flag occluded keypoints. Hover your mouse to a occluded keypoint and press ``s`` to set it as occluded, press again to cancel. If a keypoint is annotated as occluded, it will stay as occluded unless another keyframe says otherwise.
+    - flag occluded keypoints. Hover your mouse to an occluded keypoint and press ``s`` to set it as occluded, press again to cancel. If a keypoint is annotated as occluded, it will stay as occluded unless another keyframe says otherwise.
 
 
  4. **Worker Labels**. All created worker instances will show up here. For each worker, the **eye** icon is used to set visibility of keypoints for this worker at current frame; the **solid star** icon indicates at least one keypoints of this worker at current frame is annotated by human, such frame is called a **keyframe**. 
